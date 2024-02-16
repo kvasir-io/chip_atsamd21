@@ -1,0 +1,16 @@
+include(${CMAKE_CURRENT_LIST_DIR}/../core/cmake/core.cmake)
+
+set(TARGET_MPU ATSAMD21G17L)
+set(TARGET_FLASH_SIZE 131072)
+set(TARGET_RAM_SIZE 16384)
+set(TARGET_EEPROM_SIZE 4096)
+
+set(TARGET_UF2_CODE 0x68ED2B88)
+
+set(LINKER_FILE ${CMAKE_CURRENT_LIST_DIR}/../linker/chip.ld)
+
+svd_convert(
+  peripherals
+  SVD_FILE ${CMAKE_CURRENT_LIST_DIR}/../chip.svd
+  OUTPUT_DIRECTORY peripherals
+)
