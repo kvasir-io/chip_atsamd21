@@ -440,7 +440,7 @@ namespace Kvasir { namespace Sercom { namespace SPI {
               DMAC::DmacDescriptor::blockact::noact,
               DMAC::DmacDescriptor::evosel::disabled,
               std::uint16_t(size),
-              std::uint32_t(last),
+              std::uint32_t(std::addressof(*last)),
               Regs::DATA8::Addr::value);
             // set timeout
             startDma<DmaChannelA, false>();
@@ -487,7 +487,7 @@ namespace Kvasir { namespace Sercom { namespace SPI {
               DMAC::DmacDescriptor::blockact::noact,
               DMAC::DmacDescriptor::evosel::disabled,
               inSize,
-              std::uint32_t(last),
+              std::uint32_t(std::addressof(*last)),
               Regs::DATA8::Addr::value);
             Dma::template rd<DmaChannelB>() = DMAC::DmacDescriptor(
               true,
@@ -500,7 +500,7 @@ namespace Kvasir { namespace Sercom { namespace SPI {
               DMAC::DmacDescriptor::evosel::disabled,
               outSize,
               Regs::DATA8::Addr::value,
-              std::uint32_t(lastOut));
+              std::uint32_t(std::addressof(*lastOut)));
             // set timeout
             startDma<DmaChannelA, false>();
             startDma<DmaChannelB, true>();
