@@ -429,9 +429,9 @@ namespace detail {
             for(auto& row : rows) {
                 if(p == &row.pages.back()) {
                     if(index + 1 == rows.size()) {
-                        return rows.front().pages.begin();
+                        return &(*rows.front().pages.begin());
                     }
-                    return rows[index + 1].pages.begin();
+                    return &(*rows[index + 1].pages.begin());
                 }
                 ++index;
             }
@@ -498,7 +498,7 @@ namespace detail {
                 for(auto& row : rows) {
                     clearRow<Clock, isMainFlash>(reinterpret_cast<std::uint32_t>(&row));
                 }
-                pageToWrite = rows.front().pages.begin();
+                pageToWrite = &(*rows.front().pages.begin());
             } else {
                 if(pageFull(vp.page)) {
                     pageToWrite = nextPage(vp.page);
@@ -506,7 +506,7 @@ namespace detail {
                         for(auto& row : rows) {
                             clearRow<Clock, isMainFlash>(reinterpret_cast<std::uint32_t>(&row));
                         }
-                        pageToWrite = rows.front().pages.begin();
+                        pageToWrite = &(*rows.front().pages.begin());
                     } else {
                         if(pageToWrite == &rows[0].pages[0]) {
                             rowToClear = &rows[1];
