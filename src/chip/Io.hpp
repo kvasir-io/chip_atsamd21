@@ -7,8 +7,8 @@
 
 #include <array>
 namespace Kvasir { namespace Io {
-    template<>
-    struct PinLocationTraits<void> {
+    template<typename>
+    struct PinLocationTraits {
         static constexpr unsigned baseAddress = Kvasir::Peripheral::PORT::Registers<>::baseAddr;
         static constexpr int      portBegin   = 0;
         static constexpr int      portEnd     = 2;
