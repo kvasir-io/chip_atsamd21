@@ -46,6 +46,7 @@ namespace Interrupt {
 
 namespace Nvic {
     using namespace Kvasir::Interrupt;
+
     template<>
     struct InterruptOffsetTraits<void> {
         static constexpr int        begin = -14;

@@ -13,9 +13,9 @@
 #include "peripherals/SERCOM_SPI.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <ratio>
-#include <cassert>
 
 namespace Kvasir { namespace Sercom { namespace SPI {
     template<typename = void>
@@ -36,45 +36,67 @@ namespace Kvasir { namespace Sercom { namespace SPI {
 
             static constexpr bool isValidPinLocationMISO(NotUsed<>) { return true; }
 
-            template<int Port, int Pin>
-            static constexpr bool isValidPinLocationMISO(Kvasir::Register::PinLocation<Port, Pin>) {
+            template<int Port,
+                     int Pin>
+            static constexpr bool isValidPinLocationMISO(Kvasir::Register::PinLocation<Port,
+                                                                                       Pin>) {
                 return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(0, 1, 2, 3);
             }
-            template<int Port, int Pin>
-            static constexpr bool isValidPinLocationMOSI(Kvasir::Register::PinLocation<Port, Pin>) {
+
+            template<int Port,
+                     int Pin>
+            static constexpr bool isValidPinLocationMOSI(Kvasir::Register::PinLocation<Port,
+                                                                                       Pin>) {
                 return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(0, 2, 3);
             }
-            template<int Port, int Pin>
-            static constexpr bool isValidPinLocationSCLK(Kvasir::Register::PinLocation<Port, Pin>) {
+
+            template<int Port,
+                     int Pin>
+            static constexpr bool isValidPinLocationSCLK(Kvasir::Register::PinLocation<Port,
+                                                                                       Pin>) {
                 return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(1, 3);
             }
 
             static constexpr bool isValidPinLocationCS(NotUsed<>) { return true; }
-            template<int Port, int Pin>
-            static constexpr bool isValidPinLocationCS(Kvasir::Register::PinLocation<Port, Pin>) {
+
+            template<int Port,
+                     int Pin>
+            static constexpr bool isValidPinLocationCS(Kvasir::Register::PinLocation<Port,
+                                                                                     Pin>) {
                 return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(1, 2);
             }
 
-            template<int LPort, int LPin, int RPort, int RPin>
-            static constexpr bool PinLocationAreTheSame(
-              Kvasir::Register::PinLocation<LPort, LPin> l,
-              Kvasir::Register::PinLocation<RPort, RPin> r) {
+            template<int LPort,
+                     int LPin,
+                     int RPort,
+                     int RPin>
+            static constexpr bool PinLocationAreTheSame(Kvasir::Register::PinLocation<LPort,
+                                                                                      LPin> l,
+                                                        Kvasir::Register::PinLocation<RPort,
+                                                                                      RPin> r) {
                 return Io::Detail::PinLocationEqual(l, r);
             }
 
-            template<int LPort, int LPin>
-            static constexpr bool
-            PinLocationAreTheSame(Kvasir::Register::PinLocation<LPort, LPin>, NotUsed<>) {
+            template<int LPort,
+                     int LPin>
+            static constexpr bool PinLocationAreTheSame(Kvasir::Register::PinLocation<LPort,
+                                                                                      LPin>,
+                                                        NotUsed<>) {
                 return false;
             }
 
-            template<int RPort, int RPin>
-            static constexpr bool
-            PinLocationAreTheSame(NotUsed<>, Kvasir::Register::PinLocation<RPort, RPin>) {
+            template<int RPort,
+                     int RPin>
+            static constexpr bool PinLocationAreTheSame(NotUsed<>,
+                                                        Kvasir::Register::PinLocation<RPort,
+                                                                                      RPin>) {
                 return false;
             }
 
-            static constexpr bool PinLocationAreTheSame(NotUsed<>, NotUsed<>) { return false; }
+            static constexpr bool PinLocationAreTheSame(NotUsed<>,
+                                                        NotUsed<>) {
+                return false;
+            }
 
             template<typename MISOPIN>
             struct GetMISOPinConfig;
@@ -140,18 +162,23 @@ namespace Kvasir { namespace Sercom { namespace SPI {
                 if constexpr(std::is_same_v<MISOPIN, NotUsed<>>) {
                     return brigand::list<>{};
                 } else {
-                    return write(
-                      Regs::CTRLA::dipo,
-                      Kvasir::Register::value<static_cast<std::uint32_t>(
-                        Traits::SercomTraits::GetPOVal<SercomInstance>(MISOPIN{}))>());
+                    return write(Regs::CTRLA::dipo,
+                                 Kvasir::Register::value<static_cast<std::uint32_t>(
+                                   Traits::SercomTraits::GetPOVal<SercomInstance>(MISOPIN{}))>());
                 }
             }
+
             template<typename T>
             struct Fail {
-                static_assert(std::is_void_v<T>, "invalid Pin config");
-                static_assert(!std::is_void_v<T>, "invalid Pin config");
+                static_assert(std::is_void_v<T>,
+                              "invalid Pin config");
+                static_assert(!std::is_void_v<T>,
+                              "invalid Pin config");
             };
-            template<typename MOSIPIN, typename SCLKPIN, typename CSPIN>
+
+            template<typename MOSIPIN,
+                     typename SCLKPIN,
+                     typename CSPIN>
             static constexpr auto getDOPO() {
                 constexpr auto MOSIPAD = Traits::SercomTraits::GetPOVal<SercomInstance>(MOSIPIN{});
                 constexpr auto SCLKPAD = Traits::SercomTraits::GetPOVal<SercomInstance>(SCLKPIN{});
@@ -220,21 +247,23 @@ namespace Kvasir { namespace Sercom { namespace SPI {
             };
         };
 
-        constexpr std::uint32_t calcBaudReg(std::uint32_t f_clockSpeed, std::uint32_t f_baud) {
+        constexpr std::uint32_t calcBaudReg(std::uint32_t f_clockSpeed,
+                                            std::uint32_t f_baud) {
             auto baudReg = std::int64_t((double(f_clockSpeed) / (2.0 * double(f_baud))) - 1.0);
             return static_cast<std::uint32_t>(std::clamp<std::int64_t>(baudReg, 0, 256));
         }
 
-        constexpr double calcf_Baud(std::uint32_t f_clockSpeed, std::uint32_t baudReg) {
+        constexpr double calcf_Baud(std::uint32_t f_clockSpeed,
+                                    std::uint32_t baudReg) {
             return (double(f_clockSpeed) / (2.0 * (double(baudReg) + 1.0)));
         }
 
-        template<
-          std::uint32_t f_clockSpeed,
-          std::uint32_t f_baud,
-          std::intmax_t Num,
-          std::intmax_t Denom>
-        constexpr bool isValidBaudConfig(std::ratio<Num, Denom>) {
+        template<std::uint32_t f_clockSpeed,
+                 std::uint32_t f_baud,
+                 std::intmax_t Num,
+                 std::intmax_t Denom>
+        constexpr bool isValidBaudConfig(std::ratio<Num,
+                                                    Denom>) {
             constexpr auto baudReg      = calcBaudReg(f_clockSpeed, f_baud);
             constexpr auto f_baudCalced = calcf_Baud(f_clockSpeed, baudReg);
             constexpr auto err          = f_baudCalced - double(f_baud);
@@ -244,6 +273,7 @@ namespace Kvasir { namespace Sercom { namespace SPI {
         }
 
     }   // namespace Detail
+
     template<typename SPIConfig_>
     struct SPIBase {
         struct SPIConfig : SPIConfig_ {
@@ -284,42 +314,39 @@ namespace Kvasir { namespace Sercom { namespace SPI {
         static constexpr auto RxDmaTrigger = Traits::SercomTraits::DmaRX_Trigger<Instance>();
         static constexpr auto TxDmaTrigger = Traits::SercomTraits::DmaTX_Trigger<Instance>();
 
-        static_assert(
-          Detail::isValidBaudConfig<SPIConfig::clockSpeed, SPIConfig::baudRate>(
-            SPIConfig::maxBaudRateError),
-          "invalid baud configuration baudRate error to big");
-        static_assert(
-          Config::isValidPinLocationMISO(SPIConfig::misoPinLocation),
-          "invalid MISOPin");
-        static_assert(
-          Config::isValidPinLocationMOSI(SPIConfig::mosiPinLocation),
-          "invalid MOSIPin");
-        static_assert(
-          Config::isValidPinLocationSCLK(SPIConfig::sclkPinLocation),
-          "invalid SCLKPin");
-        static_assert(Config::isValidPinLocationCS(SPIConfig::csPinLocation), "invalid CSPin");
-        static_assert(
-          !Config::PinLocationAreTheSame(SPIConfig::misoPinLocation, SPIConfig::mosiPinLocation),
-          "MISO and MOSI are the same pin");
-        static_assert(
-          !Config::PinLocationAreTheSame(SPIConfig::misoPinLocation, SPIConfig::sclkPinLocation),
-          "MISO and SCLK are the same pin");
-        static_assert(
-          !Config::PinLocationAreTheSame(SPIConfig::misoPinLocation, SPIConfig::csPinLocation),
-          "MISO and CS are the same pin");
+        static_assert(Detail::isValidBaudConfig<SPIConfig::clockSpeed,
+                                                SPIConfig::baudRate>(SPIConfig::maxBaudRateError),
+                      "invalid baud configuration baudRate error to big");
+        static_assert(Config::isValidPinLocationMISO(SPIConfig::misoPinLocation),
+                      "invalid MISOPin");
+        static_assert(Config::isValidPinLocationMOSI(SPIConfig::mosiPinLocation),
+                      "invalid MOSIPin");
+        static_assert(Config::isValidPinLocationSCLK(SPIConfig::sclkPinLocation),
+                      "invalid SCLKPin");
+        static_assert(Config::isValidPinLocationCS(SPIConfig::csPinLocation),
+                      "invalid CSPin");
+        static_assert(!Config::PinLocationAreTheSame(SPIConfig::misoPinLocation,
+                                                     SPIConfig::mosiPinLocation),
+                      "MISO and MOSI are the same pin");
+        static_assert(!Config::PinLocationAreTheSame(SPIConfig::misoPinLocation,
+                                                     SPIConfig::sclkPinLocation),
+                      "MISO and SCLK are the same pin");
+        static_assert(!Config::PinLocationAreTheSame(SPIConfig::misoPinLocation,
+                                                     SPIConfig::csPinLocation),
+                      "MISO and CS are the same pin");
 
         static constexpr auto powerClockEnable
           = list(typename PM::enable<Regs::baseAddr>::action{});
 
-        static constexpr auto initStepPinConfig = list(
-          typename Config::template GetMISOPinConfig<
-            std::decay_t<decltype(SPIConfig::misoPinLocation)>>::pinConfig{},
-          typename Config::template GetMOSIPinConfig<
-            std::decay_t<decltype(SPIConfig::mosiPinLocation)>>::pinConfig{},
-          typename Config::template GetSCLKPinConfig<
-            std::decay_t<decltype(SPIConfig::sclkPinLocation)>>::pinConfig{},
-          typename Config::template GetCSPinConfig<
-            std::decay_t<decltype(SPIConfig::csPinLocation)>>::pinConfig{});
+        static constexpr auto initStepPinConfig
+          = list(typename Config::template GetMISOPinConfig<
+                   std::decay_t<decltype(SPIConfig::misoPinLocation)>>::pinConfig{},
+                 typename Config::template GetMOSIPinConfig<
+                   std::decay_t<decltype(SPIConfig::mosiPinLocation)>>::pinConfig{},
+                 typename Config::template GetSCLKPinConfig<
+                   std::decay_t<decltype(SPIConfig::sclkPinLocation)>>::pinConfig{},
+                 typename Config::template GetCSPinConfig<
+                   std::decay_t<decltype(SPIConfig::csPinLocation)>>::pinConfig{});
 
         static constexpr auto initStepPeripheryConfig = list(
           typename Config::template GetMISOPinConfig<
@@ -331,11 +358,9 @@ namespace Kvasir { namespace Sercom { namespace SPI {
           typename Config::template GetCSPinConfig<
             std::decay_t<decltype(SPIConfig::csPinLocation)>>::enable{},
 
-          write(
-            Regs::BAUD::baud,
-            Register::value<
-              std::uint8_t,
-              Detail::calcBaudReg(SPIConfig::clockSpeed, SPIConfig::baudRate)>()),
+          write(Regs::BAUD::baud,
+                Register::value<std::uint8_t,
+                                Detail::calcBaudReg(SPIConfig::clockSpeed, SPIConfig::baudRate)>()),
 
           typename Config::template GetModeConfig<SPIConfig::mode>::config{},
 
@@ -367,12 +392,11 @@ namespace Kvasir { namespace Sercom { namespace SPI {
         static constexpr auto initStepPeripheryEnable = list(set(Regs::CTRLA::enable));
     };
 
-    template<
-      typename SPIConfig,
-      typename Dma,
-      DMAC::DMAChannel  DmaChannelA,
-      DMAC::DMAChannel  DmaChannelB,
-      DMAC::DMAPriority DmaPriority>
+    template<typename SPIConfig,
+             typename Dma,
+             DMAC::DMAChannel  DmaChannelA,
+             DMAC::DMAChannel  DmaChannelB,
+             DMAC::DMAPriority DmaPriority>
     struct SPIBehavior : SPIBase<SPIConfig> {
         using base    = SPIBase<SPIConfig>;
         using Regs    = typename base::Regs;
@@ -384,30 +408,24 @@ namespace Kvasir { namespace Sercom { namespace SPI {
         inline static bool b = false;
 
         static OperationState operationState() {
-            if(!a && !b) {
-                return OperationState::succeeded;
-            }
+            if(!a && !b) { return OperationState::succeeded; }
 
             if(!Dma::template wd<DmaChannelA>().isValid() && apply(read(Regs::INTFLAG::txc))) {
                 a = false;
             }
-            if(!Dma::template wd<DmaChannelB>().isValid()) {
-                b = false;
-            }
+            if(!Dma::template wd<DmaChannelB>().isValid()) { b = false; }
 
-            if(!a && !b) {
-                return OperationState::succeeded;
-            }
+            if(!a && !b) { return OperationState::succeeded; }
             // TODO timeout
             return OperationState::ongoing;
         }
 
-        template<DMAC::DMAChannel Channel, bool isRx>
+        template<DMAC::DMAChannel Channel,
+                 bool             isRx>
         static void startDma() {
-            apply(
-              Dma::template start < Channel,
-              DmaPriority,
-              isRx ? base::RxDmaTrigger : base::TxDmaTrigger > ());
+            apply(Dma::template start<Channel,
+                                      DmaPriority,
+                                      isRx ? base::RxDmaTrigger : base::TxDmaTrigger>());
         }
 
         template<typename C>
@@ -416,32 +434,36 @@ namespace Kvasir { namespace Sercom { namespace SPI {
         }
 
         template<typename InputIt>
-        static void send_nocopy(InputIt first, InputIt last) {
+        static void send_nocopy(InputIt first,
+                                InputIt last) {
             static_assert(sizeof(*first) == 1, "only bytes");
             send_nocopy_impl(last, static_cast<std::size_t>(std::distance(first, last)), true);
         }
 
         template<typename T>
-        static void send_nocopy_static(T const* v, std::size_t size) {
+        static void send_nocopy_static(T const*    v,
+                                       std::size_t size) {
             static_assert(sizeof(*v) == 1, "only bytes");
             send_nocopy_impl(v, size, false);
         }
 
         template<typename InputIt>
-        static void send_nocopy_impl(InputIt last, std::size_t size, bool increment) {
-            Dma::template rd<DmaChannelA>() = DMAC::DmacDescriptor(
-              true,
-              DMAC::DmacDescriptor::stepsize::x1,
-              DMAC::DmacDescriptor::stepsel::dst,
-              DMAC::DmacDescriptor::dstinc::no_increment,
-              increment ? DMAC::DmacDescriptor::srcinc::increment
-                        : DMAC::DmacDescriptor::srcinc::no_increment,
-              DMAC::DmacDescriptor::beatsize::byte,
-              DMAC::DmacDescriptor::blockact::noact,
-              DMAC::DmacDescriptor::evosel::disabled,
-              std::uint16_t(size),
-              std::uint32_t(std::addressof(*last)),
-              Regs::DATA8::Addr::value);
+        static void send_nocopy_impl(InputIt     last,
+                                     std::size_t size,
+                                     bool        increment) {
+            Dma::template rd<DmaChannelA>()
+              = DMAC::DmacDescriptor(true,
+                                     DMAC::DmacDescriptor::stepsize::x1,
+                                     DMAC::DmacDescriptor::stepsel::dst,
+                                     DMAC::DmacDescriptor::dstinc::no_increment,
+                                     increment ? DMAC::DmacDescriptor::srcinc::increment
+                                               : DMAC::DmacDescriptor::srcinc::no_increment,
+                                     DMAC::DmacDescriptor::beatsize::byte,
+                                     DMAC::DmacDescriptor::blockact::noact,
+                                     DMAC::DmacDescriptor::evosel::disabled,
+                                     std::uint16_t(size),
+                                     std::uint32_t(std::addressof(*last)),
+                                     Regs::DATA8::Addr::value);
             // set timeout
             startDma<DmaChannelA, false>();
             a = true;
@@ -453,54 +475,58 @@ namespace Kvasir { namespace Sercom { namespace SPI {
             send_receive_nocopy(c.begin(), c.end(), c.begin(), c.end());
         }
 
-        template<typename C1, typename C2>
-        static void send_receive_nocopy(C1 const& c1, C2& c2) {
+        template<typename C1,
+                 typename C2>
+        static void send_receive_nocopy(C1 const& c1,
+                                        C2&       c2) {
             send_receive_nocopy(c1.begin(), c1.end(), c2.begin(), c2.end());
         }
 
         template<typename InputOutputIt>
-        static void send_receive_nocopy(InputOutputIt first, InputOutputIt last) {
+        static void send_receive_nocopy(InputOutputIt first,
+                                        InputOutputIt last) {
             send_receive_nocopy(first, last, first, last);
         }
 
-        template<typename InputIt, typename OutputIt>
-        static void
-        send_receive_nocopy(InputIt first, InputIt last, OutputIt firstOut, OutputIt lastOut) {
+        template<typename InputIt,
+                 typename OutputIt>
+        static void send_receive_nocopy(InputIt  first,
+                                        InputIt  last,
+                                        OutputIt firstOut,
+                                        OutputIt lastOut) {
             static_assert(sizeof(*first) == 1, "only bytes");
             static_assert(sizeof(*firstOut) == 1, "only bytes");
             auto const inSize  = std::uint16_t(std::distance(first, last));
             auto const outSize = std::uint16_t(std::distance(firstOut, lastOut));
             assert(inSize == outSize);
 
-            while(apply(read(Regs::INTFLAG::rxc))) {
-                apply(read(Regs::DATA8::data));
-            }
+            while(apply(read(Regs::INTFLAG::rxc))) { apply(read(Regs::DATA8::data)); }
             apply(set(Regs::STATUS::bufovf));
 
-            Dma::template rd<DmaChannelA>() = DMAC::DmacDescriptor(
-              true,
-              DMAC::DmacDescriptor::stepsize::x1,
-              DMAC::DmacDescriptor::stepsel::src,
-              DMAC::DmacDescriptor::dstinc::no_increment,
-              DMAC::DmacDescriptor::srcinc::increment,
-              DMAC::DmacDescriptor::beatsize::byte,
-              DMAC::DmacDescriptor::blockact::noact,
-              DMAC::DmacDescriptor::evosel::disabled,
-              inSize,
-              std::uint32_t(std::addressof(*last)),
-              Regs::DATA8::Addr::value);
-            Dma::template rd<DmaChannelB>() = DMAC::DmacDescriptor(
-              true,
-              DMAC::DmacDescriptor::stepsize::x1,
-              DMAC::DmacDescriptor::stepsel::dst,
-              DMAC::DmacDescriptor::dstinc::increment,
-              DMAC::DmacDescriptor::srcinc::no_increment,
-              DMAC::DmacDescriptor::beatsize::byte,
-              DMAC::DmacDescriptor::blockact::noact,
-              DMAC::DmacDescriptor::evosel::disabled,
-              outSize,
-              Regs::DATA8::Addr::value,
-              std::uint32_t(std::addressof(*lastOut)));
+            Dma::template rd<DmaChannelA>()
+              = DMAC::DmacDescriptor(true,
+                                     DMAC::DmacDescriptor::stepsize::x1,
+                                     DMAC::DmacDescriptor::stepsel::src,
+                                     DMAC::DmacDescriptor::dstinc::no_increment,
+                                     DMAC::DmacDescriptor::srcinc::increment,
+                                     DMAC::DmacDescriptor::beatsize::byte,
+                                     DMAC::DmacDescriptor::blockact::noact,
+                                     DMAC::DmacDescriptor::evosel::disabled,
+                                     inSize,
+                                     std::uint32_t(std::addressof(*last)),
+                                     Regs::DATA8::Addr::value);
+            Dma::template rd<DmaChannelB>()
+              = DMAC::DmacDescriptor(true,
+                                     DMAC::DmacDescriptor::stepsize::x1,
+                                     DMAC::DmacDescriptor::stepsel::dst,
+                                     DMAC::DmacDescriptor::dstinc::increment,
+                                     DMAC::DmacDescriptor::srcinc::no_increment,
+                                     DMAC::DmacDescriptor::beatsize::byte,
+                                     DMAC::DmacDescriptor::blockact::noact,
+                                     DMAC::DmacDescriptor::evosel::disabled,
+                                     outSize,
+                                     Regs::DATA8::Addr::value,
+                                     std::uint32_t(std::addressof(*lastOut)));
             // set timeout
             startDma<DmaChannelA, false>();
             startDma<DmaChannelB, true>();

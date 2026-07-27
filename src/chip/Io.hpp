@@ -6,6 +6,7 @@
 #include "peripherals/PORT.hpp"
 
 #include <array>
+
 namespace Kvasir { namespace Io {
     template<typename>
     struct PinLocationTraits {
@@ -40,7 +41,8 @@ namespace Kvasir { namespace Io {
                29,
                30,
                31,
-               ListEndIndicator}}}};
+               ListEndIndicator}}}
+        };
     };
 
 }}   // namespace Kvasir::Io

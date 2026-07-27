@@ -1,9 +1,9 @@
 #pragma once
 
-#include "peripherals/EIC.hpp"
 #include "core/Nvic.hpp"
 #include "kvasir/Io/Types.hpp"
 #include "kvasir/Register/Register.hpp"
+#include "peripherals/EIC.hpp"
 
 namespace Kvasir { namespace EIC {
     enum class InterruptType {
@@ -15,11 +15,13 @@ namespace Kvasir { namespace EIC {
         LevelHigh = 4,
         LevelLow  = 5
     };
+
     namespace detail {
 
         template<unsigned bit, typename Org>
         struct INTENSET {
-            static_assert(bit < 16, "not a valid pin");
+            static_assert(bit < 16,
+                          "not a valid pin");
             using Addr     = typename Org::Addr;
             using Loc      = decltype(Org::extint);
             using Access   = typename Loc::Access;
@@ -34,7 +36,8 @@ namespace Kvasir { namespace EIC {
 
         template<unsigned bit, typename Org>
         struct EVCTRL {
-            static_assert(bit < 16, "not a valid pin");
+            static_assert(bit < 16,
+                          "not a valid pin");
             using Addr     = typename Org::Addr;
             using AddrT    = typename Addr::RegType;
             using Loc      = decltype(Org::extinteo);
@@ -65,7 +68,8 @@ namespace Kvasir { namespace EIC {
             using Access   = typename Loc::Access;
             using DataType = typename Loc::DataType;
 
-            static_assert(bit < 16, "not a valid pin");
+            static_assert(bit < 16,
+                          "not a valid pin");
 
             static constexpr auto clear() {
                 return Kvasir::Register::set(
@@ -89,7 +93,8 @@ namespace Kvasir { namespace EIC {
 
         template<unsigned bit, template<unsigned> typename Org_>
         struct CONFIG {
-            static_assert(bit < 16, "not a valid pin");
+            static_assert(bit < 16,
+                          "not a valid pin");
 
             using Org                   = Org_<(bit > 7 ? 1 : 0)>;
             using Addr                  = typename Org::Addr;
@@ -106,8 +111,12 @@ namespace Kvasir { namespace EIC {
 
             static constexpr int bitPos = (bit % 8) * 4;
 
-            static_assert(TMask == Register::maskFromRange(2, 0));
-            static_assert(FMask == Register::maskFromRange(3, 3));
+            static_assert(TMask
+                          == Register::maskFromRange(2,
+                                                     0));
+            static_assert(FMask
+                          == Register::maskFromRange(3,
+                                                     3));
 
             static_assert(InterruptType::None == static_cast<InterruptType>(Org::SENSE0Val::none));
             static_assert(InterruptType::EdgeRise
@@ -148,36 +157,58 @@ namespace Kvasir { namespace EIC {
             }
         };
 
-        template<typename Reg, int Port, int Pin>
-        constexpr auto enablePinInterrupt(Register::PinLocation<Port, Pin>) {
+        template<typename Reg,
+                 int Port,
+                 int Pin>
+        constexpr auto enablePinInterrupt(Register::PinLocation<Port,
+                                                                Pin>) {
             return INTENSET<Pin % 16, Reg>::set();
         }
 
-        template<template<unsigned> typename Reg, InterruptType Type, int Port, int Pin>
-        constexpr auto setInterruptType(Register::PinLocation<Port, Pin>) {
+        template<template<unsigned> typename Reg,
+                 InterruptType Type,
+                 int           Port,
+                 int           Pin>
+        constexpr auto setInterruptType(Register::PinLocation<Port,
+                                                              Pin>) {
             // use with care
             return CONFIG<Pin % 16, Reg>::template setInterruptType<Type>();
         }
 
-        template<template<unsigned> typename Reg, bool Filter, int Port, int Pin>
-        constexpr auto setFilter(Register::PinLocation<Port, Pin>) {
+        template<template<unsigned> typename Reg,
+                 bool Filter,
+                 int  Port,
+                 int  Pin>
+        constexpr auto setFilter(Register::PinLocation<Port,
+                                                       Pin>) {
             // use with care
             return CONFIG<Pin % 16, Reg>::template setFilter<Filter>();
         }
 
-        template<typename Reg, bool Event, int Port, int Pin>
-        constexpr auto setEvent(Register::PinLocation<Port, Pin>) {
+        template<typename Reg,
+                 bool Event,
+                 int  Port,
+                 int  Pin>
+        constexpr auto setEvent(Register::PinLocation<Port,
+                                                      Pin>) {
             // use with care
             return EVCTRL<Pin % 16, Reg>::template setEvent<Event>();
         }
 
-        template<typename Reg, int Port, int Pin>
-        constexpr auto RuntimeClearInterrupt(Register::PinLocation<Port, Pin>, bool v) {
+        template<typename Reg,
+                 int Port,
+                 int Pin>
+        constexpr auto RuntimeClearInterrupt(Register::PinLocation<Port,
+                                                                   Pin>,
+                                             bool v) {
             return INTFLAG<Pin % 16, Reg>::runtimeClear(v);
         }
 
-        template<typename Reg, int Port, int Pin>
-        constexpr auto getInterruptFlag(Register::PinLocation<Port, Pin>) {
+        template<typename Reg,
+                 int Port,
+                 int Pin>
+        constexpr auto getInterruptFlag(Register::PinLocation<Port,
+                                                              Pin>) {
             return INTFLAG<Pin % 16, Reg>::get();
         }
 
@@ -191,51 +222,68 @@ namespace Kvasir { namespace EIC {
 
         static constexpr auto powerClockEnable = list(typename PM::enable<ba>::action{});
 
-        static constexpr auto initStepPinConfig = list(action(
-          Kvasir::Io::Action::
-            PinFunction<0, Io::OutputType::PushPull, Io::OutputSpeed::Low, PinConfigs::pull>{},
-          PinConfigs::pin)...);
+        static constexpr auto initStepPinConfig
+          = list(action(Kvasir::Io::Action::PinFunction<0,
+                                                        Io::OutputType::PushPull,
+                                                        Io::OutputSpeed::Low,
+                                                        Io::OutputInit::Low,
+                                                        PinConfigs::pull>{},
+                        PinConfigs::pin)...);
 
-        static constexpr auto initStepPeripheryConfig =
-          list(detail::enablePinInterrupt<Regs::INTENSET>(PinConfigs::pin)...,
-               detail::setInterruptType<Regs::CONFIG, PinConfigs::type>(PinConfigs::pin)...,
-               detail::setFilter<Regs::CONFIG, PinConfigs::filter>(PinConfigs::pin)...,
-               detail::setEvent<Regs::EVCTRL, PinConfigs::enableEvent>(PinConfigs::pin)...);
+        static constexpr auto initStepPeripheryConfig
+          = list(detail::enablePinInterrupt<Regs::INTENSET>(PinConfigs::pin)...,
+                 detail::setInterruptType<Regs::CONFIG, PinConfigs::type>(PinConfigs::pin)...,
+                 detail::setFilter<Regs::CONFIG, PinConfigs::filter>(PinConfigs::pin)...,
+                 detail::setEvent<Regs::EVCTRL, PinConfigs::enableEvent>(PinConfigs::pin)...);
 
         static constexpr auto initStepInterruptConfig = list(
           action(Kvasir::Nvic::Action::SetPriority<EICConfig::IsrPriority>{}, InterruptIndex{}),
           action(Kvasir::Nvic::Action::clearPending, InterruptIndex{}));
 
-        static constexpr auto initStepPeripheryEnable =
-          list(Regs::CTRLA::overrideDefaults(set(Regs::CTRLA::enable)),
-               makeEnable(InterruptIndex{}));
+        static constexpr auto initStepPeripheryEnable
+          = list(Regs::CTRLA::overrideDefaults(set(Regs::CTRLA::enable)),
+                 makeEnable(InterruptIndex{}));
 
-        template<std::size_t I, typename Flags, typename CBS>
-        static void callIfTrue(Flags flags, CBS cbs) {
+        template<std::size_t I,
+                 typename Flags,
+                 typename CBS>
+        static void callIfTrue(Flags flags,
+                               CBS   cbs) {
             if(Kvasir::Register::get<I>(flags)) { std::get<I>(cbs)(); }
         }
 
-        template<typename Flags, typename CBS, std::size_t... Is>
-        static void callIfTrue(Flags flags, CBS cbs, std::index_sequence<Is...>) {
+        template<typename Flags,
+                 typename CBS,
+                 std::size_t... Is>
+        static void callIfTrue(Flags flags,
+                               CBS   cbs,
+                               std::index_sequence<Is...>) {
             return ((callIfTrue<Is>(flags, cbs)), ...);
         }
 
-        template<std::size_t I, typename Flags, typename Pins>
-        static auto clearIfTrue(Flags flags, Pins pins) {
+        template<std::size_t I,
+                 typename Flags,
+                 typename Pins>
+        static auto clearIfTrue(Flags flags,
+                                Pins  pins) {
             return detail::RuntimeClearInterrupt<Regs::INTFLAG>(std::get<I>(pins),
                                                                 Kvasir::Register::get<I>(flags));
         }
 
-        template<typename Flags, typename Pins, std::size_t... Is>
-        static void clearIfTrue(Flags flags, Pins pins, std::index_sequence<Is...>) {
+        template<typename Flags,
+                 typename Pins,
+                 std::size_t... Is>
+        static void clearIfTrue(Flags flags,
+                                Pins  pins,
+                                std::index_sequence<Is...>) {
             return Kvasir::Register::apply(clearIfTrue<Is>(flags, pins)...);
         }
 
         // ISR
         static void onIsr() {
             static constexpr auto pins = std::tuple<decltype(PinConfigs::pin)...>{};
-            static constexpr auto callbacks =
-              std::tuple<decltype(PinConfigs::callback)...>{PinConfigs::callback...};
+            static constexpr auto callbacks
+              = std::tuple<decltype(PinConfigs::callback)...>{PinConfigs::callback...};
             auto const flags = apply(detail::getInterruptFlag<Regs::INTFLAG>(PinConfigs::pin)...);
 
             callIfTrue(flags, callbacks, std::make_index_sequence<sizeof...(PinConfigs)>{});

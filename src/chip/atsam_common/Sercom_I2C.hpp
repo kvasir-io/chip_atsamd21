@@ -19,13 +19,19 @@
 namespace Kvasir { namespace Sercom { namespace I2C {
     namespace Detail {
 
-        template<unsigned SercomInstance, int Port, int Pin>
-        constexpr bool isValidPinLocationSDA(Kvasir::Register::PinLocation<Port, Pin>) {
+        template<unsigned SercomInstance,
+                 int      Port,
+                 int      Pin>
+        constexpr bool isValidPinLocationSDA(Kvasir::Register::PinLocation<Port,
+                                                                           Pin>) {
             return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(0);
         }
 
-        template<unsigned SercomInstance, int Port, int Pin>
-        constexpr bool isValidPinLocationSCL(Kvasir::Register::PinLocation<Port, Pin>) {
+        template<unsigned SercomInstance,
+                 int      Port,
+                 int      Pin>
+        constexpr bool isValidPinLocationSCL(Kvasir::Register::PinLocation<Port,
+                                                                           Pin>) {
             return Traits::SercomTraits::ValidIfPOVal<SercomInstance, Port, Pin>(1);
         }
 
@@ -68,26 +74,25 @@ namespace Kvasir { namespace Sercom { namespace I2C {
         static constexpr unsigned maxSpeedFastPlus  = 1'000'000;
         static constexpr unsigned maxSpeedHighSpeed = 3'400'000;
 
-        static constexpr BaudConfigRaw calcBaudConfigRaw(
-          std::uint32_t f_clockSpeed,
-          std::uint32_t f_baud,
-          double        val,
-          double        lowtime,
-          double        hightime) {
+        static constexpr BaudConfigRaw calcBaudConfigRaw(std::uint32_t f_clockSpeed,
+                                                         std::uint32_t f_baud,
+                                                         double        val,
+                                                         double        lowtime,
+                                                         double        hightime) {
             double     baudraw = ((double(f_clockSpeed) / double(f_baud)) - val);
             auto const baud    = std::int64_t(
               (baudraw * (hightime / (lowtime + hightime)))   //NOLINT(bugprone-incorrect-roundings)
               + 0.5);
-            auto const baudlow = std::int64_t(
-              (baudraw * (lowtime / (lowtime + hightime)))
-              + 0.5);   //NOLINT(bugprone-incorrect-roundings)
+            auto const baudlow = std::int64_t((baudraw * (lowtime / (lowtime + hightime)))
+                                              + 0.5);   //NOLINT(bugprone-incorrect-roundings)
             auto const baudReg = static_cast<unsigned char>(std::clamp<std::int64_t>(baud, 0, 255));
             auto const baudlowReg
               = static_cast<unsigned char>(std::clamp<std::int64_t>(baudlow, 0, 255));
             return {baudReg, baudlowReg};
         }
 
-        constexpr BaudConfig calcBaudConfig(std::uint32_t f_clockSpeed, std::uint32_t f_baud) {
+        constexpr BaudConfig calcBaudConfig(std::uint32_t f_clockSpeed,
+                                            std::uint32_t f_baud) {
             if(f_baud <= maxSpeedStandard) {
                 auto const raw = calcBaudConfigRaw(f_clockSpeed, f_baud, 10, 4.7, 4.0);
                 return {raw.baud, raw.baudlow, 0, 0};
@@ -104,7 +109,8 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             return {0, 0, raw.baud, raw.baudlow};
         }
 
-        constexpr double calcf_Baud(std::uint32_t f_clockSpeed, BaudConfig baudConfig) {
+        constexpr double calcf_Baud(std::uint32_t f_clockSpeed,
+                                    BaudConfig    baudConfig) {
             if(baudConfig.baud == 0 && baudConfig.baudlow == 0) {
                 // high_speed
                 if(baudConfig.hsbaudlow == 0) {
@@ -124,12 +130,12 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             return std::numeric_limits<double>::min();
         }
 
-        template<
-          std::uint32_t f_clockSpeed,
-          std::uint32_t f_baud,
-          std::intmax_t Num,
-          std::intmax_t Denom>
-        constexpr bool isValidBaudConfig(std::ratio<Num, Denom>) {
+        template<std::uint32_t f_clockSpeed,
+                 std::uint32_t f_baud,
+                 std::intmax_t Num,
+                 std::intmax_t Denom>
+        constexpr bool isValidBaudConfig(std::ratio<Num,
+                                                    Denom>) {
             static_assert(f_baud <= maxSpeedHighSpeed, "baudRate to big");
 
             constexpr auto baudConfig   = calcBaudConfig(f_clockSpeed, f_baud);
@@ -148,12 +154,12 @@ namespace Kvasir { namespace Sercom { namespace I2C {
               write(Regs::BAUD::baud, Register::value<unsigned char, baudConfig.baud>()),
               write(Regs::BAUD::baudlow, Register::value<unsigned char, baudConfig.baudlow>()),
               write(Regs::BAUD::hsbaud, Register::value<unsigned char, baudConfig.hsbaud>()),
-              write(
-                Regs::BAUD::hsbaudlow,
-                Register::value<unsigned char, baudConfig.hsbaudlow>())));
+              write(Regs::BAUD::hsbaudlow,
+                    Register::value<unsigned char, baudConfig.hsbaudlow>())));
         };
 
-        template<typename Regs, unsigned baudrate>
+        template<typename Regs,
+                 unsigned baudrate>
         constexpr auto getSpeedConfig() {
             if constexpr(baudrate <= maxSpeedFast) {
                 return Regs::CTRLA::SPEEDValC::standard_and_fast_mode;
@@ -197,43 +203,39 @@ namespace Kvasir { namespace Sercom { namespace I2C {
 
             using InterruptIndexs = decltype(Traits::SercomTraits::getSercomIsrIndexs<Instance>());
 
-            static_assert(
-              isValidBaudConfig<I2CConfig::clockSpeed, I2CConfig::baudRate>(
-                I2CConfig::maxBaudRateError),
-              "invalid baud configuration baudRate error to big");
-            static_assert(
-              isValidPinLocationSDA<Instance>(I2CConfig::sdaPinLocation),
-              "invalid SDAPin");
-            static_assert(
-              isValidPinLocationSCL<Instance>(I2CConfig::sclPinLocation),
-              "invalid SCLPin");
+            static_assert(isValidBaudConfig<I2CConfig::clockSpeed,
+                                            I2CConfig::baudRate>(I2CConfig::maxBaudRateError),
+                          "invalid baud configuration baudRate error to big");
+            static_assert(isValidPinLocationSDA<Instance>(I2CConfig::sdaPinLocation),
+                          "invalid SDAPin");
+            static_assert(isValidPinLocationSCL<Instance>(I2CConfig::sclPinLocation),
+                          "invalid SCLPin");
 
             static constexpr auto powerClockEnable
               = list(typename PM::enable<Regs::baseAddr>::action{});
 
-            static constexpr auto initStepPinConfig = list(
-              typename GetSdaPinConfig<
-                Instance,
-                std::decay_t<decltype(I2CConfig::sdaPinLocation)>>::pinConfig{},
-              typename GetSclPinConfig<
-                Instance,
-                std::decay_t<decltype(I2CConfig::sclPinLocation)>>::pinConfig{});
+            static constexpr auto initStepPinConfig
+              = list(typename GetSdaPinConfig<
+                       Instance,
+                       std::decay_t<decltype(I2CConfig::sdaPinLocation)>>::pinConfig{},
+                     typename GetSclPinConfig<
+                       Instance,
+                       std::decay_t<decltype(I2CConfig::sclPinLocation)>>::pinConfig{});
 
             static constexpr auto initStepPeripheryConfig = list(
               Regs::BAUD::overrideDefaults(
                 typename GetBaudConfig<Regs, I2CConfig::clockSpeed, I2CConfig::baudRate>::config{}),
 
-              Regs::CTRLA::overrideDefaults(
-                write(Regs::CTRLA::MODEValC::i2c_master),
-                write(getSpeedConfig<Regs, I2CConfig::baudRate>())),
+              Regs::CTRLA::overrideDefaults(write(Regs::CTRLA::MODEValC::i2c_master),
+                                            write(getSpeedConfig<Regs, I2CConfig::baudRate>())),
               set(Regs::INTENSET::mb),
               set(Regs::INTENSET::sb),
               set(Regs::INTENSET::error),
               I2CConfig::userConfigOverride);
 
-            static constexpr auto initStepInterruptConfig = list(
-              Nvic::makeSetPriority<I2CConfig::isrPriority>(InterruptIndexs{}),
-              Nvic::makeClearPending(InterruptIndexs{}));
+            static constexpr auto initStepInterruptConfig
+              = list(Nvic::makeSetPriority<I2CConfig::isrPriority>(InterruptIndexs{}),
+                     Nvic::makeClearPending(InterruptIndexs{}));
 
             static constexpr auto initStepPeripheryEnable
               = list(set(Regs::CTRLA::enable), Nvic::makeEnable(InterruptIndexs{}));
@@ -257,19 +259,20 @@ namespace Kvasir { namespace Sercom { namespace I2C {
         inline static uint8_t                                      addr{0};
         inline static tp                                           timeoutTime{};
 
-        static constexpr auto ack_byte_read = list(Regs::CTRLB::overrideDefaults(
-          write(Regs::CTRLB::ACKACTValC::send_ack),
-          write(Regs::CTRLB::CMDValC::ack_byte_read)));
+        static constexpr auto ack_byte_read
+          = list(Regs::CTRLB::overrideDefaults(write(Regs::CTRLB::ACKACTValC::send_ack),
+                                               write(Regs::CTRLB::CMDValC::ack_byte_read)));
 
-        static constexpr auto nack_stop = list(Regs::CTRLB::overrideDefaults(
-          write(Regs::CTRLB::ACKACTValC::send_nack),
-          write(Regs::CTRLB::CMDValC::ack_stop)));
+        static constexpr auto nack_stop
+          = list(Regs::CTRLB::overrideDefaults(write(Regs::CTRLB::ACKACTValC::send_nack),
+                                               write(Regs::CTRLB::CMDValC::ack_stop)));
 
-        static constexpr auto ack_stop = list(Regs::CTRLB::overrideDefaults(
-          write(Regs::CTRLB::ACKACTValC::send_ack),
-          write(Regs::CTRLB::CMDValC::ack_stop)));
+        static constexpr auto ack_stop
+          = list(Regs::CTRLB::overrideDefaults(write(Regs::CTRLB::ACKACTValC::send_ack),
+                                               write(Regs::CTRLB::CMDValC::ack_stop)));
 
         static void runtimeInit() { apply(write(Regs::STATUS::BUSSTATEValC::idle)); }
+
         // INTERFACE
         // TODO timeout
         static void reset() {
@@ -277,8 +280,7 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             state_.store(State::idle, std::memory_order_relaxed);
             operationState_.store(OperationState::succeeded, std::memory_order_relaxed);
             apply(set(Regs::CTRLA::swrst));
-            while(apply(read(Regs::SYNCBUSY::swrst))) {
-            }
+            while(apply(read(Regs::SYNCBUSY::swrst))) {}
             apply(base::initStepPeripheryConfig);
             apply(base::initStepInterruptConfig);
             apply(base::initStepPeripheryEnable);
@@ -292,7 +294,8 @@ namespace Kvasir { namespace Sercom { namespace I2C {
         }
 
         template<typename OIT>
-        static void getReceivedBytes(OIT first, OIT last) {
+        static void getReceivedBytes(OIT first,
+                                     OIT last) {
             while(first != last) {
                 assert(!buffer_.empty());
                 *first = buffer_.front();
@@ -319,13 +322,16 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             }
             return false;
         }
+
         static void release() {
             assert(state_.load(std::memory_order_relaxed) != State::idle);   // TODO
             state_.store(State::idle, std::memory_order_relaxed);
         }
 
         template<typename C>
-        static void send(tp const& currentTime, std::uint8_t address, C const& c) {
+        static void send(tp const&    currentTime,
+                         std::uint8_t address,
+                         C const&     c) {
             /*            K_ASSERT(
               state_.load(std::memory_order_relaxed)
               == Kvasir::none_of(State::sending, State::receiveing));*/
@@ -338,7 +344,9 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             apply(write(Regs::ADDR::addr, unsigned(address) << 1U));
         }
 
-        static void receive(tp const& currentTime, std::uint8_t address, std::uint8_t size) {
+        static void receive(tp const&    currentTime,
+                            std::uint8_t address,
+                            std::uint8_t size) {
             /*            K_ASSERT(
               state_.load(std::memory_order_relaxed)
               == Kvasir::none_of(State::sending, State::receiveing));*/
@@ -353,8 +361,10 @@ namespace Kvasir { namespace Sercom { namespace I2C {
         }
 
         template<typename C>
-        static void
-        send_receive(tp const& currentTime, std::uint8_t address, C const& c, std::uint8_t size) {
+        static void send_receive(tp const&    currentTime,
+                                 std::uint8_t address,
+                                 C const&     c,
+                                 std::uint8_t size) {
             /*     K_ASSERT(
               state_.load(std::memory_order_relaxed)
               == Kvasir::none_of(State::sending, State::receiveing));*/
@@ -432,6 +442,7 @@ namespace Kvasir { namespace Sercom { namespace I2C {
             return brigand::list<
               Kvasir::Nvic::Isr<std::addressof(onIsr), Nvic::Index<Ts::value>>...>{};
         }
+
         using Isr = decltype(makeIsr(typename base::InterruptIndexs{}));
     };
 

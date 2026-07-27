@@ -13,11 +13,10 @@ namespace Kvasir { namespace PM {
 
         struct RCAUSE {
             using Addr = Register::Address<baseAddr + 0x38, 0xff, 0x00, unsigned char>;
-            static constexpr Register::FieldLocation<
-              Addr,
-              Register::maskFromRange(2, 0, 6, 4),
-              Register::ReadWriteAccess,
-              unsigned char>
+            static constexpr Register::FieldLocation<Addr,
+                                                     Register::maskFromRange(2, 0, 6, 4),
+                                                     Register::ReadWriteAccess,
+                                                     unsigned char>
               flags{};
             static constexpr Register::FieldValue<typename decltype(flags)::type, 0b0000'0001>
               POR{};
@@ -72,46 +71,39 @@ namespace Kvasir { namespace PM {
 
         static constexpr bool isValidPeripheryAddress(unsigned peripheryAddress) {
             for(auto pei : peripheryEnableInfos) {
-                if(pei.address == peripheryAddress) {
-                    return true;
-                }
+                if(pei.address == peripheryAddress) { return true; }
             }
             return false;
         }
 
         static constexpr unsigned getOffset(unsigned peripheryAddress) {
             for(auto pei : peripheryEnableInfos) {
-                if(pei.address == peripheryAddress) {
-                    return pei.offset;
-                }
+                if(pei.address == peripheryAddress) { return pei.offset; }
             }
             return 0;
         }
 
         static constexpr unsigned getBit(unsigned peripheryAddress) {
             for(auto pei : peripheryEnableInfos) {
-                if(pei.address == peripheryAddress) {
-                    return pei.bit;
-                }
+                if(pei.address == peripheryAddress) { return pei.bit; }
             }
             return 0;
         }
 
     }   // namespace Detail
+
     template<unsigned PeripheryAddress>
     struct enable {
-        static_assert(
-          Detail::isValidPeripheryAddress(PeripheryAddress),
-          "invalid PeripheryAddress to enable");
+        static_assert(Detail::isValidPeripheryAddress(PeripheryAddress),
+                      "invalid PeripheryAddress to enable");
         using action
           = Detail::BitSet<Detail::getOffset(PeripheryAddress), Detail::getBit(PeripheryAddress)>;
     };
 
     template<unsigned PeripheryAddress>
     struct disable {
-        static_assert(
-          Detail::isValidPeripheryAddress(PeripheryAddress),
-          "invalid PeripheryAddress to disable");
+        static_assert(Detail::isValidPeripheryAddress(PeripheryAddress),
+                      "invalid PeripheryAddress to disable");
         using action
           = Detail::BitClear<Detail::getOffset(PeripheryAddress), Detail::getBit(PeripheryAddress)>;
     };
@@ -120,21 +112,11 @@ namespace Kvasir { namespace PM {
 
     inline ResetCause reset_cause() {
         auto c = apply(read(Registers<>::RCAUSE::flags));
-        if(c == Registers<>::RCAUSE::POR) {
-            return ResetCause::por;
-        }
-        if(c == Registers<>::RCAUSE::BOD12) {
-            return ResetCause::bod12;
-        }
-        if(c == Registers<>::RCAUSE::BOD33) {
-            return ResetCause::bod33;
-        }
-        if(c == Registers<>::RCAUSE::EXT) {
-            return ResetCause::ext;
-        }
-        if(c == Registers<>::RCAUSE::WDT) {
-            return ResetCause::wdt;
-        }
+        if(c == Registers<>::RCAUSE::POR) { return ResetCause::por; }
+        if(c == Registers<>::RCAUSE::BOD12) { return ResetCause::bod12; }
+        if(c == Registers<>::RCAUSE::BOD33) { return ResetCause::bod33; }
+        if(c == Registers<>::RCAUSE::EXT) { return ResetCause::ext; }
+        if(c == Registers<>::RCAUSE::WDT) { return ResetCause::wdt; }
         return ResetCause::syst;
     }
 

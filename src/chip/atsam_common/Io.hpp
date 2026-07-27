@@ -6,7 +6,8 @@
 #include "kvasir/Register/Register.hpp"
 
 namespace Kvasir { namespace Io {
-    template<int Port, int Pin>
+    template<int Port,
+             int Pin>
     constexpr bool isValidPinLocation() {
         if(!(Port < PinLocationTraits<void>::portEnd && Port >= PinLocationTraits<void>::portBegin))
         {
@@ -18,12 +19,8 @@ namespace Kvasir { namespace Io {
         }
 
         for(auto dp : PinLocationTraits<void>::PinsDisabled[Port]) {
-            if(dp == PinLocationTraits<void>::ListEndIndicator) {
-                break;
-            }
-            if(dp == Pin) {
-                return false;
-            }
+            if(dp == PinLocationTraits<void>::ListEndIndicator) { break; }
+            if(dp == Pin) { return false; }
         }
 
         return true;
@@ -33,13 +30,13 @@ namespace Kvasir { namespace Io {
         using namespace Register;
 
         template<unsigned A, int BitPos>
-        using BlindSet = Register::Action<
-          WOBitLocT<Register::Address<A, maskFromRange(31, 0)>, BitPos>,
-          WriteLiteralAction<(1U << unsigned(BitPos))>>;
+        using BlindSet
+          = Register::Action<WOBitLocT<Register::Address<A, maskFromRange(31, 0)>, BitPos>,
+                             WriteLiteralAction<(1U << unsigned(BitPos))>>;
 
         template<unsigned A, int BitPos>
-        using Read = Register::
-          Action<RWBitLocT<Register::Address<A, maskFromRange(31, 0)>, BitPos>, ReadAction>;
+        using Read = Register::Action<RWBitLocT<Register::Address<A, maskFromRange(31, 0)>, BitPos>,
+                                      ReadAction>;
 
         static constexpr unsigned baseAddress = PinLocationTraits<void>::baseAddress;
         static constexpr unsigned portOffset  = 0x00000080;
@@ -53,9 +50,9 @@ namespace Kvasir { namespace Io {
           Address<baseAddress + 0x40 + Port * portOffset + Pin, 0b10111000, 0, unsigned char>;
 
         template<int Port, int Pin, int Position, bool SetClr>
-        using CFG_BitPos = Register::Action<
-          RWBitLocT<CFG_BaseAddress<Port, Pin>, Position>,
-          WriteLiteralAction<((SetClr ? 1U : 0U) << unsigned(Position))>>;
+        using CFG_BitPos
+          = Register::Action<RWBitLocT<CFG_BaseAddress<Port, Pin>, Position>,
+                             WriteLiteralAction<((SetClr ? 1U : 0U) << unsigned(Position))>>;
 
         template<int Port, int Pin, bool SetClr>
         using CFG_PMUXEN = CFG_BitPos<Port, Pin, 0, SetClr>;
@@ -81,26 +78,30 @@ namespace Kvasir { namespace Io {
 
     template<Io::PullConfiguration PC, int Port, int Pin>
     struct MakeAction<Action::Input<PC>, Register::PinLocation<Port, Pin>>
-      : decltype(MPL::list(
-          Detail::BlindSet<Detail::baseAddress + 0x04 + Port * Detail::portOffset, Pin>{},   // DIRCLR
-          Detail::CFG_PMUXEN<Port, Pin, false>{},
-          Detail::CFG_INEN<Port, Pin, true>{},
-          Detail::CFG_PULLEN<Port, Pin, PC != Io::PullConfiguration::PullNone>{},
-          Detail::CFG_DRVSTR<Port, Pin, false>{},
-          Detail::BlindSet<Detail::baseAddress
-                             + (PC == PullConfiguration::PullNone ? 0x04
-                                                                  : PC == PullConfiguration::PullDown ? 0x14 : 0x18)
-                             + Port * Detail::portOffset,
-                           Pin>{}   // DIRCLR || OUTSET || OUTCLR
-          )) {
+      : decltype(MPL::list(Detail::BlindSet<Detail::baseAddress + 0x04 + Port * Detail::portOffset,
+                                            Pin>{},   // DIRCLR
+                           Detail::CFG_PMUXEN<Port, Pin, false>{},
+                           Detail::CFG_INEN<Port, Pin, true>{},
+                           Detail::CFG_PULLEN<Port, Pin, PC != Io::PullConfiguration::PullNone>{},
+                           Detail::CFG_DRVSTR<Port, Pin, false>{},
+                           Detail::BlindSet<Detail::baseAddress
+                                              + (PC == PullConfiguration::PullNone   ? 0x04
+                                                 : PC == PullConfiguration::PullDown ? 0x14
+                                                                                     : 0x18)
+                                              + Port * Detail::portOffset,
+                                            Pin>{}   // DIRCLR || OUTSET || OUTCLR
+                           )) {
         static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
     };
 
-    template<Io::OutputType OT, Io::OutputSpeed OS, int Port, int Pin>
-    struct MakeAction<Action::Output<OT, OS>, Register::PinLocation<Port, Pin>>
+    template<Io::OutputType OT, Io::OutputSpeed OS, Io::OutputInit OI, int Port, int Pin>
+    struct MakeAction<Action::Output<OT, OS, OI>, Register::PinLocation<Port, Pin>>
       : decltype(MPL::list(
-          Detail::
-            BlindSet<Detail::baseAddress + 0x08 + Port * Detail::portOffset, Pin>{},   // DIRSET
+          Detail::BlindSet<Detail::baseAddress + (OI == Io::OutputInit::High ? 0x18 : 0x14)
+                             + Port * Detail::portOffset,
+                           Pin>{},   // OUTSET || OUTCLR
+          Detail::BlindSet<Detail::baseAddress + 0x08 + Port * Detail::portOffset,
+                           Pin>{},   // DIRSET
           Detail::CFG_PMUXEN<Port, Pin, false>{},
           Detail::CFG_INEN<Port, Pin, true>{},
           Detail::CFG_PULLEN<Port, Pin, false>{},
@@ -113,44 +114,59 @@ namespace Kvasir { namespace Io {
     struct MakeAction<Action::Clear, Register::PinLocation<Port, Pin>>
       : Detail::BlindSet<Detail::baseAddress + 0x14 + Port * Detail::portOffset, Pin>   // OUTCLR
     {
-        static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
+        static_assert(isValidPinLocation<Port,
+                                         Pin>(),
+                      "invalid PinLocation");
     };
 
     template<int Port, int Pin>
     struct MakeAction<Action::Set, Register::PinLocation<Port, Pin>>
       : Detail::BlindSet<Detail::baseAddress + 0x18 + Port * Detail::portOffset, Pin>   // OUTSET
     {
-        static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
+        static_assert(isValidPinLocation<Port,
+                                         Pin>(),
+                      "invalid PinLocation");
     };
 
     template<int Port, int Pin>
     struct MakeAction<Action::Toggle, Register::PinLocation<Port, Pin>>
       : Detail::BlindSet<Detail::baseAddress + 0x1C + Port * Detail::portOffset, Pin>   // OUTTGL
     {
-        static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
+        static_assert(isValidPinLocation<Port,
+                                         Pin>(),
+                      "invalid PinLocation");
     };
 
     template<int Port, int Pin>
     struct MakeAction<Action::Read, Register::PinLocation<Port, Pin>>
       : Detail::Read<Detail::baseAddress + 0x20 + Port * Detail::portOffset, Pin>   // IN
     {
-        static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
+        static_assert(isValidPinLocation<Port,
+                                         Pin>(),
+                      "invalid PinLocation");
     };
 
-    template<Io::OutputType OT, Io::OutputSpeed OS, PullConfiguration PC, int Port, int Pin, int Function>
-    struct MakeAction<Action::PinFunction<Function, OT, OS, PC>, Register::PinLocation<Port, Pin>>
-      : decltype(MPL::list(
-          Detail::PMUX<Port, Pin, Function>{},
-          Detail::CFG_PMUXEN<Port, Pin, true>{},
-          Detail::CFG_INEN<Port, Pin, true>{},
-          Detail::CFG_PULLEN<Port, Pin, PC != Io::PullConfiguration::PullNone>{},
-          Detail::CFG_DRVSTR<Port, Pin, OS != OutputSpeed::Low>{},
-          Detail::BlindSet<Detail::baseAddress
-                             + (PC == PullConfiguration::PullNone ? 0x04
-                                                                  : PC == PullConfiguration::PullDown ? 0x14 : 0x18)
-                             + Port * Detail::portOffset,
-                           Pin>{}   // DIRCLR || OUTSET || OUTCLR
-          )) {
+    template<Io::OutputType    OT,
+             Io::OutputSpeed   OS,
+             Io::OutputInit    OI,
+             PullConfiguration PC,
+             int               Port,
+             int               Pin,
+             int               Function>
+    struct MakeAction<Action::PinFunction<Function, OT, OS, OI, PC>,
+                      Register::PinLocation<Port, Pin>>
+      : decltype(MPL::list(Detail::PMUX<Port, Pin, Function>{},
+                           Detail::CFG_PMUXEN<Port, Pin, true>{},
+                           Detail::CFG_INEN<Port, Pin, true>{},
+                           Detail::CFG_PULLEN<Port, Pin, PC != Io::PullConfiguration::PullNone>{},
+                           Detail::CFG_DRVSTR<Port, Pin, OS != OutputSpeed::Low>{},
+                           Detail::BlindSet<Detail::baseAddress
+                                              + (PC == PullConfiguration::PullNone   ? 0x04
+                                                 : PC == PullConfiguration::PullDown ? 0x14
+                                                                                     : 0x18)
+                                              + Port * Detail::portOffset,
+                                            Pin>{}   // DIRCLR || OUTSET || OUTCLR
+                           )) {
         static_assert(isValidPinLocation<Port, Pin>(), "invalid PinLocation");
         static_assert(OT == Io::OutputType::PushPull, "only push pull supported");
     };

@@ -1,6 +1,6 @@
 #pragma once
-#include "peripherals/EVSYS.hpp"
 #include "kvasir/Register/Utility.hpp"
+#include "peripherals/EVSYS.hpp"
 
 namespace Kvasir { namespace EVSYS {
     template<typename EVSYSConfig>
@@ -35,31 +35,34 @@ namespace Kvasir { namespace EVSYS {
 
         //TODO
         template<Channel channel>
-        static auto
-          triggerEventChannel() -> decltype(list(
-            write(
-              Regs::CHANNEL_TRIG::channel,
-              Register::value<std::uint16_t, static_cast<std::uint16_t>(channel)>()),
-            set(Regs::CHANNEL_TRIG::swevt))) {
+        static auto triggerEventChannel()
+          -> decltype(list(write(Regs::CHANNEL_TRIG::channel,
+                                 Register::value<std::uint16_t,
+                                                 static_cast<std::uint16_t>(channel)>()),
+                           set(Regs::CHANNEL_TRIG::swevt))) {
             return {};
         }
 
-        template<
-          Channel   channel,
-          Generator generator,
-          User      user,
-          Path      path = Path::synchronous,
-          Edge      edge = Edge::rising_edge>
-        static auto
-          setupEventChannel() -> decltype(list(
-            write(Regs::USER::channel, Register::value<static_cast<unsigned>(channel) + 1>()),
-            write(Register::FieldValue<typename decltype(Regs::USER::user)::type, user>{}),
-            Register::sequencePoint,
-            write(Regs::CHANNEL::channel, Register::value<static_cast<unsigned>(channel)>()),
-            clear(Regs::CHANNEL::swevt),
-            write(Register::FieldValue<typename decltype(Regs::CHANNEL::evgen)::type, generator>{}),
-            write(Register::FieldValue<typename decltype(Regs::CHANNEL::path)::type, path>{}),
-            write(Register::FieldValue<typename decltype(Regs::CHANNEL::edgsel)::type, edge>{}))) {
+        template<Channel   channel,
+                 Generator generator,
+                 User      user,
+                 Path      path = Path::synchronous,
+                 Edge      edge = Edge::rising_edge>
+        static auto setupEventChannel() -> decltype(list(
+          write(Regs::USER::channel,
+                Register::value<static_cast<unsigned>(channel) + 1>()),
+          write(Register::FieldValue<typename decltype(Regs::USER::user)::type,
+                                     user>{}),
+          Register::sequencePoint,
+          write(Regs::CHANNEL::channel,
+                Register::value<static_cast<unsigned>(channel)>()),
+          clear(Regs::CHANNEL::swevt),
+          write(Register::FieldValue<typename decltype(Regs::CHANNEL::evgen)::type,
+                                     generator>{}),
+          write(Register::FieldValue<typename decltype(Regs::CHANNEL::path)::type,
+                                     path>{}),
+          write(Register::FieldValue<typename decltype(Regs::CHANNEL::edgsel)::type,
+                                     edge>{}))) {
             return {};
         }
     };

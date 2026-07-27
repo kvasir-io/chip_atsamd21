@@ -2,6 +2,7 @@
 #include "peripherals/DMAC.hpp"
 
 #include <cstdint>
+
 namespace Kvasir { namespace DMAC { namespace Traits {
     struct DmacTraits {
         static constexpr std::size_t Channels = 12;

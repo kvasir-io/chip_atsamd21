@@ -16,13 +16,12 @@ namespace detail {
     static constexpr void waitForReady() {
         auto const timeout = Clock::now() + 100ms;
         while(!NVMCTRL::Traits::ready()) {
-            if(Clock::now() > timeout) {
-                assert(false);
-            }
+            if(Clock::now() > timeout) { assert(false); }
         }
     }
 
-    template<typename Clock, bool isMainFlash>
+    template<typename Clock,
+             bool isMainFlash>
     static constexpr void clearRow(std::uint32_t address) {
         NVMCTRL::Traits::set_addr(address);
         if constexpr(isMainFlash) {
@@ -43,34 +42,32 @@ namespace detail {
             std::uint32_t currentAddress;
             std::uint32_t remainingSize;
 
-            Writer(std::uint32_t start, std::uint32_t size)
+            Writer(std::uint32_t start,
+                   std::uint32_t size)
               : currentAddress{start}
               , remainingSize{size} {
                 assert(start % RowSize == 0);
             }
 
             template<typename I>
-            void write(I start, I end) {
+            void write(I start,
+                       I end) {
                 static_assert(sizeof(decltype(*start)) == 1, "needs to be 1 byte type");
                 std::uint32_t const size{static_cast<std::uint32_t>(std::distance(start, end))};
 
                 assert(reinterpret_cast<std::uint32_t>(&(*start)) % 4 == 0);
                 assert(remainingSize >= size && (size == WriteSize || size == remainingSize));
 
-                if(currentAddress % RowSize == 0) {
-                    clearRow<Clock, isMainFlash>(currentAddress);
-                }
+                if(currentAddress % RowSize == 0) { clearRow<Clock, isMainFlash>(currentAddress); }
 
                 if constexpr(WriteSize == RowSize) {
-                    writeRow<isMainFlash>(
-                      currentAddress,
-                      reinterpret_cast<std::uint32_t const*>(start),
-                      reinterpret_cast<std::uint32_t const*>(end));
+                    writeRow<isMainFlash>(currentAddress,
+                                          reinterpret_cast<std::uint32_t const*>(start),
+                                          reinterpret_cast<std::uint32_t const*>(end));
                 } else {
-                    writePage<isMainFlash>(
-                      currentAddress,
-                      reinterpret_cast<std::uint32_t const*>(start),
-                      reinterpret_cast<std::uint32_t const*>(end));
+                    writePage<isMainFlash>(currentAddress,
+                                           reinterpret_cast<std::uint32_t const*>(start),
+                                           reinterpret_cast<std::uint32_t const*>(end));
                 }
 
                 currentAddress += size;
@@ -78,8 +75,11 @@ namespace detail {
             }
         };
 
-        template<bool isMainFlash, typename I>
-        static void writePage(std::uint32_t address, I start, I end) {
+        template<bool isMainFlash,
+                 typename I>
+        static void writePage(std::uint32_t address,
+                              I             start,
+                              I             end) {
             static_assert(sizeof(decltype(*start)) == 4, "needs to be 4 byte type");
             NVMCTRL::Traits::disable_cache();
             std::size_t const size = static_cast<std::size_t>(std::distance(start, end));
@@ -110,8 +110,11 @@ namespace detail {
             NVMCTRL::Traits::enable_cache();
         }
 
-        template<bool isMainFlash, typename I>
-        static void writeRow(std::uint32_t address, I start, I end) {
+        template<bool isMainFlash,
+                 typename I>
+        static void writeRow(std::uint32_t address,
+                             I             start,
+                             I             end) {
             static_assert(sizeof(decltype(*start)) == 4, "needs to be 4 byte type");
             std::size_t const size = static_cast<std::size_t>(std::distance(start, end));
             assert(RowSize / 4 >= size);
@@ -120,26 +123,28 @@ namespace detail {
                 writePage<isMainFlash>(
                   address,
                   start,
-                  std::next(
-                    start,
-                    std::min(static_cast<int>(PageSize / 4), std::distance(start, end))));
-                if(std::distance(start, end) < static_cast<int>(PageSize / 4)) {
-                    return;
-                }
+                  std::next(start,
+                            std::min(static_cast<int>(PageSize / 4), std::distance(start, end))));
+                if(std::distance(start, end) < static_cast<int>(PageSize / 4)) { return; }
                 std::advance(start, PageSize / 4);
                 address += PageSize;
             }
         }
 
-        template<bool isMainFlash, typename I>
-        static void clearAndWriteRow(std::uint32_t address, I start, I end) {
+        template<bool isMainFlash,
+                 typename I>
+        static void clearAndWriteRow(std::uint32_t address,
+                                     I             start,
+                                     I             end) {
             clearRow<Clock, isMainFlash>(address);
             writeRow<isMainFlash>(address, start, end);
         }
 
         template<typename I>
         [[KVASIR_RAM_FUNC_ATTRIBUTES]] static void
-        clearAndWriteMultibleRowsRam(std::uint32_t address, I start, I end) {
+        clearAndWriteMultibleRowsRam(std::uint32_t address,
+                                     I             start,
+                                     I             end) {
             static_assert(sizeof(decltype(*start)) == 4, "needs to be 4 byte type");
 
             NVMCTRL::Traits::disable_cache();
@@ -148,15 +153,13 @@ namespace detail {
                 NVMCTRL::Traits::set_addr(address);
 
                 NVMCTRL::Traits::command_erase_row();
-                while(!NVMCTRL::Traits::ready()) {
-                }
+                while(!NVMCTRL::Traits::ready()) {}
 
                 for(std::size_t subPage{}; subPage < pagesPerRow; ++subPage) {
                     NVMCTRL::Traits::set_addr(address);
 
                     NVMCTRL::Traits::command_page_buffer_clear();
-                    while(!NVMCTRL::Traits::ready()) {
-                    }
+                    while(!NVMCTRL::Traits::ready()) {}
 
                     for(std::size_t i{}; i < PageSize / 4; ++i) {
                         if(start != end) {
@@ -166,12 +169,10 @@ namespace detail {
                             *(reinterpret_cast<std::uint32_t volatile*>(address) + i) = 0xffffffff;
                         }
                     }
-                    while(!NVMCTRL::Traits::ready()) {
-                    }
+                    while(!NVMCTRL::Traits::ready()) {}
 
                     NVMCTRL::Traits::command_write_page();
-                    while(!NVMCTRL::Traits::ready()) {
-                    }
+                    while(!NVMCTRL::Traits::ready()) {}
                     address += PageSize;
                 }
                 if(size > RowSize) {
@@ -185,6 +186,7 @@ namespace detail {
     };
 
 }   // namespace detail
+
 template<typename Clock>
 using Flash = detail::Flash<Clock, NVMCTRL::Traits::PageSize, NVMCTRL::Traits::PagesPerRow>;
 
@@ -207,9 +209,7 @@ namespace detail {
         static inline bool valueRead{false};
 
         static T readFlashValue() {
-            if(flashValue.crc != calcCrc(flashValue.v)) {
-                return T{};
-            }
+            if(flashValue.crc != calcCrc(flashValue.v)) { return T{}; }
             return flashValue.v;
         }
 
@@ -236,19 +236,16 @@ namespace detail {
 
         static void writeValue() {
             auto const currentFlashValue = readFlashValue();
-            if(ramCopy != currentFlashValue) {
-                internalWrite();
-            }
+            if(ramCopy != currentFlashValue) { internalWrite(); }
         }
     };
 
-    template<
-      typename Clock,
-      typename T,
-      std::size_t pageSize,
-      std::size_t pagesPerRow,
-      std::size_t rowToUse,
-      bool        isMainFlash>
+    template<typename Clock,
+             typename T,
+             std::size_t pageSize,
+             std::size_t pagesPerRow,
+             std::size_t rowToUse,
+             bool        isMainFlash>
     struct EepromEmulator {
         static std::uint16_t calcCrc(T const& v) {
             return Kvasir::CRC::calcCrc<Kvasir::CRC::CRC_Type::crc16>(v);
@@ -278,23 +275,24 @@ namespace detail {
 
         template<typename Config>
         static constexpr bool configValid() {
-            return Config::numTypes < static_cast<std::size_t>(std::popcount(Config::blockResetValue))
+            return Config::numTypes
+                   < static_cast<std::size_t>(std::popcount(Config::blockResetValue))
                 && Config::numTypes != 0;
         }
 
         using SConfig = std::conditional_t<
           configValid<SConfig8>(),
           SConfig8,
-          std::conditional_t<
-            configValid<SConfig16>(),
-            SConfig16,
-            std::conditional_t<configValid<SConfig32>(), SConfig32, SConfig64>>>;
+          std::conditional_t<configValid<SConfig16>(),
+                             SConfig16,
+                             std::conditional_t<configValid<SConfig32>(), SConfig32, SConfig64>>>;
 
         using blockType                       = typename SConfig::blockType;
         static constexpr auto blockResetValue = SConfig::blockResetValue;
         static constexpr auto numTypes        = SConfig::numTypes;
 
-        static_assert(configValid<SConfig>(), "bla");
+        static_assert(configValid<SConfig>(),
+                      "bla");
 
         static ValueStruct calcVS(T const& v) { return ValueStruct{v, calcCrc(v)}; }
 
@@ -307,13 +305,19 @@ namespace detail {
             std::array<PageStruct, pagesPerRow> pages;
         };
 
-        static_assert(sizeof(PageStruct) == pageSize, "bla");
-        static_assert(std::is_standard_layout_v<PageStruct>, "bla");
-        static_assert(std::alignment_of_v<PageStruct> == pageSize, "bla");
+        static_assert(sizeof(PageStruct) == pageSize,
+                      "bla");
+        static_assert(std::is_standard_layout_v<PageStruct>,
+                      "bla");
+        static_assert(std::alignment_of_v<PageStruct> == pageSize,
+                      "bla");
 
-        static_assert(sizeof(RowStruct) == pageSize * pagesPerRow, "bla");
-        static_assert(std::is_standard_layout_v<RowStruct>, "bla");
-        static_assert(std::alignment_of_v<RowStruct> == pageSize * pagesPerRow, "bla");
+        static_assert(sizeof(RowStruct) == pageSize * pagesPerRow,
+                      "bla");
+        static_assert(std::is_standard_layout_v<RowStruct>,
+                      "bla");
+        static_assert(std::alignment_of_v<RowStruct> == pageSize * pagesPerRow,
+                      "bla");
 
         [[gnu::section(".eeprom")]] static inline std::array<RowStruct, rowToUse> rows{};
 
@@ -321,17 +325,13 @@ namespace detail {
             assert(index == std::clamp<decltype(index)>(index, 0, numTypes));
             blockType v = blockResetValue;
 
-            for(std::size_t i = 0; i < index + 1; ++i) {
-                v = v & (~(blockType{1} << i));
-            }
+            for(std::size_t i = 0; i < index + 1; ++i) { v = v & (~(blockType{1} << i)); }
             return v;
         }
 
         static constexpr bool validIndex(blockType v) {
             auto const vv = (std::popcount(blockResetValue) - 1) - std::popcount(v);
-            if(vv != std::clamp<decltype(vv)>(vv, 0, numTypes - 1)) {
-                return false;
-            }
+            if(vv != std::clamp<decltype(vv)>(vv, 0, numTypes - 1)) { return false; }
 
             return blockFromIndex(static_cast<std::size_t>(vv)) == v;
         }
@@ -345,14 +345,10 @@ namespace detail {
         static constexpr blockType nextBlockValue(blockType v) {
             if(validIndex(v)) {
                 auto newIndex = getIndex(v) + 1;
-                if(newIndex >= numTypes) {
-                    return 0;
-                }
+                if(newIndex >= numTypes) { return 0; }
                 return blockFromIndex(newIndex);
             }
-            if(v == blockResetValue) {
-                return blockFromIndex(0);
-            }
+            if(v == blockResetValue) { return blockFromIndex(0); }
             return 0;
         }
 
@@ -377,15 +373,11 @@ namespace detail {
         static T readFlashValue() {
             auto const vp = getValidPage();
 
-            if(vp.nPages != 1 || vp.page == nullptr) {
-                return T{};
-            }
+            if(vp.nPages != 1 || vp.page == nullptr) { return T{}; }
 
             auto const         index = getIndex(vp.page->validBlock);
             ValueStruct const& cpy{vp.page->array[index]};
-            if(cpy.crc == calcCrc(cpy.v)) {
-                return cpy.v;
-            }
+            if(cpy.crc == calcCrc(cpy.v)) { return cpy.v; }
             return T{};
         }
 
@@ -399,27 +391,21 @@ namespace detail {
 
         static void writeValue() {
             auto const currentFlashValue = readFlashValue();
-            if(ramCopy != currentFlashValue) {
-                internalWrite();
-            }
+            if(ramCopy != currentFlashValue) { internalWrite(); }
         }
 
         static inline T    ramCopy{};
         static inline bool valueRead{false};
 
         static bool pageFull(PageStruct const* p) {
-            if(!validIndex(p->validBlock)) {
-                return true;
-            }
+            if(!validIndex(p->validBlock)) { return true; }
 
             return getIndex(p->validBlock) == numTypes - 1;
         }
 
         static bool pageCleared(PageStruct const* p) {
             for(std::size_t i = 0; i < pageSize / 4; ++i) {
-                if(*(reinterpret_cast<std::uint32_t const*>(p) + i) != 0xffffffff) {
-                    return false;
-                }
+                if(*(reinterpret_cast<std::uint32_t const*>(p) + i) != 0xffffffff) { return false; }
             }
             return true;
         }
@@ -428,9 +414,7 @@ namespace detail {
             std::size_t index{};
             for(auto& row : rows) {
                 if(p == &row.pages.back()) {
-                    if(index + 1 == rows.size()) {
-                        return &(*rows.front().pages.begin());
-                    }
+                    if(index + 1 == rows.size()) { return &(*rows.front().pages.begin()); }
                     return &(*rows[index + 1].pages.begin());
                 }
                 ++index;
@@ -527,27 +511,23 @@ namespace detail {
                 clearRow<Clock, isMainFlash>(reinterpret_cast<std::uint32_t>(rowToClear));
             }
 
-            if(pageToZero != nullptr) {
-                zeroPage(pageToZero);
-            }
+            if(pageToZero != nullptr) { zeroPage(pageToZero); }
         }
     };
 }   // namespace detail
 
 template<typename Clock, typename ValueType, std::size_t rowsToUse, bool isMainFlash>
-using EepromEmulator = detail::EepromEmulator<
-  Clock,
-  ValueType,
-  NVMCTRL::Traits::PageSize,
-  NVMCTRL::Traits::PagesPerRow,
-  rowsToUse,
-  isMainFlash>;
+using EepromEmulator = detail::EepromEmulator<Clock,
+                                              ValueType,
+                                              NVMCTRL::Traits::PageSize,
+                                              NVMCTRL::Traits::PagesPerRow,
+                                              rowsToUse,
+                                              isMainFlash>;
 
 template<typename Clock, typename ValueType, bool isMainFlash>
-using SimpleEeprom = detail::SimpleEeprom<
-  Clock,
-  ValueType,
-  NVMCTRL::Traits::PageSize * NVMCTRL::Traits::PagesPerRow,
-  isMainFlash>;
+using SimpleEeprom = detail::SimpleEeprom<Clock,
+                                          ValueType,
+                                          NVMCTRL::Traits::PageSize * NVMCTRL::Traits::PagesPerRow,
+                                          isMainFlash>;
 
 }   // namespace Kvasir

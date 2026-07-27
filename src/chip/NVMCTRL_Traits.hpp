@@ -1,6 +1,7 @@
 #pragma once
 
 #include "peripherals/NVMCTRL.hpp"
+
 namespace Kvasir { namespace NVMCTRL { namespace Traits {
 
     using NVM = Kvasir::Peripheral::NVMCTRL::Registers<>;
@@ -28,13 +29,14 @@ namespace Kvasir { namespace NVMCTRL { namespace Traits {
     }
 
     static constexpr void enable_cache() {}
+
     static constexpr void disable_cache() {}
 
     template<typename T>
     void set_addr(T addr) {
-        apply(write(
-          NVM::ADDR::addr,
-          (reinterpret_cast<std::uint32_t>(addr) / 2) & Kvasir::Register::maskFromRange(21, 0)));
+        apply(write(NVM::ADDR::addr,
+                    (reinterpret_cast<std::uint32_t>(addr) / 2)
+                      & Kvasir::Register::maskFromRange(21, 0)));
     }
 
     static constexpr std::size_t PageSize    = 64;

@@ -63,9 +63,8 @@ namespace Kvasir { namespace GCLK {
         static constexpr unsigned maxDiv
           = (Generator == 1 ? (1 << 16) : (Generator == 2 ? (1 << 5) : (1 << 8))) - 1;
 
-        static_assert(
-          (Div <= maxDiv) || (std::popcount(Div) == 1),
-          "must be power of 2 or lower then maxDiv");
+        static_assert((Div <= maxDiv) || (std::popcount(Div) == 1),
+                      "must be power of 2 or lower then maxDiv");
 
         static constexpr auto divsel = []() {
             if constexpr(Div > maxDiv) {
@@ -83,53 +82,47 @@ namespace Kvasir { namespace GCLK {
         }();
 
         [[nodiscard]] static constexpr auto enable() {
-            return list(
-              Register::sequencePoint,
-              write(GD::id, Register::value<Generator>()),
-              write(GD::div, Register::value<div>()),
-              Register::sequencePoint,
-              Register::overrideDefaults<typename GC::default_values>::value(
-                write(GC::id, Register::value<Generator>()),
-                set(GC::genen),
-                write(divsel),
-                set(GC::runstdby),
-                write(
-                  GC::src,
-                  Register::
-                    value<typename GC::SRCVal, static_cast<typename GC::SRCVal>(Source)>())));
+            return list(Register::sequencePoint,
+                        write(GD::id, Register::value<Generator>()),
+                        write(GD::div, Register::value<div>()),
+                        Register::sequencePoint,
+                        Register::overrideDefaults<typename GC::default_values>::value(
+                          write(GC::id, Register::value<Generator>()),
+                          set(GC::genen),
+                          write(divsel),
+                          set(GC::runstdby),
+                          write(GC::src,
+                                Register::value<typename GC::SRCVal,
+                                                static_cast<typename GC::SRCVal>(Source)>())));
         }
     };
 
     template<unsigned Generator, Peripheral Peripheral>
     struct PeripheralChannelController {
         using CC = Kvasir::Peripheral::GCLK::Registers<>::CLKCTRL;
+
         [[nodiscard]] static constexpr auto enable() {
-            return list(
-              Register::sequencePoint,
-              Register::overrideDefaults<typename CC::default_values>::value(
-                write(
-                  CC::id,
-                  Register::
-                    value<typename CC::IDVal, static_cast<typename CC::IDVal>(Peripheral)>()),
-                set(CC::clken),
-                write(
-                  CC::gen,
-                  Register::
-                    value<typename CC::GENVal, static_cast<typename CC::GENVal>(Generator)>())));
+            return list(Register::sequencePoint,
+                        Register::overrideDefaults<typename CC::default_values>::value(
+                          write(CC::id,
+                                Register::value<typename CC::IDVal,
+                                                static_cast<typename CC::IDVal>(Peripheral)>()),
+                          set(CC::clken),
+                          write(CC::gen,
+                                Register::value<typename CC::GENVal,
+                                                static_cast<typename CC::GENVal>(Generator)>())));
         }
+
         [[nodiscard]] static constexpr auto disable() {
-            return list(
-              Register::sequencePoint,
-              Register::overrideDefaults<typename CC::default_values>::value(
-                write(
-                  CC::id,
-                  Register::
-                    value<typename CC::IDVal, static_cast<typename CC::IDVal>(Peripheral)>()),
-                clear(CC::clken),
-                write(
-                  CC::gen,
-                  Register::
-                    value<typename CC::GENVal, static_cast<typename CC::GENVal>(Generator)>())));
+            return list(Register::sequencePoint,
+                        Register::overrideDefaults<typename CC::default_values>::value(
+                          write(CC::id,
+                                Register::value<typename CC::IDVal,
+                                                static_cast<typename CC::IDVal>(Peripheral)>()),
+                          clear(CC::clken),
+                          write(CC::gen,
+                                Register::value<typename CC::GENVal,
+                                                static_cast<typename CC::GENVal>(Generator)>())));
         }
     };
 

@@ -22,65 +22,52 @@ namespace Kvasir { namespace Sercom { namespace Traits {
             return typename Child::template IsrIndex<SercomInstance>::Type{};
         }
 
-        template<unsigned SercomInstance, int Port, int Pin>
-        static constexpr int GetPinFunction(Kvasir::Register::PinLocation<Port, Pin>) {
+        template<unsigned SercomInstance,
+                 int      Port,
+                 int      Pin>
+        static constexpr int GetPinFunction(Kvasir::Register::PinLocation<Port,
+                                                                          Pin>) {
             if(!Kvasir::Io::isValidPinLocation<Port, Pin>()) {
                 return std::numeric_limits<int>::max();
             }
             for(auto mi : Child::pinMuxInfos) {
-                if(mi.sercomInstance != SercomInstance) {
-                    continue;
-                }
-                if(mi.port != Port) {
-                    continue;
-                }
-                if(mi.pin != Pin) {
-                    continue;
-                }
+                if(mi.sercomInstance != SercomInstance) { continue; }
+                if(mi.port != Port) { continue; }
+                if(mi.pin != Pin) { continue; }
                 return mi.pinFunction;
             }
             return std::numeric_limits<int>::max();
         }
 
-        template<unsigned SercomInstance, int Port, int Pin>
-        static constexpr int GetPOVal(Kvasir::Register::PinLocation<Port, Pin>) {
+        template<unsigned SercomInstance,
+                 int      Port,
+                 int      Pin>
+        static constexpr int GetPOVal(Kvasir::Register::PinLocation<Port,
+                                                                    Pin>) {
             if(!Kvasir::Io::isValidPinLocation<Port, Pin>()) {
                 return std::numeric_limits<int>::max();
             }
             for(auto mi : Child::pinMuxInfos) {
-                if(mi.sercomInstance != SercomInstance) {
-                    continue;
-                }
-                if(mi.port != Port) {
-                    continue;
-                }
-                if(mi.pin != Pin) {
-                    continue;
-                }
+                if(mi.sercomInstance != SercomInstance) { continue; }
+                if(mi.port != Port) { continue; }
+                if(mi.pin != Pin) { continue; }
                 return mi.POVal;
             }
             return std::numeric_limits<int>::max();
         }
 
-        template<unsigned SercomInstance, int Port, int Pin, typename... Ts>
+        template<unsigned SercomInstance,
+                 int      Port,
+                 int      Pin,
+                 typename... Ts>
         static constexpr bool ValidIfPOVal(Ts... POs) {
-            if(!Kvasir::Io::isValidPinLocation<Port, Pin>()) {
-                return false;
-            }
+            if(!Kvasir::Io::isValidPinLocation<Port, Pin>()) { return false; }
             for(auto mi : Child::pinMuxInfos) {
-                if(mi.sercomInstance != SercomInstance) {
-                    continue;
-                }
-                if(mi.port != Port) {
-                    continue;
-                }
-                if(mi.pin != Pin) {
-                    continue;
-                }
+                if(mi.sercomInstance != SercomInstance) { continue; }
+                if(mi.port != Port) { continue; }
+                if(mi.pin != Pin) { continue; }
                 auto found = ((mi.POVal == POs) || ...);
-                if(found) {
-                    return true;
-                }
+                if(found) { return true; }
             }
             return false;
         }

@@ -46,34 +46,37 @@ namespace DMAC {
             beat     = 0x03,
         };
 
-        constexpr DmacDescriptor() : BTCTRL{}, BTCNT{}, SRCADDR{}, DSTADDR{}, DESCADDR{} {}
+        constexpr DmacDescriptor()
+          : BTCTRL{}
+          , BTCNT{}
+          , SRCADDR{}
+          , DSTADDR{}
+          , DESCADDR{} {}
 
-        constexpr DmacDescriptor(
-          bool          valid,
-          stepsize      stsize,
-          stepsel       stsel,
-          dstinc        dinc,
-          srcinc        sinc,
-          beatsize      bsize,
-          blockact      bact,
-          evosel        esel,
-          std::uint16_t beatcount,
-          std::uint32_t srcaddr,
-          std::uint32_t dstaddr
-
-          )
-          : BTCTRL(std::uint16_t(
-            (valid ? 1U : 0U) | (unsigned(esel) << 1U) | (unsigned(bact) << 3U)
-            | (unsigned(bsize) << 8U) | (unsigned(sinc) << 10U) | (unsigned(dinc) << 11U)
-            | (unsigned(stsel) << 12U) | (unsigned(stsize) << 13U)))
+        constexpr DmacDescriptor(bool          valid,
+                                 stepsize      stsize,
+                                 stepsel       stsel,
+                                 dstinc        dinc,
+                                 srcinc        sinc,
+                                 beatsize      bsize,
+                                 blockact      bact,
+                                 evosel        esel,
+                                 std::uint16_t beatcount,
+                                 std::uint32_t srcaddr,
+                                 std::uint32_t dstaddr)
+          : BTCTRL(std::uint16_t((valid ? 1U : 0U) | (unsigned(esel) << 1U) | (unsigned(bact) << 3U)
+                                 | (unsigned(bsize) << 8U) | (unsigned(sinc) << 10U)
+                                 | (unsigned(dinc) << 11U) | (unsigned(stsel) << 12U)
+                                 | (unsigned(stsize) << 13U)))
           , BTCNT(beatcount)
           , SRCADDR(srcaddr)
           , DSTADDR(dstaddr)
           , DESCADDR(0) {}
 
         bool isValid() const {
-            return ((*reinterpret_cast<volatile std::uint16_t const*>(&BTCTRL)) & 0x0001U) != 0;
+            return ((*reinterpret_cast<std::uint16_t const volatile*>(&BTCTRL)) & 0x0001U) != 0;
         }
+
         void setisValid(bool b) { BTCTRL = b ? BTCTRL | 1U : BTCTRL & 0xFFFEU; }
 
         std::uint16_t BTCTRL;
@@ -130,6 +133,7 @@ namespace DMAC {
             static_assert(numberOfChannels > static_cast<std::size_t>(Channel));
             return rdescriptors[static_cast<std::size_t>(Channel)];
         }
+
         template<DMAChannel Channel>
         static constexpr DmacDescriptor& wd() {
             static_assert(numberOfChannels > static_cast<std::size_t>(Channel));
@@ -140,15 +144,17 @@ namespace DMAC {
             apply(
               write(Regs::BASEADDR::baseaddr, reinterpret_cast<std::uint32_t>(rdescriptors.data())),
               write(Regs::WRBADDR::wrbaddr, reinterpret_cast<std::uint32_t>(wdescriptors.data())));
-            apply(Regs::CTRL::overrideDefaults(
-              set(Regs::CTRL::dmaenable),
-              set(Regs::CTRL::lvlen0),
-              set(Regs::CTRL::lvlen1),
-              set(Regs::CTRL::lvlen2),
-              set(Regs::CTRL::lvlen3)));
+            apply(Regs::CTRL::overrideDefaults(set(Regs::CTRL::dmaenable),
+                                               set(Regs::CTRL::lvlen0),
+                                               set(Regs::CTRL::lvlen1),
+                                               set(Regs::CTRL::lvlen2),
+                                               set(Regs::CTRL::lvlen3)));
         }
 
-        template<DMAChannel Channel, DMAPriority Priority, TriggerSource Trigger, typename Regs_t>
+        template<DMAChannel    Channel,
+                 DMAPriority   Priority,
+                 TriggerSource Trigger,
+                 typename Regs_t>
         static constexpr auto start() {
             static_assert(numberOfChannels > static_cast<std::size_t>(Channel));
 
@@ -160,16 +166,13 @@ namespace DMAC {
                   Kvasir::Register::sequencePoint,
                   write(Regs_t::CHCTRLB::CMDValC::noact),
                   write(Regs_t::CHCTRLB::TRIGACTValC::beat),
-                  write(
-                    Regs_t::CHCTRLB::trigsrc,
-                    Register::value<typename Regs_t::CHCTRLB::TRIGSRCVal, Trigger>()),
-                  write(
-                    Regs_t::CHCTRLB::lvl,
-                    Register::value<
-                      typename Regs_t::CHCTRLB::LVLVal,
-                      static_cast<typename Regs_t::CHCTRLB::LVLVal>(
-                        static_cast<int>(Regs_t::CHCTRLB::LVLVal::lvl0)
-                        + static_cast<int>(Priority))>()),
+                  write(Regs_t::CHCTRLB::trigsrc,
+                        Register::value<typename Regs_t::CHCTRLB::TRIGSRCVal, Trigger>()),
+                  write(Regs_t::CHCTRLB::lvl,
+                        Register::value<typename Regs_t::CHCTRLB::LVLVal,
+                                        static_cast<typename Regs_t::CHCTRLB::LVLVal>(
+                                          static_cast<int>(Regs_t::CHCTRLB::LVLVal::lvl0)
+                                          + static_cast<int>(Priority))>()),
                   clear(Regs_t::CHCTRLB::evoe),
                   clear(Regs_t::CHCTRLB::evie),
                   write(Regs_t::CHCTRLB::EVACTValC::noact),
@@ -185,28 +188,27 @@ namespace DMAC {
                   CHRegs::CHCTRLA::overrideDefaults(set(CHRegs::CHCTRLA::swrst)),
 
                   Kvasir::Register::sequencePoint,
-                  write(
-                    CHRegs::CHPRILVL::prilvl,
-                    Register::value<
-                      typename CHRegs::CHPRILVL::PRILVLVal,
-                      static_cast<typename CHRegs::CHPRILVL::PRILVLVal>(
-                        static_cast<int>(CHRegs::CHPRILVL::PRILVLVal::lvl0)
-                        + static_cast<int>(Priority))>()),
+                  write(CHRegs::CHPRILVL::prilvl,
+                        Register::value<typename CHRegs::CHPRILVL::PRILVLVal,
+                                        static_cast<typename CHRegs::CHPRILVL::PRILVLVal>(
+                                          static_cast<int>(CHRegs::CHPRILVL::PRILVLVal::lvl0)
+                                          + static_cast<int>(Priority))>()),
 
                   Kvasir::Register::sequencePoint,
                   CHRegs::CHCTRLA::overrideDefaults(
                     write(CHRegs::CHCTRLA::TRIGACTValC::burst),
-                    write(
-                      CHRegs::CHCTRLA::trigsrc,
-                      Register::value<
-                        typename CHRegs::CHCTRLA::TRIGSRCVal,
-                        static_cast<typename CHRegs::CHCTRLA::TRIGSRCVal>(Trigger)>())),
+                    write(CHRegs::CHCTRLA::trigsrc,
+                          Register::value<typename CHRegs::CHCTRLA::TRIGSRCVal,
+                                          static_cast<typename CHRegs::CHCTRLA::TRIGSRCVal>(
+                                            Trigger)>())),
                   Kvasir::Register::sequencePoint,
                   set(CHRegs::CHCTRLA::enable));
             }
         }
 
-        template<DMAChannel Channel, DMAPriority Priority, TriggerSource Trigger>
+        template<DMAChannel    Channel,
+                 DMAPriority   Priority,
+                 TriggerSource Trigger>
         static constexpr auto start() {
             return start<Channel, Priority, Trigger, Regs>();
         }
@@ -219,10 +221,11 @@ namespace CRC {
     namespace detail {
         template<typename CRC>
         void reset_crc() {
-            if constexpr(requires { {CRC::CTRL::crcenable}; }) {
-                if(1 == apply(read(CRC::CTRL::crcenable))) {
-                    apply(set(CRC::CRCSTATUS::crcbusy));
-                }
+            if constexpr(requires {
+                             { CRC::CTRL::crcenable };
+                         })
+            {
+                if(1 == apply(read(CRC::CTRL::crcenable))) { apply(set(CRC::CRCSTATUS::crcbusy)); }
                 apply(clear(CRC::CTRL::crcenable));
             } else {
                 apply(CRC::CRCCTRL::overrideDefaults());
@@ -231,7 +234,10 @@ namespace CRC {
 
         template<typename CRC>
         void enable_crc() {
-            if constexpr(requires { {CRC::CTRL::crcenable}; }) {
+            if constexpr(requires {
+                             { CRC::CTRL::crcenable };
+                         })
+            {
                 apply(set(CRC::CTRL::crcenable));
             }
         }
@@ -239,8 +245,10 @@ namespace CRC {
 
     enum class CRC_Type { crc16, crc32 };
 
-    template<CRC_Type Crc, typename It>
-    auto calcCrc(It start, It end) {
+    template<CRC_Type Crc,
+             typename It>
+    auto calcCrc(It start,
+                 It end) {
         using CRC = Peripheral::DMAC::Registers<>;
 
         static constexpr std::size_t dataSize = sizeof(decltype(*start));
@@ -250,13 +258,11 @@ namespace CRC {
 
         auto crcTypes = []() {
             if constexpr(Crc == CRC_Type::crc16) {
-                return std::make_tuple(
-                  write(CRC::CRCCTRL::CRCPOLYValC::crc16),
-                  read(CRC::CRCCHKSUM::crcchksum16));
+                return std::make_tuple(write(CRC::CRCCTRL::CRCPOLYValC::crc16),
+                                       read(CRC::CRCCHKSUM::crcchksum16));
             } else {
-                return std::make_tuple(
-                  write(CRC::CRCCTRL::CRCPOLYValC::crc32),
-                  read(CRC::CRCCHKSUM::crcchksum32));
+                return std::make_tuple(write(CRC::CRCCTRL::CRCPOLYValC::crc32),
+                                       read(CRC::CRCCHKSUM::crcchksum32));
             }
         }();
 
@@ -291,11 +297,11 @@ namespace CRC {
           Kvasir::Register::get<0>(apply(std::get<1>(crcTypes))));
     }
 
-    template<CRC_Type Crc, typename T>
+    template<CRC_Type Crc,
+             typename T>
     auto calcCrc(T const& v) {
-        return calcCrc<Crc>(
-          reinterpret_cast<std::uint8_t const*>(&v),
-          reinterpret_cast<std::uint8_t const*>(&v + 1));
+        return calcCrc<Crc>(reinterpret_cast<std::uint8_t const*>(&v),
+                            reinterpret_cast<std::uint8_t const*>(&v + 1));
     }
 
 }   // namespace CRC

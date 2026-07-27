@@ -2,9 +2,12 @@
 
 #include <array>
 #include <cstddef>
+
 namespace Kvasir {
 
-static inline std::array<std::byte, 16> serial_number() {
+static inline std::array<std::byte,
+                         16>
+serial_number() {
     std::array<std::byte, 16> ret;
     auto                      it = ret.data();
 
@@ -14,9 +17,7 @@ static inline std::array<std::byte, 16> serial_number() {
         it += 4;
     };
 
-    for(auto address : Kvasir::SerialNumber::Traits::addresses) {
-        add(address);
-    }
+    for(auto address : Kvasir::SerialNumber::Traits::addresses) { add(address); }
 
     return ret;
 };

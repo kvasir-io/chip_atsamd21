@@ -9,8 +9,4 @@ set(TARGET_UF2_CODE 0x68ED2B88)
 
 set(LINKER_FILE ${CMAKE_CURRENT_LIST_DIR}/../linker/chip.ld)
 
-svd_convert(
-  peripherals
-  SVD_FILE ${CMAKE_CURRENT_LIST_DIR}/../chip.svd
-  OUTPUT_DIRECTORY peripherals
-)
+svd_convert(peripherals SVD_FILE ${CMAKE_CURRENT_LIST_DIR}/../chip.svd OUTPUT_DIRECTORY peripherals)

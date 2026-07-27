@@ -15,11 +15,10 @@ namespace Kvasir { namespace CAN {
 
     struct CanMessage {
         constexpr std::uint32_t id() const {
-            if((F0 & 0x40000000) != 0) {
-                return F0 & 0x1FFFFFFF;
-            }
+            if((F0 & 0x40000000) != 0) { return F0 & 0x1FFFFFFF; }
             return (F0 & 0x1FFFFFFF) >> 18;
         }
+
         constexpr std::uint32_t size() const { return (F1 & 0x000F0000_u32) >> 16_u32; }
 
         constexpr void setId(std::uint32_t id) {
@@ -29,14 +28,17 @@ namespace Kvasir { namespace CAN {
                 F0 = (id & 0x7FF) << 18;
             }
         }
+
         constexpr void setSize(std::uint8_t size) {
             F1 = static_cast<std::uint32_t>(size << 16_u32);
         }
 
         constexpr auto begin() { return data.begin(); }
+
         constexpr auto end() { return std::next(data.begin(), static_cast<int>(size())); }
 
         constexpr auto begin() const { return data.begin(); }
+
         constexpr auto end() const { return std::next(data.begin(), static_cast<int>(size())); }
 
         std::uint32_t            F0{};
@@ -72,7 +74,9 @@ namespace Kvasir { namespace CAN {
             value = static_cast<std::uint32_t>(FilterConfig::Disable) << 27;
         }
     };
+
     static_assert(sizeof(CanFilter) == 4);
+
     namespace Detail {
 
         template<unsigned CanInstance, typename RXPIN>
@@ -130,11 +134,10 @@ namespace Kvasir { namespace CAN {
 
             static constexpr auto rejectConfig = []() {
                 if constexpr(CANConfig::rejectNonMatching) {
-                    return list(
-                      write(Regs::GFC::ANFEValC::reject),
-                      write(Regs::GFC::ANFSValC::reject),
-                      set(Regs::GFC::rrfs),
-                      set(Regs::GFC::rrfe));
+                    return list(write(Regs::GFC::ANFEValC::reject),
+                                write(Regs::GFC::ANFSValC::reject),
+                                set(Regs::GFC::rrfs),
+                                set(Regs::GFC::rrfe));
                 } else {
                     return Kvasir::MPL::list();
                 }
@@ -203,9 +206,9 @@ namespace Kvasir { namespace CAN {
 */
               set(Regs::ILE::eint0),
               CANConfig::userConfigOverride);
-            static constexpr auto initStepInterruptConfig = list(
-              Nvic::makeSetPriority<CANConfig::isrPriority>(InterruptIndexs{}),
-              Nvic::makeClearPending(InterruptIndexs{}));
+            static constexpr auto initStepInterruptConfig
+              = list(Nvic::makeSetPriority<CANConfig::isrPriority>(InterruptIndexs{}),
+                     Nvic::makeClearPending(InterruptIndexs{}));
 
             static constexpr auto initStepPeripheryEnable
               = list(Nvic::makeEnable(InterruptIndexs{}));
@@ -256,9 +259,12 @@ namespace Kvasir { namespace CAN {
         static constexpr std::size_t TxSize     = CANConfig::txSize;
         static constexpr std::size_t FilterSize = CANConfig::filterSize;
 
-        static_assert(MaxRxSize >= RxSize, "rx size to big");
-        static_assert(MaxTxSize >= TxSize, "tx size to big");
-        static_assert(MaxFilterSize >= FilterSize, "filter size to big");
+        static_assert(MaxRxSize >= RxSize,
+                      "rx size to big");
+        static_assert(MaxTxSize >= TxSize,
+                      "tx size to big");
+        static_assert(MaxFilterSize >= FilterSize,
+                      "filter size to big");
 
         [[gnu::section(".noInitLowRam")]] static inline std::array<CanMessage, RxSize>    RxFIFO{};
         [[gnu::section(".noInitLowRam")]] static inline std::array<CanMessage, TxSize>    TxFIFO{};
@@ -272,35 +278,29 @@ namespace Kvasir { namespace CAN {
             std::uint32_t const filter
               = reinterpret_cast<std::uint32_t>(std::addressof(Filter)) & 0x0000FFFF_u32;
 
-            apply(
-              write(Regs::RXF0C::f0sa, rx),
-              write(Regs::RXF0C::f0s, Kvasir::Register::value<RxSize>()));
+            apply(write(Regs::RXF0C::f0sa, rx),
+                  write(Regs::RXF0C::f0s, Kvasir::Register::value<RxSize>()));
 
-            apply(
-              write(Regs::TXBC::tbsa, tx),
-              write(Regs::TXBC::tfqs, Kvasir::Register::value<TxSize>()));
+            apply(write(Regs::TXBC::tbsa, tx),
+                  write(Regs::TXBC::tfqs, Kvasir::Register::value<TxSize>()));
 
-            apply(
-              write(Regs::SIDFC::flssa, filter),
-              write(Regs::SIDFC::lss, Kvasir::Register::value<FilterSize>()));
+            apply(write(Regs::SIDFC::flssa, filter),
+                  write(Regs::SIDFC::lss, Kvasir::Register::value<FilterSize>()));
 
-            for(auto& f : Filter) {
-                f.disable();
-            }
+            for(auto& f : Filter) { f.disable(); }
 
             apply(clear(Regs::CCCR::init));
         }
 
-        static void setFilter(std::uint8_t number, std::uint32_t id) {
+        static void setFilter(std::uint8_t  number,
+                              std::uint32_t id) {
             K_ASSERT(FilterSize > number);
             Filter[number].setId(id);
         }
 
         static bool send(CanMessage const& msg) {
             auto const state = apply(read(Regs::TXFQS::tfqpi), read(Regs::TXFQS::tffl));
-            if(get<1>(state) == 0) {
-                return false;
-            }
+            if(get<1>(state) == 0) { return false; }
             TxFIFO[get<0>(state)] = msg;
             apply(write(Regs::TXBAR::ar, 1_u32 << get<0>(state)));
             return true;
@@ -314,9 +314,7 @@ namespace Kvasir { namespace CAN {
         static std::optional<CanMessage> recv() {
             std::optional<CanMessage> ret{};
             auto const state = apply(read(Regs::RXF0S::f0gi), read(Regs::RXF0S::f0fl));
-            if(get<1>(state) == 0) {
-                return ret;
-            }
+            if(get<1>(state) == 0) { return ret; }
 
             ret = RxFIFO[get<0>(state)];
 
@@ -328,9 +326,7 @@ namespace Kvasir { namespace CAN {
         // ISR
         static void onIsr() {
             auto const state = apply(read(Regs::IR::rf0l));
-            if(get<0>(state)) {
-                KL_T("CAN ISR overrrun {}", get<0>(state));
-            }
+            if(get<0>(state)) { KL_T("CAN ISR overrrun {}", get<0>(state)); }
             apply(set(Regs::IR::rf0l));
         }
 
@@ -339,6 +335,7 @@ namespace Kvasir { namespace CAN {
             return brigand::list<
               Kvasir::Nvic::Isr<std::addressof(onIsr), Nvic::Index<Ts::value>>...>{};
         }
+
         using Isr = decltype(makeIsr(typename base::InterruptIndexs{}));
     };
 }}   // namespace Kvasir::CAN

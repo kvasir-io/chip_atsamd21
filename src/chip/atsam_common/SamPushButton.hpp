@@ -1,7 +1,7 @@
 #pragma once
 
-#include "kvasir/Devices/PushButton.hpp"
 #include "EIC.hpp"
+#include "kvasir/Devices/PushButton.hpp"
 
 namespace Kvasir {
 template<typename Clock, typename Pin, std::size_t EventQSize, typename Config_>

@@ -23,8 +23,9 @@ namespace Kvasir { namespace Bootloader {
         template<std::size_t WriteSize>
         using Writer = typename base::template Writer<WriteSize, true>;
 
-        [[gnu::section(".noInit")]] alignas(std::uint32_t) static inline Kvasir::
-          StaticVector<std::byte, BootLoaderSize - RowSize> bootloaderFlashBuffer;
+        [[gnu::section(".noInit")]] alignas(std::uint32_t) static inline Kvasir::StaticVector<
+          std::byte,
+          BootLoaderSize - RowSize> bootloaderFlashBuffer;
 
         static void overrideSelf() {
             Kvasir::Nvic::disable_all();
@@ -45,33 +46,41 @@ namespace Kvasir { namespace Bootloader {
 
     struct Crc {
         using type = std::uint32_t;
+
         template<typename I>
-        static type calc(I begin, I end) {
+        static type calc(I begin,
+                         I end) {
             return Kvasir::CRC::calcCrc<Kvasir::CRC::CRC_Type::crc32>(begin, end);
         }
     };
 
-    template<typename T, typename MsgBuffer, typename Buffer>
-    std::optional<T> parse(MsgBuffer const& newMsg, Buffer& recvBuffer) {
+    template<typename T,
+             typename MsgBuffer,
+             typename Buffer>
+    std::optional<T> parse(MsgBuffer const& newMsg,
+                           Buffer&          recvBuffer) {
         return Kvasir::CAN::parse<T, Packager>(newMsg, recvBuffer);
     }
 
     namespace CAN {
 
-        template<typename Can, typename T>
-        void packAndSend(T const& v, std::uint8_t channel) {
+        template<typename Can,
+                 typename T>
+        void packAndSend(T const&     v,
+                         std::uint8_t channel) {
             Kvasir::CAN::packAndSend<Can, Packager, 192>(v, channel + NodeId);
         }
 
-        template<
-          typename Clock,
-          typename Can,
-          typename RequestSet,
-          typename ResponseSet,
-          typename WDReset>
+        template<typename Clock,
+                 typename Can,
+                 typename RequestSet,
+                 typename ResponseSet,
+                 typename WDReset>
         struct Com {
-            template<typename Rep, typename Periode>
-            static std::optional<RequestSet> recv(std::chrono::duration<Rep, Periode> timeout) {
+            template<typename Rep,
+                     typename Periode>
+            static std::optional<RequestSet> recv(std::chrono::duration<Rep,
+                                                                        Periode> timeout) {
                 Kvasir::StaticVector<std::byte, 640> recvBuffer{};
                 auto const                           endTime = Clock::now() + timeout;
                 while(true) {
@@ -79,69 +88,61 @@ namespace Kvasir { namespace Bootloader {
                     WDReset{}();
                     while(!newMsg || newMsg->id() != CoordinatorId) {
                         newMsg = Can::recv();
-                        if(Clock::now() > endTime) {
-                            return {};
-                        }
+                        if(Clock::now() > endTime) { return {}; }
                         WDReset{}();
                     }
                     auto ret = parse<RequestSet>(*newMsg, recvBuffer);
-                    if(ret) {
-                        return ret;
-                    }
+                    if(ret) { return ret; }
                 }
                 return {};
             }
 
             static void wait_for_all_send() {
                 WDReset{}();
-                while(!Can::transmissonComplete()) {
-                    WDReset{}();
-                }
+                while(!Can::transmissonComplete()) { WDReset{}(); }
             }
 
-            static void send(ResponseSet const& response, std::uint8_t channel) {
+            static void send(ResponseSet const& response,
+                             std::uint8_t       channel) {
                 WDReset{}();
                 packAndSend<Can>(response, channel);
             }
         };
     }   // namespace CAN
+
     namespace Uart {
 
-        template<
-          typename Clock,
-          typename Uart,
-          typename RequestSet,
-          typename ResponseSet,
-          typename WDReset,
-          typename DirectionPin>
+        template<typename Clock,
+                 typename Uart,
+                 typename RequestSet,
+                 typename ResponseSet,
+                 typename WDReset,
+                 typename DirectionPin>
         struct Com {
-            template<typename Rep, typename Periode>
-            static std::optional<RequestSet> recv(std::chrono::duration<Rep, Periode> timeout) {
+            template<typename Rep,
+                     typename Periode>
+            static std::optional<RequestSet> recv(std::chrono::duration<Rep,
+                                                                        Periode> timeout) {
                 Kvasir::StaticVector<std::byte, 640> recvBuffer;
                 auto                                 endTime = Clock::now() + timeout;
                 while(true) {
                     std::optional<std::byte> newByte;
                     WDReset{}();
                     while(!Uart::rxbuffer_.pop_into(newByte) || !newByte) {
-                        if(Clock::now() > endTime) {
-                            return {};
-                        }
+                        if(Clock::now() > endTime) { return {}; }
                         WDReset{}();
                     }
                     recvBuffer.push_back(*newByte);
                     auto ret = Packager::unpack<RequestSet>(recvBuffer);
-                    if(ret) {
-                        return ret;
-                    }
+                    if(ret) { return ret; }
                 }
             }
 
-            static void send(ResponseSet const& response, std::uint8_t) {
+            static void send(ResponseSet const& response,
+                             std::uint8_t) {
                 Kvasir::StaticVector<std::byte, 128> buffer;
 
-                if(!Packager::pack(buffer, response)) {
-                    K_ALWAYS_ASSERT(false);
-                }
+                if(!Packager::pack(buffer, response)) { K_ALWAYS_ASSERT(false); }
                 apply(set(DirectionPin{}));
                 Uart::send_nocopy(buffer.begin(), buffer.end());
 
@@ -154,9 +155,7 @@ namespace Kvasir { namespace Bootloader {
                     auto const ostate = Uart::operationState();
 
                     WDReset{}();
-                    if(ostate != Uart::OperationState::ongoing) {
-                        break;
-                    }
+                    if(ostate != Uart::OperationState::ongoing) { break; }
                 }
             }
         };

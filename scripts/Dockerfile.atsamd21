@@ -1,0 +1,10 @@
+FROM kvasirio/kvasir:latest AS atsamd21_dev
+
+ENV CHIP_ROOT=/opt/chip
+COPY . ${CHIP_ROOT}/
+
+RUN su aur_user -c "yay -S --noconfirm --disable-download-timeout --asdeps gcc-arm-none-eabi-bin" && \
+    rm -rf /home/aur_user/* rm -rf /home/aur_user/.* && \
+    git config --global --add safe.directory ${CHIP_ROOT}
+
+ENTRYPOINT ["/opt/kvasir/scripts/entrypoint.sh"]
