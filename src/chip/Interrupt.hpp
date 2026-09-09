@@ -49,10 +49,9 @@ namespace Nvic {
 
     template<>
     struct InterruptOffsetTraits<void> {
-        static constexpr int        begin = -14;
-        static constexpr int        end   = 29;
-        static constexpr std::array disabled
-          = {-13, -12, -11, -10, -9, -8, -7, -6, -4, -3, 7, 26, 27};
+        static constexpr int        begin    = -14;
+        static constexpr int        end      = 29;
+        static constexpr std::array disabled = {-12, -11, -10, -9, -8, -7, -6, -4, -3, 7, 26, 27};
         static constexpr std::array noEnable
           = {nonMaskableInt.index(), sVCall.index(), pendSV.index()};
         static constexpr std::array noDisable
