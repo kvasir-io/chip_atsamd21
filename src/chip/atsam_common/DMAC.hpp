@@ -212,6 +212,31 @@ namespace DMAC {
         static constexpr auto start() {
             return start<Channel, Priority, Trigger, Regs>();
         }
+
+        /// Disable one channel: what an aborted transfer needs, so the channel stops moving
+        /// bytes and the next start() finds it idle.
+        template<DMAChannel Channel,
+                 typename Regs_t>
+        static constexpr auto stop() {
+            static_assert(numberOfChannels > static_cast<std::size_t>(Channel));
+
+            if constexpr(Traits::DmacTraits::OldImpl) {
+                return list(
+                  write(
+                    Regs_t::CHID::id,
+                    Kvasir::Register::value<std::uint8_t, static_cast<std::uint8_t>(Channel)>()),
+                  Kvasir::Register::sequencePoint,
+                  clear(Regs_t::CHCTRLA::enable));
+            } else {
+                using CHRegs = typename Regs_t::template CHANNEL<static_cast<std::size_t>(Channel)>;
+                return list(clear(CHRegs::CHCTRLA::enable));
+            }
+        }
+
+        template<DMAChannel Channel>
+        static constexpr auto stop() {
+            return stop<Channel, Regs>();
+        }
     };
 
 }   // namespace DMAC

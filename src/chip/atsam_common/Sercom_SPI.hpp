@@ -13,6 +13,7 @@
 #include "peripherals/SERCOM_SPI.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <chrono>
 #include <ratio>
@@ -418,6 +419,36 @@ namespace Kvasir { namespace Sercom { namespace SPI {
             if(!a && !b) { return OperationState::succeeded; }
             // TODO timeout
             return OperationState::ongoing;
+        }
+
+        // The bookkeeping a shared-bus device driver (kvasir_devices SPIDeviceBase) needs, with
+        // the RP2040 / RP2350 SPI's names. This behaviour has no completion interrupt: a
+        // transfer is over when operationState() says so, and SPIDeviceBase polls it.
+        inline static std::atomic<bool> booked{false};
+
+        /// Book the bus for one frame; false while another device has it.
+        static bool acquire() { return !booked.exchange(true, std::memory_order_acquire); }
+
+        static void release() { booked.store(false, std::memory_order_release); }
+
+        /// A transfer is still moving bytes: operationState() asked the other way round.
+        [[nodiscard]] static bool transferInProgress() {
+            return operationState() == OperationState::ongoing;
+        }
+
+        /// Nothing is latched here to acknowledge: a transfer completes or is aborted.
+        static void clearError() {}
+
+        /// Abandon an in-flight transfer: stop both DMA channels, forget them, and drop what
+        /// the receiver holds so it is not read as the start of the next transfer.
+        static void abortTransfer() {
+            apply(Dma::template stop<DmaChannelA>());
+            apply(Dma::template stop<DmaChannelB>());
+            a = false;
+            b = false;
+            for(int i = 0; i < 4 && apply(read(Regs::INTFLAG::rxc)); ++i) {
+                apply(read(Regs::DATA8::data));
+            }
         }
 
         template<DMAC::DMAChannel Channel,

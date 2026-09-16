@@ -49,6 +49,7 @@
 #include "atsam_common/SamPushButton.hpp"
 #include "atsam_common/SamRotaryEncoder.hpp"
 #include "atsam_common/Sercom_I2C.hpp"
+#include "atsam_common/Sercom_I2CQueued.hpp"
 #include "atsam_common/Sercom_SPI.hpp"
 #include "atsam_common/Sercom_Usart.hpp"
 #include "atsam_common/Serial_Number.hpp"
