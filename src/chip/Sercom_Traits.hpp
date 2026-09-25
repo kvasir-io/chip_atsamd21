@@ -1,5 +1,6 @@
 #pragma once
 #include "Interrupt.hpp"
+#include "Variant.hpp"
 #include "chip/atsam_common/DMAC.hpp"
 #include "chip/atsam_common/Sercom_Common.hpp"
 #include "kvasir/Io/Types.hpp"
@@ -88,8 +89,9 @@ namespace Kvasir { namespace Sercom { namespace Traits {
             return DmaTriggers<Instance>().second;
         }
 
+        // {instance, port, pin, pin function (C = 2, D = 3), pad}: SAM D21 datasheet DS40001882,
+        // tables 7-1 and 7-2 "PORT Function Multiplexing".
         static constexpr std::array pinMuxInfos{
-          // LVariant
           // Instance 0
           PinInfo{0, 0,  4, 3, 0},
           PinInfo{0, 0,  5, 3, 1},
@@ -144,6 +146,15 @@ namespace Kvasir { namespace Sercom { namespace Traits {
           PinInfo{5, 0, 25, 3, 3},
           PinInfo{5, 1,  2, 3, 0},
           PinInfo{5, 1,  3, 3, 1},
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+          // What table 7-1 (A variants, column SAMD2xG) has and table 7-2 (L variants) has not:
+          // PA00, PA01 and PB22, PB23, which the L parts do not bond out. Everything above is the
+          // same in both tables.
+          PinInfo{1, 0,  0, 3, 0},
+          PinInfo{1, 0,  1, 3, 1},
+          PinInfo{5, 1, 22, 3, 2},
+          PinInfo{5, 1, 23, 3, 3},
+#endif
         };
     };
 

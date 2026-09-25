@@ -18,12 +18,15 @@ namespace Kvasir { namespace GCLK {
     };
 
     enum class Peripheral : std::uint16_t {
-        dfll48       = 0,    //DFLL48
-        fdpll        = 1,    //FDPLL
-        fdpll32k     = 2,    //FDPLL32K
-        wdt          = 3,    //WDT
-        rtc          = 4,    //RTC
-        eic          = 5,    //EIC
+        dfll48   = 0,   //DFLL48
+        fdpll    = 1,   //FDPLL
+        fdpll32k = 2,   //FDPLL32K
+        wdt      = 3,   //WDT
+        rtc      = 4,   //RTC
+        eic      = 5,   //EIC
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+        usb = 6,   //USB (SAM D21 datasheet, GCLK CLKCTRL.ID: 0x06 GCLK_USB)
+#endif
         evsys_0      = 7,    //EVSYS_0
         evsys_1      = 8,    //EVSYS_1
         evsys_2      = 9,    //EVSYS_2

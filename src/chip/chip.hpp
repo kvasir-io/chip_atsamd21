@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Variant.hpp"
+//
 #include "peripherals/AC.hpp"
 #include "peripherals/ADC.hpp"
 #include "peripherals/DAC.hpp"
@@ -27,9 +29,14 @@
 #include "peripherals/TC_COUNT32.hpp"
 #include "peripherals/TC_COUNT8.hpp"
 #include "peripherals/WDT.hpp"
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+    #include "peripherals/I2S.hpp"
+    #include "peripherals/USB_DEVICE.hpp"
+#endif
 //
 #include "PM.hpp"
 //
+#include "DFLL.hpp"
 #include "GCLK.hpp"
 #include "Interrupt.hpp"
 #include "Io.hpp"
@@ -45,7 +52,10 @@
 //
 #include "Sercom_Traits.hpp"
 //
-#include "atsam_common/NVMCTRL.hpp"
+#if !defined(KVASIR_CHIP_ATSAMD21G18A)
+    // EEPROM emulation in the RWW flash section, which only the L (and D) parts have.
+    #include "atsam_common/NVMCTRL.hpp"
+#endif
 #include "atsam_common/SamPushButton.hpp"
 #include "atsam_common/SamRotaryEncoder.hpp"
 #include "atsam_common/Sercom_I2C.hpp"
@@ -55,3 +65,9 @@
 #include "atsam_common/Serial_Number.hpp"
 #include "atsam_common/StartUp.hpp"
 #include "core/core.hpp"
+#if defined(KVASIR_CHIP_ATSAMD21G18A) && __has_include(<kvasir/Devices/USB/Device.hpp>)
+    // The USB controller as a backend of kvasir_devices' USB device: only for a firmware that has
+    // kvasir_devices on its include path (LIBRARIES kvasir::devices).
+    #include "Usb_Traits.hpp"
+    #include "atsam_common/usb/Backend.hpp"
+#endif

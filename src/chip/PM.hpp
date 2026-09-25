@@ -3,8 +3,11 @@
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 #include <string_view>
+#include <utility>
 
 namespace Kvasir { namespace PM {
     template<unsigned baseAddr = 0x40000400>
@@ -66,7 +69,15 @@ namespace Kvasir { namespace PM {
           PeripheryEnableInfo{0x42004000, 0x20, 16}, // ADC
           PeripheryEnableInfo{0x42004400, 0x20, 17}, // AC0
           PeripheryEnableInfo{0x42004800, 0x20, 18}, // DAC
-          PeripheryEnableInfo{0x42005400, 0x20, 21}, // AC1
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+          // Two masks gate the USB: the AHB clock (AHBMASK bit 6) and the APB one (APBBMASK,
+          // offset 0x1C, bit 5). SAM D21 datasheet DS40001882, PM register descriptions.
+          PeripheryEnableInfo{0x41005000, 0x14,  6}, // USB (AHB)
+          PeripheryEnableInfo{0x41005000, 0x1C,  5}, // USB (APB)
+          PeripheryEnableInfo{0x42005000, 0x20, 20}, // I2S
+#else
+          PeripheryEnableInfo{0x42005400, 0x20, 21},   // AC1
+#endif
         };
 
         static constexpr bool isValidPeripheryAddress(unsigned peripheryAddress) {
@@ -76,19 +87,37 @@ namespace Kvasir { namespace PM {
             return false;
         }
 
-        static constexpr unsigned getOffset(unsigned peripheryAddress) {
+        // A peripheral has one row per mask bit that gates it: usually one, the USB two.
+        static constexpr std::size_t rowCount(unsigned peripheryAddress) {
+            std::size_t n{};
             for(auto pei : peripheryEnableInfos) {
-                if(pei.address == peripheryAddress) { return pei.offset; }
+                if(pei.address == peripheryAddress) { ++n; }
             }
-            return 0;
+            return n;
         }
 
-        static constexpr unsigned getBit(unsigned peripheryAddress) {
+        static constexpr PeripheryEnableInfo row(unsigned    peripheryAddress,
+                                                 std::size_t index) {
             for(auto pei : peripheryEnableInfos) {
-                if(pei.address == peripheryAddress) { return pei.bit; }
+                if(pei.address == peripheryAddress && index-- == 0) { return pei; }
             }
-            return 0;
+            return {};
         }
+
+        // One mask bit: the action itself, as it always was. Several: a list of them, which a
+        // Startup list takes just the same.
+        template<template<unsigned, int> class Bit, unsigned Address, typename Indices>
+        struct Actions;
+
+        template<template<unsigned, int> class Bit, unsigned Address>
+        struct Actions<Bit, Address, std::index_sequence<0>> {
+            using type = Bit<row(Address, 0).offset, int(row(Address, 0).bit)>;
+        };
+
+        template<template<unsigned, int> class Bit, unsigned Address, std::size_t... Is>
+        struct Actions<Bit, Address, std::index_sequence<Is...>> {
+            using type = brigand::list<Bit<row(Address, Is).offset, int(row(Address, Is).bit)>...>;
+        };
 
     }   // namespace Detail
 
@@ -96,17 +125,35 @@ namespace Kvasir { namespace PM {
     struct enable {
         static_assert(Detail::isValidPeripheryAddress(PeripheryAddress),
                       "invalid PeripheryAddress to enable");
-        using action
-          = Detail::BitSet<Detail::getOffset(PeripheryAddress), Detail::getBit(PeripheryAddress)>;
+        using action = typename Detail::Actions<
+          Detail::BitSet,
+          PeripheryAddress,
+          std::make_index_sequence<Detail::rowCount(PeripheryAddress)>>::type;
     };
 
     template<unsigned PeripheryAddress>
     struct disable {
         static_assert(Detail::isValidPeripheryAddress(PeripheryAddress),
                       "invalid PeripheryAddress to disable");
-        using action
-          = Detail::BitClear<Detail::getOffset(PeripheryAddress), Detail::getBit(PeripheryAddress)>;
+        using action = typename Detail::Actions<
+          Detail::BitClear,
+          PeripheryAddress,
+          std::make_index_sequence<Detail::rowCount(PeripheryAddress)>>::type;
     };
+
+    /// Whether every mask bit that gates the peripheral at `peripheryAddress` is set - what
+    /// enable<Address> writes, read back (a self-test's question: "is its bus clock on?").
+    inline bool isEnabled(unsigned peripheryAddress) {
+        bool all = Detail::isValidPeripheryAddress(peripheryAddress);
+        for(auto const pei : Detail::peripheryEnableInfos) {
+            if(pei.address != peripheryAddress) { continue; }
+            // NOLINTNEXTLINE(performance-no-int-to-ptr)
+            auto const* const mask = reinterpret_cast<std::uint32_t const volatile*>(
+              std::uintptr_t{Registers<>::BaseAddr} + pei.offset);
+            all = all && ((*mask >> pei.bit) & 1U) != 0;
+        }
+        return all;
+    }
 
     enum class ResetCause : std::uint8_t { por, bod12, bod33, ext, wdt, syst };
 

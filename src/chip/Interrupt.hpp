@@ -1,4 +1,5 @@
 #pragma once
+#include "Variant.hpp"
 #include "kvasir/Common/Interrupt.hpp"
 
 #include <array>
@@ -20,7 +21,10 @@ namespace Interrupt {
     static constexpr Type<4>   eic{};
     static constexpr Type<5>   nvmctrl{};
     static constexpr Type<6>   dmac{};
-    // 7
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+    static constexpr Type<7> usb{};
+#endif
+    // 7 on a part without USB
     static constexpr Type<8>  evsys{};
     static constexpr Type<9>  sercom0{};
     static constexpr Type<10> sercom1{};
@@ -34,6 +38,15 @@ namespace Interrupt {
     static constexpr Type<18> tc3{};
     static constexpr Type<19> tc4{};
     static constexpr Type<20> tc5{};
+    // SAM D21 datasheet DS40001882, table 11-3 "Interrupt Line Mapping"; which lines a part has
+    // follows from its peripherals ("Configuration Summary").
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+    static constexpr Type<23> adc{};
+    static constexpr Type<24> ac{};
+    static constexpr Type<25> dac{};
+    static constexpr Type<26> ptc{};
+    static constexpr Type<27> i2s{};
+#else
     static constexpr Type<21> tc6{};
     static constexpr Type<22> tc7{};
     static constexpr Type<23> adc{};
@@ -42,6 +55,7 @@ namespace Interrupt {
     // 26
     // 27
     static constexpr Type<28> ac1{};
+#endif
 }   // namespace Interrupt
 
 namespace Nvic {
@@ -49,9 +63,14 @@ namespace Nvic {
 
     template<>
     struct InterruptOffsetTraits<void> {
-        static constexpr int        begin    = -14;
+        static constexpr int begin = -14;
+#if defined(KVASIR_CHIP_ATSAMD21G18A)
+        static constexpr int        end      = 28;
+        static constexpr std::array disabled = {-12, -11, -10, -9, -8, -7, -6, -4, -3, 21, 22};
+#else
         static constexpr int        end      = 29;
         static constexpr std::array disabled = {-12, -11, -10, -9, -8, -7, -6, -4, -3, 7, 26, 27};
+#endif
         static constexpr std::array noEnable
           = {nonMaskableInt.index(), sVCall.index(), pendSV.index()};
         static constexpr std::array noDisable
