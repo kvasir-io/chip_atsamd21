@@ -3,6 +3,7 @@
 #include "kvasir/Common/Interrupt.hpp"
 
 #include <array>
+#include <type_traits>
 
 namespace Kvasir {
 namespace Interrupt {
@@ -56,6 +57,12 @@ namespace Interrupt {
     // 27
     static constexpr Type<28> ac1{};
 #endif
+
+    // The vector that serves EXTINT line n: one for all sixteen ("EIC - External Interrupt
+    // Controller | 4", DS40001882L Table 11-3, md line 1856). Kvasir::EIC's lines are
+    // sub-interrupts of it (atsam_common/EIC.hpp).
+    template<unsigned Line>
+    using EicExtIntVector = std::remove_cvref_t<decltype(eic)>;
 }   // namespace Interrupt
 
 namespace Nvic {

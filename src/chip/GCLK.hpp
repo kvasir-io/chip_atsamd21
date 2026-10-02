@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ClockLimits.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "peripherals/GCLK.hpp"
@@ -84,7 +85,16 @@ namespace Kvasir { namespace GCLK {
             }
         }();
 
+        static constexpr bool divisionInTable = Div <= ClockLimits::D21::gclkMaxDivision(Generator);
+
         [[nodiscard]] static constexpr auto enable() {
+            // The data sheet's "Maximum Division Factor" (15.8.5, md l.5407) is what the hardware
+            // does: above it the division clamps (/512 for DIVSEL on rev D silicon).
+            static_assert(
+              divisionInTable,
+              "GCLK generator division above the SAM D21's Maximum Division Factor (data "
+              "sheet 15.8.5: 512 for generators 0 and 3-8, 64 for 2, 131072 for 1): the "
+              "silicon clamps it (measured), so the clock would not be what is written");
             return list(Register::sequencePoint,
                         write(GD::id, Register::value<Generator>()),
                         write(GD::div, Register::value<div>()),

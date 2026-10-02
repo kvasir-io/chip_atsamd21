@@ -214,18 +214,24 @@
               <description>Comparator 0</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 34.8.6 l.39103-39115 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>COMP1</name>
               <description>Comparator 1</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 34.8.6 l.39103-39115 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>WIN0</name>
               <description>Window 0</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 34.8.6 l.39103-39115 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -1331,24 +1337,32 @@
               <description>Result Ready</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 33.8.12 l.38011-38043 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVERRUN</name>
               <description>Overrun</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 33.8.12 l.38011-38043 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>WINMON</name>
               <description>Window Monitor</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 33.8.12 l.38011-38043 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SYNCRDY</name>
               <description>Synchronization Ready</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 33.8.12 l.38011-38043 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -1664,18 +1678,24 @@
               <description>Underrun</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 35.8.6 l.40154-40158 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EMPTY</name>
               <description>Data Buffer Empty</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 35.8.6 l.40146-40150; SYNCRDY left out -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SYNCRDY</name>
               <description>Synchronization Ready</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: write-one-to-clear as measured on rev D silicon; the data sheet's INTFLAG text (TC l.27471-27480, DAC l.40136-40143) is a copy of INTENCLR's -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -1919,6 +1939,8 @@
               <description>CRC Module Busy</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.5 l.13599-13612; by a 1 only when the CRC is used through the I/O interface -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CRCZERO</name>
@@ -2192,18 +2214,24 @@
               <description>Transfer Error</description>
               <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.10 l.13875-13877 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>TCMPL</name>
               <description>Transfer Complete</description>
               <bitOffset>9</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.10 l.13867-13869 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SUSP</name>
               <description>Channel Suspend</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.10 l.13859-13861; ID stays plain R/W -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FERR</name>
@@ -3090,18 +3118,24 @@
               <description>Transfer Error</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.22 l.14456-14482 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>TCMPL</name>
               <description>Transfer Complete</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.22 l.14456-14482 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SUSP</name>
               <description>Channel Suspend</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 20.8.22 l.14456-14482 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -3198,30 +3232,40 @@
               <description>Done</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 13.13.2 l.3606-3617 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CRSTEXT</name>
               <description>CPU Reset Phase Extension</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 13.13.2 l.3598-3605 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>BERR</name>
               <description>Bus Error</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 13.13.2 l.3594-3597 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAIL</name>
               <description>Failure</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 13.13.2 l.3590-3593 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>PERR</name>
               <description>Protection Error</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 13.13.2 l.3586-3589 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -3749,6 +3793,8 @@
               <description>Non-Maskable Interrupt</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.4 l.15397-15401 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -4095,96 +4141,128 @@
               <description>External Interrupt 0</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT1</name>
               <description>External Interrupt 1</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT2</name>
               <description>External Interrupt 2</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT3</name>
               <description>External Interrupt 3</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT4</name>
               <description>External Interrupt 4</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT5</name>
               <description>External Interrupt 5</description>
               <bitOffset>5</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT6</name>
               <description>External Interrupt 6</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT7</name>
               <description>External Interrupt 7</description>
               <bitOffset>7</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT8</name>
               <description>External Interrupt 8</description>
               <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT9</name>
               <description>External Interrupt 9</description>
               <bitOffset>9</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT10</name>
               <description>External Interrupt 10</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT11</name>
               <description>External Interrupt 11</description>
               <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT12</name>
               <description>External Interrupt 12</description>
               <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT13</name>
               <description>External Interrupt 13</description>
               <bitOffset>13</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT14</name>
               <description>External Interrupt 14</description>
               <bitOffset>14</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT15</name>
               <description>External Interrupt 15</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 21.8.8 l.15492-15496; also EXTINT0..15, which undo the EXTINT[15:0] mark today -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -5834,144 +5912,192 @@
               <description>Channel 0 Overrun</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR1</name>
               <description>Channel 1 Overrun</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR2</name>
               <description>Channel 2 Overrun</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR3</name>
               <description>Channel 3 Overrun</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR4</name>
               <description>Channel 4 Overrun</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR5</name>
               <description>Channel 5 Overrun</description>
               <bitOffset>5</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR6</name>
               <description>Channel 6 Overrun</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR7</name>
               <description>Channel 7 Overrun</description>
               <bitOffset>7</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD0</name>
               <description>Channel 0 Event Detection</description>
               <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD1</name>
               <description>Channel 1 Event Detection</description>
               <bitOffset>9</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD2</name>
               <description>Channel 2 Event Detection</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD3</name>
               <description>Channel 3 Event Detection</description>
               <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD4</name>
               <description>Channel 4 Event Detection</description>
               <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD5</name>
               <description>Channel 5 Event Detection</description>
               <bitOffset>13</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD6</name>
               <description>Channel 6 Event Detection</description>
               <bitOffset>14</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD7</name>
               <description>Channel 7 Event Detection</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR8</name>
               <description>Channel 8 Overrun</description>
               <bitOffset>16</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR9</name>
               <description>Channel 9 Overrun</description>
               <bitOffset>17</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR10</name>
               <description>Channel 10 Overrun</description>
               <bitOffset>18</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OVR11</name>
               <description>Channel 11 Overrun</description>
               <bitOffset>19</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD8</name>
               <description>Channel 8 Event Detection</description>
               <bitOffset>24</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD9</name>
               <description>Channel 9 Event Detection</description>
               <bitOffset>25</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD10</name>
               <description>Channel 10 Event Detection</description>
               <bitOffset>26</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>EVD11</name>
               <description>Channel 11 Event Detection</description>
               <bitOffset>27</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 24.8.7 l.18555-18587 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -6848,6 +6974,8 @@
           <description>Control B</description>
           <addressOffset>0x04</addressOffset>
           <size>32</size>
+          <!-- Kvasir: DS40001882L 22.8.2 l.16117 (MANW reset 1, CTRLB reset 0x00000080; rev. history l.52030: Variant A resets 0). Without it every RWS write cleared MANW and each page was written twice: automatically at the last page-buffer word (22.6.4.3.2) and again by the driver WP command. -->
+          <resetValue>0x00000080</resetValue>
           <fields>
             <field>
               <name>RWS</name>
@@ -7058,12 +7186,16 @@
               <description>NVM Ready</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.6 l.16311: Access R -->
+              <access>read-only</access>
             </field>
             <field>
               <name>ERROR</name>
               <description>Error</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.6 l.16318; READY is R (l.16311) -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -7085,24 +7217,32 @@
               <description>NVM Page Buffer Active Loading</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.7 l.16387-16392 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>PROGE</name>
               <description>Programming Error Status</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.7 l.16376-16386 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>LOCKE</name>
               <description>Lock Error Status</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.7 l.16370-16375 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>NVME</name>
               <description>NVM Error</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 22.8.7 l.16364-16369 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SB</name>
@@ -7815,6 +7955,8 @@
               <description>Clock Ready</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 16.8.13 l.6761-6765: cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8252,7 +8394,8 @@
               <description>Output Driver Strength Selection</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
-              <access>write-only</access>
+              <!-- Kvasir: DS40001882L 23.8.13 l.~17563-17575: RW (SVD says write-only) -->
+              <access>read-write</access>
             </field>
           </fields>
         </register>
@@ -8569,18 +8712,24 @@
                 <description>Compare 0</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.14 l.11720-11742 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>6</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.14 l.11720-11742 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>OVF</name>
                 <description>Overflow</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.14 l.11720-11742 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -8958,24 +9107,32 @@
                 <description>Compare 0</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.15 l.11764-11786 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>CMP1</name>
                 <description>Compare 1</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.15 l.11764-11786 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>6</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.15 l.11764-11786 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>OVF</name>
                 <description>Overflow</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.15 l.11764-11786 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -9361,18 +9518,24 @@
                 <description>Alarm 0</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.16 l.11805-11827 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>6</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.16 l.11805-11827 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>OVF</name>
                 <description>Overflow</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 19.8.16 l.11805-11827 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -9938,18 +10101,24 @@
                 <description>Master On Bus Interrupt</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.6 l.24242,24260,24274; MB/SB also cleared by ADDR/DATA/CMD -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SB</name>
                 <description>Slave On Bus Interrupt</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.6 l.24242,24260,24274; MB/SB also cleared by ADDR/DATA/CMD -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERROR</name>
                 <description>Combined Error Interrupt</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.6 l.24242,24260,24274; MB/SB also cleared by ADDR/DATA/CMD -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -9964,12 +10133,16 @@
                 <description>Bus Error</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24375-24388 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ARBLOST</name>
                 <description>Arbitration Lost</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24369-24374 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>RXNACK</name>
@@ -10012,6 +10185,8 @@
                 <description>SCL Low Timeout</description>
                 <bitOffset>6</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24328-24341 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>CLKHOLD</name>
@@ -10025,18 +10200,24 @@
                 <description>Master SCL Low Extend Timeout</description>
                 <bitOffset>8</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24314-24321 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SEXTTOUT</name>
                 <description>Slave SCL Low Extend Timeout</description>
                 <bitOffset>9</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24306-24313 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>LENERR</name>
                 <description>Length Error</description>
                 <bitOffset>10</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.10.7 l.24298-24305 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -10365,24 +10546,32 @@
                 <description>Stop Received Interrupt</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.5 l.23457-23495; writing 1 to AMATCH sends ACK/NACK -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>AMATCH</name>
                 <description>Address Match Interrupt</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.5 l.23457-23495; writing 1 to AMATCH sends ACK/NACK -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>DRDY</name>
                 <description>Data Interrupt</description>
                 <bitOffset>2</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.5 l.23457-23495; writing 1 to AMATCH sends ACK/NACK -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERROR</name>
                 <description>Combined Error Interrupt</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.5 l.23457-23495; writing 1 to AMATCH sends ACK/NACK -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -10397,12 +10586,16 @@
                 <description>Bus Error</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.6 l.23599-23612 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>COLL</name>
                 <description>Transmit Collision</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.6 l.23584-23598 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>RXNACK</name>
@@ -10430,6 +10623,8 @@
                 <description>SCL Low Timeout</description>
                 <bitOffset>6</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.6 l.23546-23557 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>CLKHOLD</name>
@@ -10443,12 +10638,16 @@
                 <description>Slave SCL Low Extend Timeout</description>
                 <bitOffset>9</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.6 l.23525-23539 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>HS</name>
                 <description>High Speed</description>
                 <bitOffset>10</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 28.8.6 l.23519-23524 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -10845,6 +11044,8 @@
                 <description>Transmit Complete Interrupt</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 27.8.6 l.21887-21893; DRE/RXC are R -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>RXC</name>
@@ -10858,12 +11059,16 @@
                 <description>Slave Select Low Interrupt Flag</description>
                 <bitOffset>3</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 27.8.6 l.21871-21875 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERROR</name>
                 <description>Combined Error Interrupt</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 27.8.6 l.21863-21867 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -10878,6 +11083,8 @@
                 <description>Buffer Overflow</description>
                 <bitOffset>2</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 27.8.7 l.21918-21940 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -11415,6 +11622,8 @@
                 <description>Transmit Complete Interrupt</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20513-20519; DRE/RXC are R -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>RXC</name>
@@ -11428,25 +11637,34 @@
                 <description>Receive Start Interrupt</description>
                 <bitOffset>3</bitOffset>
                 <bitWidth>1</bitWidth>
-                <access>write-only</access>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20466: R/W (SVD says write-only) -->
+                <access>read-write</access>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20493-20499 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>CTSIC</name>
                 <description>Clear To Send Input Change Interrupt</description>
                 <bitOffset>4</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20485-20489 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>RXBRK</name>
                 <description>Break Received Interrupt</description>
                 <bitOffset>5</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20479-20481 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERROR</name>
                 <description>Combined Error Interrupt</description>
                 <bitOffset>7</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.7 l.20473-20475 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -11461,18 +11679,24 @@
                 <description>Parity Error</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.8 l.20607-20624 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>FERR</name>
                 <description>Frame Error</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.8 l.20593-20606 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>BUFOVF</name>
                 <description>Buffer Overflow</description>
                 <bitOffset>2</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.8 l.20583-20592 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>CTS</name>
@@ -11486,12 +11710,16 @@
                 <description>Inconsistent Sync Field</description>
                 <bitOffset>4</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.8 l.20569-20578 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>COLL</name>
                 <description>Collision Detected</description>
                 <bitOffset>5</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 26.8.8 l.20561-20568 -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -11840,90 +12068,120 @@
               <description>XOSC Ready</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>XOSC32KRDY</name>
               <description>XOSC32K Ready</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OSC32KRDY</name>
               <description>OSC32K Ready</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>OSC8MRDY</name>
               <description>OSC8M Ready</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFLLRDY</name>
               <description>DFLL Ready</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFLLOOB</name>
               <description>DFLL Out Of Bounds</description>
               <bitOffset>5</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFLLLCKF</name>
               <description>DFLL Lock Fine</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFLLLCKC</name>
               <description>DFLL Lock Coarse</description>
               <bitOffset>7</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFLLRCS</name>
               <description>DFLL Reference Clock Stopped</description>
               <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>BOD33RDY</name>
               <description>BOD33 Ready</description>
               <bitOffset>9</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>BOD33DET</name>
               <description>BOD33 Detection</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>B33SRDY</name>
               <description>BOD33 Synchronization Ready</description>
               <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DPLLLCKR</name>
               <description>DPLL Lock Rise</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DPLLLCKF</name>
               <description>DPLL Lock Fall</description>
               <bitOffset>16</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DPLLLTO</name>
               <description>DPLL Lock Timeout</description>
               <bitOffset>17</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 17.8.3 l.8139-8245: every flag cleared by writing a one -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -13398,30 +13656,40 @@
                 <description>Overflow</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.8.10 l.27491; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERR</name>
                 <description>Error</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.8.10 l.27485; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>3</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: write-one-to-clear as measured on rev D silicon; the data sheet's INTFLAG text (TC l.27471-27480, DAC l.40136-40143) is a copy of INTENCLR's -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC0</name>
                 <description>Match or Capture Channel 0</description>
                 <bitOffset>4</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.8.10 l.27465-27467; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC1</name>
                 <description>Match or Capture Channel 1</description>
                 <bitOffset>5</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.8.10 l.27465-27467; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -13983,30 +14251,40 @@
                 <description>Overflow</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.10.10 l.28193; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERR</name>
                 <description>Error</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.10.10 l.28187; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>3</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: write-one-to-clear as measured on rev D silicon; the data sheet's INTFLAG text (TC l.27471-27480, DAC l.40136-40143) is a copy of INTENCLR's -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC0</name>
                 <description>Match or Capture Channel 0</description>
                 <bitOffset>4</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.10.10 l.28164-28166; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC1</name>
                 <description>Match or Capture Channel 1</description>
                 <bitOffset>5</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.10.10 l.28164-28166; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -14553,30 +14831,40 @@
                 <description>Overflow</description>
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.12.10 l.28910; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>ERR</name>
                 <description>Error</description>
                 <bitOffset>1</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.12.10 l.28904; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>SYNCRDY</name>
                 <description>Synchronization Ready</description>
                 <bitOffset>3</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: write-one-to-clear as measured on rev D silicon; the data sheet's INTFLAG text (TC l.27471-27480, DAC l.40136-40143) is a copy of INTENCLR's -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC0</name>
                 <description>Match or Capture Channel 0</description>
                 <bitOffset>4</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.12.10 l.28881-28883; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
               <field>
                 <name>MC1</name>
                 <description>Match or Capture Channel 1</description>
                 <bitOffset>5</bitOffset>
                 <bitWidth>1</bitWidth>
+                <!-- Kvasir: DS40001882L 30.12.10 l.28881-28883; SYNCRDY left out (datasheet text unclear) -->
+                <modifiedWriteValues>oneToClear</modifiedWriteValues>
               </field>
             </fields>
           </register>
@@ -16199,84 +16487,112 @@
               <description>Overflow</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>TRG</name>
               <description>Retrigger</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CNT</name>
               <description>Counter</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>ERR</name>
               <description>Error</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>UFS</name>
               <description>Non-Recoverable Update Fault</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFS</name>
               <description>Non-Recoverable Debug Fault</description>
               <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULTA</name>
               <description>Recoverable Fault A</description>
               <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULTB</name>
               <description>Recoverable Fault B</description>
               <bitOffset>13</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULT0</name>
               <description>Non-Recoverable Fault 0</description>
               <bitOffset>14</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULT1</name>
               <description>Non-Recoverable Fault 1</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>MC0</name>
               <description>Match or Capture 0</description>
               <bitOffset>16</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>MC1</name>
               <description>Match or Capture 1</description>
               <bitOffset>17</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>MC2</name>
               <description>Match or Capture 2</description>
               <bitOffset>18</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>MC3</name>
               <description>Match or Capture 3</description>
               <bitOffset>19</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.12 l.31942-32020 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -16306,12 +16622,16 @@
               <description>Non-Recoverable Update Fault State</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32131-32136 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>DFS</name>
               <description>Non-Recoverable Debug Fault State</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32125-32130 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>SLAVE</name>
@@ -16325,18 +16645,24 @@
               <description>Pattern Buffer Valid</description>
               <bitOffset>5</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32121-32124 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>WAVEBV</name>
               <description>Wave Buffer Valid</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32117-32120 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>PERBV</name>
               <description>Period Buffer Valid</description>
               <bitOffset>7</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32113-32116 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULTAIN</name>
@@ -16371,48 +16697,64 @@
               <description>Recoverable Fault A State</description>
               <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32091-32096 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULTB</name>
               <description>Recoverable Fault B State</description>
               <bitOffset>13</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32079-32090 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULT0</name>
               <description>Non-Recoverable Fault 0 State</description>
               <bitOffset>14</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32073-32078 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>FAULT1</name>
               <description>Non-Recoverable Fault 1 State</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32073-32078 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CCBV0</name>
               <description>Compare Channel 0 Buffer Valid</description>
               <bitOffset>16</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32067-32072 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CCBV1</name>
               <description>Compare Channel 1 Buffer Valid</description>
               <bitOffset>17</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32067-32072 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CCBV2</name>
               <description>Compare Channel 2 Buffer Valid</description>
               <bitOffset>18</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32067-32072 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CCBV3</name>
               <description>Compare Channel 3 Buffer Valid</description>
               <bitOffset>19</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 31.8.13 l.32067-32072 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
             <field>
               <name>CMP0</name>
@@ -17688,6 +18030,8 @@
               <description>Early Warning</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <!-- Kvasir: DS40001882L 18.8.6 l.10266-10268 -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>

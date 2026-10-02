@@ -36,7 +36,9 @@
 //
 #include "PM.hpp"
 //
+#include "ClockTree.hpp"
 #include "DFLL.hpp"
+#include "Dpll.hpp"
 #include "GCLK.hpp"
 #include "Interrupt.hpp"
 #include "Io.hpp"
