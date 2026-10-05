@@ -11,6 +11,7 @@
 //     while(!Kvasir::DPLL::ready()) {}
 
 #include "ClockLimits.hpp"
+#include "WaitBounds.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "peripherals/SYSCTRL.hpp"
@@ -157,6 +158,6 @@ namespace Kvasir { namespace DPLL {
              Options   O = {}>
     inline void enable() {
         apply(configure<S, R, O>());
-        while(!ready()) {}
+        Kvasir::Register::waitUntil<Kvasir::Chip::DpllLockBound>([] { return ready(); });
     }
 }}   // namespace Kvasir::DPLL

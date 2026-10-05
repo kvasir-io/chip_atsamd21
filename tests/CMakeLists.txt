@@ -43,3 +43,20 @@ foreach(_message IN LISTS _must_fail_messages)
                                           -I${_chip_src} -DMUST_FAIL=${_n} ${CMAKE_CURRENT_LIST_DIR}/must_fail.cpp)
     set_tests_properties(must_fail_${_n} PROPERTIES PASS_REGULAR_EXPRESSION "${_message}")
 endforeach()
+
+# The write-only guard: every write-only field of this chip's SVD(s) is classified (oneToSet, a key, or <!-- Kvasir:
+# write-only accepted -->), so svd_converter --write-only-guard=error must exit 0. Needs the SDK's svd_converter (the
+# sibling checkout's submodule); left out without it.
+if(EXISTS ${KVASIR_ROOT}/svd_converter/CMakeLists.txt)
+    add_subdirectory(${KVASIR_ROOT}/svd_converter svd_converter)
+    foreach(svd chip.svd svd/ATSAMD21G18A.svd)
+        string(MAKE_C_IDENTIFIER ${svd} _svd_name)
+        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/write_only_guard/${_svd_name})
+        add_test(
+            NAME svd_write_only_guard_${_svd_name}
+            COMMAND svd_converter --write-only-guard=error --write-only-registers=derived
+                    ${CMAKE_CURRENT_LIST_DIR}/../${svd} ${CMAKE_CURRENT_BINARY_DIR}/write_only_guard/${_svd_name} json)
+    endforeach()
+else()
+    message(STATUS "svd_write_only_guard left out: no ${KVASIR_ROOT}/svd_converter")
+endif()

@@ -19,6 +19,7 @@
 #include "DFLL.hpp"
 #include "Dpll.hpp"
 #include "GCLK.hpp"
+#include "WaitBounds.hpp"
 #include "atsam_common/Clocks.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
@@ -111,13 +112,14 @@ namespace Kvasir { namespace Clocks { namespace Sam {
 
         static void coreClockInit() {
             apply(XOSC::configure<C.source.hz, XoscOptions>());
-            while(!XOSC::ready()) {}
+            Kvasir::Register::waitUntil<Kvasir::Chip::XoscReadyBound<XoscOptions.startup>>(
+              [] { return XOSC::ready(); });
 
             apply(DPLL::configure<Dpll,
                                   DPLL::Reference::xosc,
                                   DPLL::Options{.lockBypass = C.dpllLockBypass,
                                                 .runStandby = C.dpllRunStandby}>());
-            while(!DPLL::ready()) {}
+            Kvasir::Register::waitUntil<Kvasir::Chip::DpllLockBound>([] { return DPLL::ready(); });
 
             apply(
               Nvm::setWaitStates<WaitStates>(),

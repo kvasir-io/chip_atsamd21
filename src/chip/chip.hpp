@@ -59,6 +59,7 @@
     #include "atsam_common/NVMCTRL.hpp"
 #endif
 #include "atsam_common/SamPushButton.hpp"
+#include "atsam_common/SamQuadratureEncoder.hpp"
 #include "atsam_common/SamRotaryEncoder.hpp"
 #include "atsam_common/Sercom_I2C.hpp"
 #include "atsam_common/Sercom_I2CQueued.hpp"

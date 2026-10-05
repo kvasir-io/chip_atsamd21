@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClockLimits.hpp"
+#include "WaitBounds.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "peripherals/SYSCTRL.hpp"
@@ -70,7 +71,8 @@ namespace Kvasir { namespace DFLL {
     inline void enableOpenLoop(Trim trim = factoryTrim()) {
         using KSR        = Kvasir::Peripheral::SYSCTRL::Registers<>;
         auto const ready = [] {
-            while(!apply(read(KSR::PCLKSR::dfllrdy))) {}
+            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
+              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
         };
 
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
@@ -101,7 +103,8 @@ namespace Kvasir { namespace DFLL {
     inline void enableUsbRecovery(Trim trim = factoryTrim()) {
         using KSR        = Kvasir::Peripheral::SYSCTRL::Registers<>;
         auto const ready = [] {
-            while(!apply(read(KSR::PCLKSR::dfllrdy))) {}
+            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
+              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
         };
 
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
@@ -162,7 +165,8 @@ namespace Kvasir { namespace DFLL {
         using KSR = Kvasir::Peripheral::SYSCTRL::Registers<>;
         using Kvasir::Register::value;
         auto const ready = [] {
-            while(!apply(read(KSR::PCLKSR::dfllrdy))) {}
+            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
+              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
         };
 
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
@@ -182,6 +186,7 @@ namespace Kvasir { namespace DFLL {
                                               set(KSR::DFLLCTRL::bplckc),
                                               clear(KSR::DFLLCTRL::ondemand)));
         ready();
-        while(!apply(read(KSR::PCLKSR::dflllckf))) {}
+        Kvasir::Register::waitUntil<Kvasir::Chip::DfllLockBound>(
+          Kvasir::Register::isSet(KSR::PCLKSR::dflllckf));
     }
 }}   // namespace Kvasir::DFLL

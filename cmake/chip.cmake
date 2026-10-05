@@ -17,7 +17,20 @@ include(${CMAKE_CURRENT_LIST_DIR}/variants/${KVASIR_ATSAMD21_MPU}.cmake)
 
 set(TARGET_UF2_CODE 0x68ED2B88)
 
-svd_convert(peripherals SVD_FILE ${CHIP_SVD_FILE} OUTPUT_DIRECTORY peripherals)
+# The write-only guard: every write-only field of the SVD is classified (oneToSet, a key, or <!-- Kvasir: write-only
+# accepted -->), so a new one stops the build; registers with no readable field are never read
+svd_convert(
+    peripherals
+    SVD_FILE
+    ${CHIP_SVD_FILE}
+    OUTPUT_DIRECTORY
+    peripherals
+    WRITE_ONLY_GUARD
+    error
+    WRITE_ONLY_REGISTERS
+    derived
+    WRITE_ONLY_MASK
+    ON)
 
 # kvasir_devices: chip.hpp includes its drivers unconditionally (SamPushButton/SamRotaryEncoder ->
 # kvasir/Devices/PushButton.hpp, RotaryEncoder.hpp; Sercom_I2CQueued.hpp -> kvasir/Devices/I2C/LineRecovery.hpp; the USB

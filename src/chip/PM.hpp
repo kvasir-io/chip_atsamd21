@@ -2,6 +2,7 @@
 
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
+#include "kvasir/Util/ResetKind.hpp"
 
 #include <array>
 #include <cstddef>
@@ -66,6 +67,11 @@ namespace Kvasir { namespace PM {
           PeripheryEnableInfo{0x42002000, 0x20,  8}, // TCC0
           PeripheryEnableInfo{0x42002400, 0x20,  9}, // TCC1
           PeripheryEnableInfo{0x42002800, 0x20, 10}, // TCC2
+          // APBCMASK (0x20) bits 11-13: TC3-TC5, DS40001882L §16.8.10 (md l.6454, l.6564-6575); TC6/TC7 (bits 14, 15)
+          // exist on the J parts only
+          PeripheryEnableInfo{0x42002C00, 0x20, 11}, // TC3
+          PeripheryEnableInfo{0x42003000, 0x20, 12}, // TC4
+          PeripheryEnableInfo{0x42003400, 0x20, 13}, // TC5
           PeripheryEnableInfo{0x42004000, 0x20, 16}, // ADC
           PeripheryEnableInfo{0x42004400, 0x20, 17}, // AC0
           PeripheryEnableInfo{0x42004800, 0x20, 18}, // DAC
@@ -167,4 +173,18 @@ namespace Kvasir { namespace PM {
         return ResetCause::syst;
     }
 
+    /// reset_cause() as the SDK's boot guard sees it (kvasir/Util/ResetKind.hpp): PM.RCAUSE, "the latest reset
+    /// cause" (DS40001882L 16.8.14). A debugger's reset is SYST like a software request: without a record the
+    /// guard counts neither.
+    inline ResetKind resetKind() {
+        switch(reset_cause()) {
+        case ResetCause::por:   return ResetKind::powerOn;
+        case ResetCause::bod12:
+        case ResetCause::bod33: return ResetKind::brownOut;
+        case ResetCause::ext:   return ResetKind::external;
+        case ResetCause::wdt:   return ResetKind::watchdogTimeout;
+        case ResetCause::syst:  return ResetKind::softwareRequest;
+        }
+        return ResetKind::unknown;
+    }
 }}   // namespace Kvasir::PM
