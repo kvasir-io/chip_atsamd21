@@ -1,7 +1,7 @@
 #pragma once
 // The SAM D21's crystal oscillator and FDPLL96M as building blocks: the numbers come from the
 // solver (atsam_common/ClockSolver.hpp on ClockLimits.hpp), the register writes are these. A
-// firmware with its own sequence (suntrace_pro's crystal fallback) uses them one by one;
+// firmware with its own sequence (a crystal fallback) uses them one by one;
 // ClockTree.hpp's Tree puts them together.
 //
 //     constexpr auto dpll = Kvasir::DPLL::fromXosc<8'000'000, 48'000'000>();   // DIV 3, LDR 47

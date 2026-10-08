@@ -6,7 +6,7 @@ drivers are written against, shared with the SAM C21.
 
 | file | part | how it is made |
 |---|---|---|
-| `ATSAMD21G18A.svd` | ATSAMD21G18A | `scripts/make_g18a_svd.py`: `../chip.svd` without the peripherals only the L parts have (AC1, TC6, TC7, TCC3), plus USB and I2S taken unchanged from Microchip's `Microchip.SAMD21_DFP.3.8.270.atpack` (`samd21a/svd/ATSAMD21G18A.svd`, Apache-2.0, fetched 2026-09-18 from packs.download.microchip.com) |
+| `ATSAMD21G18A.svd` | ATSAMD21G18A | `scripts/make_g18a_svd.py`: `../chip.svd` without the peripherals only the L parts have (AC1, TC6, TC7, TCC3), plus USB and I2S taken unchanged from Microchip's `Microchip.SAMD21_DFP.3.8.270.atpack` (`samd21a/svd/ATSAMD21G18A.svd`, Apache-2.0, from packs.download.microchip.com) |
 
 Microchip's own `ATSAMD21G18A.svd` cannot be used as it is: the shared drivers do not build
 against its names (`EIC::CTRL` instead of `CTRLA`, other DMAC trigger and EVSYS enum names, ...).

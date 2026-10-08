@@ -11,8 +11,8 @@ using ClockLimits::Supply;
 using L::Rating;
 
 // 8 MHz crystal -> 48 MHz: DCO 48 MHz (the lowest), the reference 1 MHz: 2 MHz (DIV 1) sits on
-// the f_IN limit, 1.333 MHz (DIV 2) is not a whole number of hertz. The numbers of
-// jbc_solder_station_fw and suntrace_pro (DIV 3, LDR 47, GCLK0 / 1).
+// the f_IN limit, 1.333 MHz (DIV 2) is not a whole number of hertz. The numbers
+// firmwares use (DIV 3, LDR 47, GCLK0 / 1).
 constexpr auto d8 = DPLL::fromXosc<L::Fdpll96m>(8'000'000, 48'000'000);
 static_assert(d8.found && d8.div == 3 && d8.ldr == 47 && d8.ldrFrac == 0 && d8.presc == 0
               && d8.gclkDiv == 1);
