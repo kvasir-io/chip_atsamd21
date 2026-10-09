@@ -71,7 +71,7 @@
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
               <access>write-only</access>
-              <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §34.8.1 l.38919 "Writing a '0' to this bit has no effect" -->
+              <!-- Kvasir: a written 0 does nothing: DS40001882L §34.8.1 l.38919 "Writing a '0' to this bit has no effect" -->
               <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
@@ -8451,7 +8451,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.1 l.10969 "Writing a zero to this bit has no effect" -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.1 l.10969 "Writing a zero to this bit has no effect" -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -8582,7 +8582,7 @@
                 <bitOffset>15</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
             </fields>
@@ -8838,7 +8838,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.2 l.11057 (same text), l.11065 -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.2 l.11057 (same text), l.11065 -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -8963,7 +8963,7 @@
                 <bitOffset>15</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
             </fields>
@@ -9259,7 +9259,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.3 l.11171 (same text), l.11179 -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.3 l.11171 (same text), l.11179 -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -9396,7 +9396,7 @@
                 <bitOffset>15</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §19.8.4 l.11212 "Writing a zero to this bit has no effect" (one READREQ description for all three modes) -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
             </fields>
@@ -10476,7 +10476,7 @@
                 <bitOffset>16</bitOffset>
                 <bitWidth>2</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §28.8.2 l.23232 "strobe bits, and always read as zero" -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §28.8.2 l.23232 "strobe bits, and always read as zero" -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -13210,7 +13210,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §30.8.1 l.27031 "Writing a '0' to this bit has no effect" -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §30.8.1 l.27031 "Writing a '0' to this bit has no effect" -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -13807,7 +13807,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §30.10.1 l.27732, l.27740 (same text) -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §30.10.1 l.27732, l.27740 (same text) -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
@@ -14389,7 +14389,7 @@
                 <bitOffset>0</bitOffset>
                 <bitWidth>1</bitWidth>
                 <access>write-only</access>
-                <!-- Kvasir: a written 0 does nothing (plan 10): DS40001882L §30.12.1 l.28449, l.28457 (same text) -->
+                <!-- Kvasir: a written 0 does nothing: DS40001882L §30.12.1 l.28449, l.28457 (same text) -->
                 <modifiedWriteValues>oneToSet</modifiedWriteValues>
               </field>
               <field>
