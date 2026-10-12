@@ -67,8 +67,10 @@ namespace Kvasir { namespace USB { namespace Sam {
                                .transp = static_cast<std::uint8_t>((word1 >> 18U) & 0x1FU),
                                .trim   = static_cast<std::uint8_t>((word1 >> 23U) & 0x07U)};
             // A field that reads all ones was never programmed. The datasheet does not say what
-            // to load then. 5 / 29 / 3 is, as far as remembered, what Microchip's ASF USB driver
-            // loads in that case - NOT checked against a source: the datasheets folder has none.
+            // to load then (10.3.2 lists the fields only; PADCAL resets to 0x0000, 32.8.6).
+            // 5 / 29 / 3 are the values Zephyr's SAM0 USB driver loads in that case, from the same
+            // NVM bits 45 / 50 / 55 (zephyr drivers/usb/udc/udc_sam0.c sam0_load_padcal, Zephyr
+            // 4.5.0-rc1). Microchip's own ASF/Harmony source was not checked.
             if(cal.transn == 0x1FU) { cal.transn = 5; }
             if(cal.transp == 0x1FU) { cal.transp = 29; }
             if(cal.trim == 0x07U) { cal.trim = 3; }

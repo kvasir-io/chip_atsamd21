@@ -24,4 +24,6 @@ using DfllLockBound = MicrosecondsBound<5'000>;
 // PCLKSR.DFLLRDY after a DFLL register write: the synchronisation, 5 P_GCLK + 2 P_APB < D < 6 P_GCLK + 3 P_APB
 // (14.3.1.8, md l.4417-4423); at a 32 kHz GCLK 190 us
 using DfllSyncBound = MicrosecondsBound<10'000>;
+// PCLKSR.OSC8MRDY after OSC8M.ENABLE: tSTARTUP max 3.3 us (Table 37-57, md l.42226), x30
+using Osc8mReadyBound = MicrosecondsBound<100>;
 }   // namespace Kvasir::Chip
