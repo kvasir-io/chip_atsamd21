@@ -3,6 +3,7 @@
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "kvasir/Util/ResetKind.hpp"
+#include "peripherals/PM.hpp"
 
 #include <array>
 #include <cstddef>
@@ -149,14 +150,30 @@ namespace Kvasir { namespace PM {
 
     /// Whether every mask bit that gates the peripheral at `peripheryAddress` is set - what
     /// enable<Address> writes, read back (a self-test's question: "is its bus clock on?").
+    namespace Detail {
+        // the gating mask register at a table row's offset, through the SVD's PM block
+        inline std::uint32_t maskRegister(unsigned offset) {
+            using P = Kvasir::Peripheral::PM::Registers<>;
+            static_assert(P::baseAddr == Registers<>::BaseAddr);
+            using Kvasir::Register::readWhole;
+            switch(offset) {
+            case P::AHBMASK::Addr::value - P::baseAddr: return readWhole(P::AHBMASK::FULLREGISTER);
+            case P::APBAMASK::Addr::value - P::baseAddr:
+                return readWhole(P::APBAMASK::FULLREGISTER);
+            case P::APBBMASK::Addr::value - P::baseAddr:
+                return readWhole(P::APBBMASK::FULLREGISTER);
+            case P::APBCMASK::Addr::value - P::baseAddr:
+                return readWhole(P::APBCMASK::FULLREGISTER);
+            default: return 0;
+            }
+        }
+    }   // namespace Detail
+
     inline bool isEnabled(unsigned peripheryAddress) {
         bool all = Detail::isValidPeripheryAddress(peripheryAddress);
         for(auto const pei : Detail::peripheryEnableInfos) {
             if(pei.address != peripheryAddress) { continue; }
-            // NOLINTNEXTLINE(performance-no-int-to-ptr)
-            auto const* const mask = reinterpret_cast<std::uint32_t const volatile*>(
-              std::uintptr_t{Registers<>::BaseAddr} + pei.offset);
-            all = all && ((*mask >> pei.bit) & 1U) != 0;
+            all = all && ((Detail::maskRegister(pei.offset) >> pei.bit) & 1U) != 0;
         }
         return all;
     }

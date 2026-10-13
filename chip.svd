@@ -7313,12 +7313,49 @@
           <description>Write Protection Clear</description>
           <addressOffset>0x0</addressOffset>
           <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.1.1 WPCLR (PDF p. 53): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will clear the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
           <fields>
             <field>
-              <name>WP</name>
-              <description>Write Protection Clear</description>
+              <name>PM</name>
+              <description>PM Write Protection Clear</description>
               <bitOffset>1</bitOffset>
-              <bitWidth>31</bitWidth>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SYSCTRL</name>
+              <description>SYSCTRL Write Protection Clear</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>GCLK</name>
+              <description>GCLK Write Protection Clear</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>WDT</name>
+              <description>WDT Write Protection Clear</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>RTC</name>
+              <description>RTC Write Protection Clear</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>EIC</name>
+              <description>EIC Write Protection Clear</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -7327,26 +7364,509 @@
           <description>Write Protection Set</description>
           <addressOffset>0x4</addressOffset>
           <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.1.2 WPSET (PDF p. 55): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will set the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
           <fields>
             <field>
-              <name>WP</name>
-              <description>Write Protection Set</description>
+              <name>PM</name>
+              <description>PM Write Protection Set</description>
               <bitOffset>1</bitOffset>
-              <bitWidth>31</bitWidth>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SYSCTRL</name>
+              <description>SYSCTRL Write Protection Set</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>GCLK</name>
+              <description>GCLK Write Protection Set</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>WDT</name>
+              <description>WDT Write Protection Set</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>RTC</name>
+              <description>RTC Write Protection Set</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>EIC</name>
+              <description>EIC Write Protection Set</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
           </fields>
         </register>
       </registers>
     </peripheral>
-    <peripheral derivedFrom="PAC0">
+    <peripheral>
       <name>PAC1</name>
       <description>Peripheral Access Controller 1</description>
+      <groupName>PAC</groupName>
+      <prependToName>PAC_</prependToName>
       <baseAddress>0x41000000</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x08</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>WPCLR</name>
+          <description>Write Protection Clear</description>
+          <addressOffset>0x0</addressOffset>
+          <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.2.1 WPCLR (PDF p. 57): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will clear the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
+          <fields>
+            <field>
+              <name>DSU</name>
+              <description>DSU Write Protection Clear</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>NVMCTRL</name>
+              <description>NVMCTRL Write Protection Clear</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>PORT</name>
+              <description>PORT Write Protection Clear</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>DMAC</name>
+              <description>DMAC Write Protection Clear</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>USB</name>
+              <description>USB Write Protection Clear</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>MTB</name>
+              <description>MTB Write Protection Clear</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>WPSET</name>
+          <description>Write Protection Set</description>
+          <addressOffset>0x4</addressOffset>
+          <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.2.2 WPSET (PDF p. 59): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will set the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
+          <fields>
+            <field>
+              <name>DSU</name>
+              <description>DSU Write Protection Set</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>NVMCTRL</name>
+              <description>NVMCTRL Write Protection Set</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>PORT</name>
+              <description>PORT Write Protection Set</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>DMAC</name>
+              <description>DMAC Write Protection Set</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>USB</name>
+              <description>USB Write Protection Set</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>MTB</name>
+              <description>MTB Write Protection Set</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+          </fields>
+        </register>
+      </registers>
     </peripheral>
-    <peripheral derivedFrom="PAC0">
+    <peripheral>
       <name>PAC2</name>
       <description>Peripheral Access Controller 2</description>
+      <groupName>PAC</groupName>
+      <prependToName>PAC_</prependToName>
       <baseAddress>0x42000000</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x08</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>WPCLR</name>
+          <description>Write Protection Clear</description>
+          <addressOffset>0x0</addressOffset>
+          <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.3.1 WPCLR (PDF p. 61): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will clear the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
+          <fields>
+            <field>
+              <name>EVSYS</name>
+              <description>EVSYS Write Protection Clear</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM0</name>
+              <description>SERCOM0 Write Protection Clear</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM1</name>
+              <description>SERCOM1 Write Protection Clear</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM2</name>
+              <description>SERCOM2 Write Protection Clear</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM3</name>
+              <description>SERCOM3 Write Protection Clear</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM4</name>
+              <description>SERCOM4 Write Protection Clear</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM5</name>
+              <description>SERCOM5 Write Protection Clear</description>
+              <bitOffset>7</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC0</name>
+              <description>TCC0 Write Protection Clear</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC1</name>
+              <description>TCC1 Write Protection Clear</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC2</name>
+              <description>TCC2 Write Protection Clear</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC3</name>
+              <description>TC3 Write Protection Clear</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC4</name>
+              <description>TC4 Write Protection Clear</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC5</name>
+              <description>TC5 Write Protection Clear</description>
+              <bitOffset>13</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC6</name>
+              <description>TC6 Write Protection Clear</description>
+              <bitOffset>14</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC7</name>
+              <description>TC7 Write Protection Clear</description>
+              <bitOffset>15</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>ADC</name>
+              <description>ADC Write Protection Clear</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>AC</name>
+              <description>AC Write Protection Clear</description>
+              <bitOffset>17</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>DAC</name>
+              <description>DAC Write Protection Clear</description>
+              <bitOffset>18</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>PTC</name>
+              <description>PTC Write Protection Clear</description>
+              <bitOffset>19</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>I2S</name>
+              <description>I2S Write Protection Clear</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>AC1</name>
+              <description>AC1 Write Protection Clear</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC3</name>
+              <description>TCC3 Write Protection Clear</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>WPSET</name>
+          <description>Write Protection Set</description>
+          <addressOffset>0x4</addressOffset>
+          <size>32</size>
+          <!-- Kvasir: DS40001882L 11.6.2.3.2 WPSET (PDF p. 64): R/W, one bit per peripheral, reads the protection state; "Writing a zero to these bits has no effect. Writing a one to these bits will set the ...protect bit" (11.6: in WPCLR and WPSET both). Unlisted bits are reserved. -->
+          <fields>
+            <field>
+              <name>EVSYS</name>
+              <description>EVSYS Write Protection Set</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM0</name>
+              <description>SERCOM0 Write Protection Set</description>
+              <bitOffset>2</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM1</name>
+              <description>SERCOM1 Write Protection Set</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM2</name>
+              <description>SERCOM2 Write Protection Set</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM3</name>
+              <description>SERCOM3 Write Protection Set</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM4</name>
+              <description>SERCOM4 Write Protection Set</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>SERCOM5</name>
+              <description>SERCOM5 Write Protection Set</description>
+              <bitOffset>7</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC0</name>
+              <description>TCC0 Write Protection Set</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC1</name>
+              <description>TCC1 Write Protection Set</description>
+              <bitOffset>9</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC2</name>
+              <description>TCC2 Write Protection Set</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC3</name>
+              <description>TC3 Write Protection Set</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC4</name>
+              <description>TC4 Write Protection Set</description>
+              <bitOffset>12</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC5</name>
+              <description>TC5 Write Protection Set</description>
+              <bitOffset>13</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC6</name>
+              <description>TC6 Write Protection Set</description>
+              <bitOffset>14</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TC7</name>
+              <description>TC7 Write Protection Set</description>
+              <bitOffset>15</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>ADC</name>
+              <description>ADC Write Protection Set</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>AC</name>
+              <description>AC Write Protection Set</description>
+              <bitOffset>17</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>DAC</name>
+              <description>DAC Write Protection Set</description>
+              <bitOffset>18</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>PTC</name>
+              <description>PTC Write Protection Set</description>
+              <bitOffset>19</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>I2S</name>
+              <description>I2S Write Protection Set</description>
+              <bitOffset>20</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>AC1</name>
+              <description>AC1 Write Protection Set</description>
+              <bitOffset>21</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+            <field>
+              <name>TCC3</name>
+              <description>TCC3 Write Protection Set</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
+            </field>
+          </fields>
+        </register>
+      </registers>
     </peripheral>
     <peripheral>
       <name>PM</name>

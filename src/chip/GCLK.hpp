@@ -148,11 +148,11 @@ namespace Kvasir { namespace GCLK {
     // GCLK0's source: GENCTRL is indirect - an 8-bit write of the ID, then a read (15.6.4.1); SRC is bits 12:8
     // (15.8.4).
     inline GeneratorSource mainClockSource() {
-        constexpr std::uintptr_t genctrl
-          = Kvasir::Peripheral::GCLK::Registers<>::GENCTRL::Addr::value;
-        *reinterpret_cast<std::uint8_t volatile*>(genctrl) = 0;   // GENCTRL.ID = 0
+        using GenCtrl = Kvasir::Peripheral::GCLK::Registers<>::GENCTRL;
+        Kvasir::Register::writeLane<std::uint8_t, 0>(GenCtrl::FULLREGISTER,
+                                                     std::uint8_t{0});   // GENCTRL.ID = 0
         return static_cast<GeneratorSource>(
-          (*reinterpret_cast<std::uint32_t const volatile*>(genctrl) >> 8U) & 0x1FU);
+          static_cast<std::uint32_t>(get<0>(apply(read(GenCtrl::src)))));
     }
 
     // Whether the chip looks as a reset leaves it: no APBC bus clock but the ADC's (PM.APBCMASK resets to
@@ -160,8 +160,8 @@ namespace Kvasir { namespace GCLK {
     // GCLK0 on another source, leaves a difference behind - and a jump does not reset either (SysResetReq and WDT
     // reset all but the RTC, 32 kHz sources, an ALWAYSON WDT and WRTLOCKed GCLKs, Table 16-2).
     inline bool looksLikeAfterReset() {
-        auto const apbc = *reinterpret_cast<std::uint32_t const volatile*>(
-          Kvasir::Peripheral::PM::Registers<>::APBCMASK::Addr::value);
+        auto const apbc = Kvasir::Register::readWhole(
+          Kvasir::Peripheral::PM::Registers<>::APBCMASK::FULLREGISTER);
         return apbc == 0x0001'0000U && mainClockSource() == GeneratorSource::osc8m;
     }
 
