@@ -1,17 +1,27 @@
 #pragma once
 // The SAM D21's core clock from a target, like DefaultClockSettings on the RP: the flash wait
-// states from the datasheet table, and
-// the whole tree crystal -> FDPLL96M -> generator 0 from a target frequency.
+// states from the datasheet table, and the whole tree from a target frequency and a source kind
+// (atsam_common/ClockTree.hpp's skeleton over this chip's builders):
 //
 //     struct ClockSettings {
 //         using Tree = Kvasir::Clocks::Sam::Tree<{.cpu    = 48'000'000,
-//                                                 .source = {.hz = 8'000'000}}>;
-//         using Provides = Tree::Provides;   // ProcessorClock<48 MHz>, Clk<ClkMain, 48 MHz>
+//                                                 .source = {.hz = 8'000'000}}>;   // XOSC -> FDPLL96M
+//         using Provides = Tree::Provides;   // ProcessorClock<48 MHz>, Hal::Clk<ClkMain, 48 MHz>
 //         static void coreClockInit() { Tree::coreClockInit(); }
 //     };
 //     static_assert(ClockSettings::Tree::Dpll.div == 3 && ClockSettings::Tree::Dpll.ldr == 47);
 //
-// The wait states alone, for a firmware with its own tree (every DFLL firmware):
+// The DFLL48M kinds, for a board without a crystal:
+//
+//     Tree<{.cpu = 48'000'000, .kind = Source::dfllOpenLoop}>      // factory coarse value, 45..49 MHz
+//     Tree<{.cpu = 48'000'000, .kind = Source::dfllUsbRecovery}>   // USB SOF, also GCLK_USB (G18A)
+//     Tree<{.cpu = 48'000'000, .kind = Source::dfllClosedLoop, .reference = {.accuracyPpm = 19'500}}>
+//
+// The crystal with a way out (a board that must start with a dead crystal too):
+//
+//     Tree<{.cpu = 48'000'000, .kind = Source::xoscFdpllElseDfll, .source = {.hz = 8'000'000}}>   // Tree::onCrystal()
+//
+// The wait states alone, for a firmware with its own tree:
 //
 //     apply(Kvasir::Nvm::setWaitStates<Kvasir::Nvm::waitStates<48'000'000, Supply::from2V7>()>());
 
@@ -20,12 +30,15 @@
 #include "Dpll.hpp"
 #include "GCLK.hpp"
 #include "WaitBounds.hpp"
+#include "atsam_common/ClockTree.hpp"
 #include "atsam_common/Clocks.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "peripherals/NVMCTRL.hpp"
+#include "peripherals/SYSCTRL.hpp"
 
 #include <cstdint>
+#include <type_traits>
 
 namespace Kvasir { namespace Nvm {
     using ClockLimits::Supply;
@@ -38,92 +51,269 @@ namespace Kvasir { namespace Nvm {
     // RWS must match the new frequency before the AHB clock goes up (22.5.2, line 15653).
     template<unsigned Ws>
     [[nodiscard]] constexpr auto setWaitStates() {
-        static_assert(Ws <= ClockLimits::D21::RwsMax, "NVMCTRL.CTRLB.RWS is 4 bits");
+        static_assert(Ws <= ClockLimits::D21::rwsMax, "NVMCTRL.CTRLB.RWS is 4 bits");
         using KNR = Kvasir::Peripheral::NVMCTRL::Registers<>;
         using RV  = typename KNR::CTRLB::RWSVal;
         return KNR::CTRLB::overrideDefaults(
           write(KNR::CTRLB::rws, Kvasir::Register::value<RV, static_cast<RV>(Ws)>()));
     }
-
-    // A count written by hand, checked: "flash wait states: 48000000 Hz at 1.62-2.7 V needs 3 (SAM
-    // D21 Table 37-42), RWS is 1"
-    template<std::uint64_t Hz,
-             Supply        S,
-             unsigned      Rws,
-             Rating        R = Rating::c85>
-    consteval void assertWaitStates() {
-        static_assert(R == Rating::c85 || R == Rating::c125 || R == Rating::aecQ100VariantA
-                        || R == Rating::aecQ100VariantBD,
-                      "SAM D21 at 105 C: no wait-state table (DS40001882L chapter 38)");
-        if constexpr(R == Rating::c85) {
-            assertWaitStatesFrom<Hz, S, Rws, ClockLimits::D21::WaitStates85C>();
-        } else if constexpr(R == Rating::c125) {
-            assertWaitStatesFrom<Hz, S, Rws, ClockLimits::D21::WaitStates125C>();
-        } else if constexpr(R == Rating::aecQ100VariantA) {
-            assertWaitStatesFrom<Hz, S, Rws, ClockLimits::D21::WaitStatesAecQ100A>();
-        } else if constexpr(R == Rating::aecQ100VariantBD) {
-            assertWaitStatesFrom<Hz, S, Rws, ClockLimits::D21::WaitStatesAecQ100BD>();
-        }
-    }
 }}   // namespace Kvasir::Nvm
 
 namespace Kvasir { namespace Clocks { namespace Sam {
-    struct Xosc {
-        std::uint64_t hz{};
-        bool          crystal = true;
+    // The closed loop's reference: a generator (not 0, the one being switched) from `source` at `sourceHz`,
+    // divided by `div`, on GCLK_DFLL48M_REF (CLKCTRL ID 0, GCLK.hpp). The default is OSC8M, whose PRESC resets
+    // to /8 (DS40001882L 17.8.9: 1 MHz), / 32 = 31.25 kHz, inside f_REF 0.732..33 kHz (Table 37-54) - the
+    // reference a board without a crystal has. `accuracyPpm` has no default: the board states its reference's
+    // accuracy, which must be within 2 % (note 1 under Table 37-54; OSC8M only at 3.3 V, Table 37-57; OSCULP32K
+    // never, Table 37-56). A board with a 32 kHz crystal passes source = xosc32k, sourceHz = 32'768, div = 1.
+    struct DfllReference {
+        unsigned              generator = 1;
+        GCLK::GeneratorSource source    = GCLK::GeneratorSource::osc8m;
+        std::uint64_t         sourceHz  = 1'000'000;
+        unsigned long long    div       = 32;
+        std::uint64_t         accuracyPpm{};
     };
 
     struct TreeConfig {
         std::uint64_t            cpu{};
-        Xosc                     source{};
+        Source                   kind = Source::xoscFdpll;
+        Xosc                     source{};                                        // xoscFdpll
+        DfllReference            reference{};                                     // dfllClosedLoop
         ClockLimits::Supply      supply         = ClockLimits::Supply::from2V7;   // board fact
         ClockLimits::D21::Rating rating         = ClockLimits::D21::Rating::c85;
         std::uint64_t            tolerancePpm   = 0;
         bool                     dpllRunStandby = false;
         bool                     dpllLockBypass = true;   // errata 1.3.5 (Dpll.hpp)
         XOSC::Options            xosc           = {};
+        bool usbClock = true;   // dfllUsbRecovery: route GCLK_USB (a main with the USB)
     };
+
+    template<TreeConfig C, Source = C.kind>
+    struct D21Kind;
 
     // XOSC -> FDPLL96M (solver: lowest DCO, integer mode) -> RWS for the new clock -> generator 0.
     // Order as on the RP (clock_config.hpp): oscillator up, PLL running (CLKRDY), flash timing for
     // the faster clock, then the switch (22.5.2).
     template<TreeConfig C>
-    struct Tree {
-        static_assert(C.cpu <= ClockLimits::D21::CpuMax,
-                      "SAM D21: f_CPU max 48 MHz (Table 37-7)");
-
-        static constexpr DPLL::Setting Dpll = DPLL::fromXosc<C.source.hz, C.cpu, C.tolerancePpm>();
-        static constexpr unsigned      WaitStates = Nvm::waitStates<C.cpu, C.supply, C.rating>();
+    struct D21Kind<C, Source::xoscFdpll> {
+        static constexpr DPLL::Setting dpll = DPLL::fromXosc<C.source.hz, C.cpu, C.tolerancePpm>();
 
         // the DCO above 64 MHz does not work below 0 C on revisions A-D (errata 1.3.2): the solver
         // takes the lowest DCO, so this only fires for a target that needs more
-        static_assert(!Prescaler::above(Dpll.dco,
-                                        ClockLimits::D21::DcoMaxBelow0C),
+        static_assert(!Prescaler::above(dpll.dco,
+                                        ClockLimits::D21::dcoMaxBelow0C),
                       "FDPLL96M DCO above 64 MHz: not functional below 0 C (errata DS80000760M "
                       "1.3.2, revisions A-D)");
 
-        static constexpr XOSC::Options XoscOptions = [] {
+        static constexpr XOSC::Options xoscOptions = [] {
             auto o    = C.xosc;
             o.crystal = C.source.crystal;
             return o;
         }();
 
-        using Provides = brigand::list<Clk<ClkMain, C.cpu>, Startup::ProcessorClock<C.cpu>>;
+        using ExtraProvides = brigand::list<>;
 
-        static void coreClockInit() {
-            apply(XOSC::configure<C.source.hz, XoscOptions>());
-            Kvasir::Register::waitUntil<Kvasir::Chip::XoscReadyBound<XoscOptions.startup>>(
+        template<unsigned WaitStates>
+        static void start() {
+            apply(XOSC::configure<C.source.hz, xoscOptions>());
+            Kvasir::Register::waitUntil<Kvasir::Chip::Sam::XoscReadyBound<xoscOptions.startup>>(
               [] { return XOSC::ready(); });
 
-            apply(DPLL::configure<Dpll,
+            apply(DPLL::configure<dpll,
                                   DPLL::Reference::xosc,
                                   DPLL::Options{.lockBypass = C.dpllLockBypass,
                                                 .runStandby = C.dpllRunStandby}>());
             Kvasir::Register::waitUntil<Kvasir::Chip::DpllLockBound>([] { return DPLL::ready(); });
 
+            // RWS first, then the switch: two apply() calls, so the order is the source's (one apply orders its writes
+            // by address, Register/Apply.hpp; NVMCTRL 0x41004004 above GCLK 0x40000C04 made it the same)
+            apply(Nvm::setWaitStates<WaitStates>());
             apply(
-              Nvm::setWaitStates<WaitStates>(),
-              GCLK::GenericClockGenerator<0, GCLK::GeneratorSource::fdpll, Dpll.gclkDiv>::enable());
+              GCLK::GenericClockGenerator<0, GCLK::GeneratorSource::fdpll, dpll.gclkDiv>::enable());
         }
     };
+
+    namespace Detail {
+        // Generator 0 on the DFLL48M for f_CPU: 48 MHz / Div. Div = 1 for 48 MHz (DIVSEL 0 and GENDIV.DIV 0 or 1
+        // are both "not divided", 15.8.4). The wait states are those of the 48 MHz row: the open loop runs up to
+        // 49 MHz (Table 37-52, ClockLimits::D21::dfllOpenLoopMaxHz), above f_CPU max (Table 37-7) and above the last
+        // row of Table 37-42, which has no count for it - what every DFLL firmware takes; the closed loop and USB
+        // recovery stay at 48 MHz +-0.25 % (Table 37-54, 32.5.3). Divided: D21Builders::flashHz.
+        template<std::uint64_t Cpu>
+        struct DfllGclk0 {
+            static_assert(Cpu != 0 && 48'000'000 % Cpu == 0,
+                          "a DFLL48M tree runs the CPU at 48 MHz or an integer fraction of it "
+                          "(generator 0 divides)");
+            static constexpr unsigned long long div = 48'000'000 / Cpu;
+
+            // RWS first, then the switch (22.5.2): two apply() calls, the order the source's
+            template<unsigned WaitStates>
+            static void switchOver() {
+                apply(Nvm::setWaitStates<WaitStates>());
+                apply(
+                  GCLK::GenericClockGenerator<0, GCLK::GeneratorSource::dfll48m, div>::enable());
+            }
+        };
+    }   // namespace Detail
+
+    // DFLL48M in open loop on the factory's coarse value (DFLL.hpp: 45 / 47 / 49 MHz, Table 37-52)
+    template<TreeConfig C>
+    struct D21Kind<C, Source::dfllOpenLoop> {
+        using ExtraProvides = brigand::list<>;
+
+        template<unsigned WaitStates>
+        static void start() {
+            DFLL::enableOpenLoop();
+            Detail::DfllGclk0<C.cpu>::template switchOver<WaitStates>();
+        }
+    };
+
+    // DFLL48M locked to the USB start-of-frame (DFLL.hpp, 17.6.7.2.2): the CPU and GCLK_USB at 48 MHz +-0.25 %
+    // (32.5.3) from generator 0. Until a host sends SOFs it runs as in open loop. GCLK_USB is routed here (CLKCTRL
+    // ID 6, 15.8.3) and the tree provides ClkUsb - unless `.usbClock = false` (a main without the USB device: the
+    // channel stays off); the USB exists on the G18A only.
+    template<TreeConfig C>
+    struct D21Kind<C, Source::dfllUsbRecovery> {
+        static_assert(C.cpu == 48'000'000,
+                      "USB recovery: generator 0 also feeds GCLK_USB, which needs 48 MHz");
+#ifdef KVASIR_CHIP_ATSAMD21G18A
+        using ExtraProvides = std::
+          conditional_t<C.usbClock, brigand::list<Hal::Clk<ClkUsb, 48'000'000>>, brigand::list<>>;
+
+        template<unsigned WaitStates>
+        static void start() {
+            DFLL::enableUsbRecovery();
+            Detail::DfllGclk0<C.cpu>::template switchOver<WaitStates>();
+            if constexpr(C.usbClock) {
+                apply(GCLK::PeripheralChannelController<0, GCLK::Peripheral::usb>::enable());
+            }
+        }
+#endif
+    };
+
+    // DFLL48M locked to a reference generator (DFLL::enableClosedLoop, 17.6.7.1.2): the reference generator, its
+    // channel GCLK_DFLL48M_REF, the loop (which checks f_REF, MUL and the 2 % itself), then generator 0. The lock
+    // wait is enableClosedLoop's DfllLockBound. No DFLLOOB interrupt (errata 1.2.2, DFLL.hpp).
+    template<TreeConfig C>
+    struct D21Kind<C, Source::dfllClosedLoop> {
+        static constexpr DfllReference ref = C.reference;
+        static_assert(ref.generator != 0 && ref.generator < 9,
+                      "the DFLL48M reference needs a generator of its own: 1..8, not 0 (the one "
+                      "being switched)");
+        static_assert(ref.accuracyPpm != 0,
+                      "the DFLL48M closed loop needs the reference's accuracy: .reference = "
+                      "{.accuracyPpm = ...} "
+                      "(note 1 under SAM D21 Table 37-54: within 2 %)");
+        static_assert(ref.div != 0 && ref.sourceHz % ref.div == 0,
+                      "the reference divides its source exactly");
+        static constexpr std::uint64_t refHz = ref.sourceHz / ref.div;
+
+        using ExtraProvides = brigand::list<>;
+
+        template<unsigned WaitStates>
+        static void start() {
+            apply(GCLK::GenericClockGenerator<ref.generator, ref.source, ref.div>::enable());
+            apply(
+              GCLK::PeripheralChannelController<ref.generator, GCLK::Peripheral::dfll48>::enable());
+            DFLL::enableClosedLoop<refHz, ref.accuracyPpm, 48'000'000>();
+            Detail::DfllGclk0<C.cpu>::template switchOver<WaitStates>();
+        }
+    };
+
+    // xoscFdpll with a way out: the crystal or the FDPLL that does not come in a bounded wait (1 000 000 polls each,
+    // OnTimeout::Report whatever the image's WaitPolicy - at the 1 MHz the CPU runs on after a reset, OSC8M / 8, some
+    // seconds; the crystal's own STARTUP 15 is ~1 s, 17.8.5 l.8456) turns XOSC and FDPLL off again and generator 0
+    // goes to the DFLL48M in open loop (DFLL.hpp: 45..49 MHz, Table 37-52). onCrystal() tells the two apart from the
+    // registers (DPLLCTRLA.ENABLE), as coreClockInit runs before .data and .bss: no variable. The wait states are those
+    // of the worse branch (D21Builders::flashHz). For a board that must still be heard from with a dead crystal - the
+    // DFLL's tolerance is the UARTs' and every crystal-timed peripheral's problem then.
+    template<TreeConfig C>
+    struct D21Kind<C, Source::xoscFdpllElseDfll> : D21Kind<C, Source::xoscFdpll> {
+        using Base = D21Kind<C, Source::xoscFdpll>;
+        using Base::dpll;
+        using Base::xoscOptions;
+        using ExtraProvides = brigand::list<>;
+        using CrystalBound  = Kvasir::Register::Bound::Polls<1'000'000>;
+
+        [[nodiscard]] static bool onCrystal() {
+            return apply(read(Kvasir::Peripheral::SYSCTRL::Registers<>::DPLLCTRLA::enable)) != 0U;
+        }
+
+        template<unsigned WaitStates>
+        static void start() {
+            namespace R = Kvasir::Register;
+            using KSR   = Kvasir::Peripheral::SYSCTRL::Registers<>;
+            apply(XOSC::configure<C.source.hz, xoscOptions>());
+            bool crystal = static_cast<bool>(
+              R::waitUntil<CrystalBound, R::OnTimeout::Report>([] { return XOSC::ready(); }));
+            if(crystal) {
+                apply(DPLL::configure<dpll,
+                                      DPLL::Reference::xosc,
+                                      DPLL::Options{.lockBypass = C.dpllLockBypass,
+                                                    .runStandby = C.dpllRunStandby}>());
+                crystal = static_cast<bool>(
+                  R::waitUntil<CrystalBound, R::OnTimeout::Report>([] { return DPLL::ready(); }));
+            }
+            // RWS first (22.5.2), its own apply(): before either switch
+            apply(Nvm::setWaitStates<WaitStates>());
+            if(crystal) {
+                apply(GCLK::GenericClockGenerator<0, GCLK::GeneratorSource::fdpll, dpll.gclkDiv>::
+                        enable());
+            } else {
+                apply(KSR::DPLLCTRLA::overrideDefaults(clear(KSR::DPLLCTRLA::enable)),
+                      KSR::XOSC::overrideDefaults(clear(KSR::XOSC::enable)));
+                DFLL::enableOpenLoop();
+                apply(GCLK::GenericClockGenerator<0,
+                                                  GCLK::GeneratorSource::dfll48m,
+                                                  Detail::DfllGclk0<C.cpu>::div>::enable());
+            }
+        }
+    };
+
+    struct D21Builders {
+        using Config = TreeConfig;
+
+        static consteval bool has(Source s) {
+#ifdef KVASIR_CHIP_ATSAMD21G18A
+            return s == Source::xoscFdpll || s == Source::dfllOpenLoop
+                || s == Source::dfllUsbRecovery || s == Source::dfllClosedLoop
+                || s == Source::xoscFdpllElseDfll;
+#else
+            return s == Source::xoscFdpll || s == Source::dfllOpenLoop
+                || s == Source::dfllClosedLoop || s == Source::xoscFdpllElseDfll;
+#endif
+        }
+
+        static consteval std::uint64_t cpuMax(TreeConfig const&) {
+            return ClockLimits::D21::cpuMax;
+        }
+
+        // The clock the flash sees at worst. A DFLL48M divided by generator 0 runs up to 49 MHz / Div (open loop,
+        // Table 37-52 max; the closed loop's 2 % reference keeps it below that, note 1 under Table 37-54), so
+        // 24 MHz from 45..49 MHz is up to 24.5 MHz, past the 0-wait-state row of Table 37-42 (24 MHz at 2.7 V).
+        // Undivided it takes the 48 MHz row (Detail::DfllGclk0). An FDPLL output is locked to its crystal. A cpu
+        // that does not divide 48 MHz is DfllGclk0's refusal: f_CPU here, so that its message is the only one.
+        template<TreeConfig C>
+        static consteval std::uint64_t flashHz() {
+            if(C.kind == Source::xoscFdpll || C.cpu == 0 || C.cpu >= 48'000'000
+               || 48'000'000 % C.cpu != 0)
+            {
+                return C.cpu;
+            }
+            std::uint64_t const div = 48'000'000 / C.cpu;
+            return (ClockLimits::D21::dfllOpenLoopMaxHz + div - 1) / div;
+        }
+
+        template<TreeConfig C>
+        static consteval unsigned waitStates() {
+            return Nvm::waitStates<flashHz<C>(), C.supply, C.rating>();
+        }
+
+        template<TreeConfig C>
+        using Kind = D21Kind<C>;
+    };
+
+    // f_CPU max 48 MHz (Table 37-7)
+    template<TreeConfig C>
+    using Tree = TreeOf<D21Builders, C>;
 }}}   // namespace Kvasir::Clocks::Sam

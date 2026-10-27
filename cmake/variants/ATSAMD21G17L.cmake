@@ -1,8 +1,10 @@
 # ATSAMD21G17L: 128 KB flash, 16 KB RAM, a 4 KB RWW section used as EEPROM. No USB.
-set(TARGET_MPU ATSAMD21G17L)
-set(TARGET_FLASH_SIZE 131072)
-set(TARGET_RAM_SIZE 16384)
-set(TARGET_EEPROM_SIZE 4096)
+set(chip_mpu ATSAMD21G17L)
 
-set(LINKER_FILE ${CMAKE_CURRENT_LIST_DIR}/../../linker/chip.ld)
-set(CHIP_SVD_FILE ${CMAKE_CURRENT_LIST_DIR}/../../chip.svd)
+set(chip_linker_file ${CMAKE_CURRENT_LIST_DIR}/../../linker/chip.ld)
+set(chip_svd_file ${CMAKE_CURRENT_LIST_DIR}/../../chip.svd)
+
+# What src/chip/Variant.hpp reads: the part, the series and the family, for every TU of the image (kvasir_chip
+# DEFINITIONS). Every part has its define, the default one too: a TU without one is an #error there, not silently this
+# part.
+set(chip_definitions KVASIR_CHIP_ATSAMD21G17L=1 KVASIR_CHIP_ATSAMD21=1 KVASIR_CHIP_FAMILY_SAM=1)

@@ -1,27 +1,28 @@
 #pragma once
 
-// Which SAM D21 this firmware is built for: cmake/chip.cmake's KVASIR_ATSAMD21_MPU picks the SVD,
-// the linker script and, for every part but the default one, a define that is read here. The
-// headers of this package differ between the parts only where the silicon does, and ask this.
-namespace Kvasir { namespace Chip {
-    enum class Variant { atsamd21g17l, atsamd21g18a };
+#include <string_view>
 
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-    inline constexpr Variant variant = Variant::atsamd21g18a;
+// Which SAM D21 this firmware is built for: cmake/chip.cmake's KVASIR_ATSAMD21_MPU picks the SVD,
+// the linker script and the part's define (cmake/variants/<part>.cmake: KVASIR_CHIP_<part>, with
+// KVASIR_CHIP_ATSAMD21 and KVASIR_CHIP_FAMILY_SAM), which is read here. The headers of this package
+// differ between the parts only where the silicon does, and ask this.
+namespace Kvasir { namespace Chip {
+    enum class Part { atsamd21g17l, atsamd21g18a };
+
+#ifdef KVASIR_CHIP_ATSAMD21G18A
+    inline constexpr Part part = Part::atsamd21g18a;
+#elifdef KVASIR_CHIP_ATSAMD21G17L
+    inline constexpr Part part = Part::atsamd21g17l;
 #else
-    inline constexpr Variant variant = Variant::atsamd21g17l;
+    #error \
+      "chip_atsamd21 without a KVASIR_CHIP_ATSAMD21<part> define: not compiled with the package's kvasir_chip DEFINITIONS"
 #endif
+
+    // which part this image is for, as text
+    inline constexpr std::string_view partName
+      = part == Part::atsamd21g18a ? "ATSAMD21G18A" : "ATSAMD21G17L";
 
     // The L parts trade the USB and the I2S for a second analog comparator, TC6/TC7 and TCC3
     // (SAM D21 datasheet DS40001882, "Configuration Summary").
-    inline constexpr bool hasUsb = variant == Variant::atsamd21g18a;
+    inline constexpr bool hasUsb = part == Part::atsamd21g18a;
 }}   // namespace Kvasir::Chip
-
-// The generated peripheral headers have to be the selected part's: a build tree that changed its
-// part without being wiped keeps the old ones.
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-    #if !__has_include("peripherals/USB_DEVICE.hpp")
-        #error \
-          "KVASIR_CHIP_ATSAMD21G18A is set, but the generated peripherals have no USB: wipe the build tree"
-    #endif
-#endif

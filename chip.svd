@@ -4029,6 +4029,7 @@
           <addressOffset>0x0C</addressOffset>
           <size>32</size>
           <fields>
+            <!-- Kvasir: DS40001882L 21.8.7 INTENSET EXTINTx: writing a zero has no effect, a one sets the enable - oneToSet, as the overlapping EXTINT[15:0] -->
             <field>
               <name>EXTINT</name>
               <description>External Interrupt Enable</description>
@@ -4041,96 +4042,112 @@
               <description>External Interrupt 0 Enable</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT1</name>
               <description>External Interrupt 1 Enable</description>
               <bitOffset>1</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT2</name>
               <description>External Interrupt 2 Enable</description>
               <bitOffset>2</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT3</name>
               <description>External Interrupt 3 Enable</description>
               <bitOffset>3</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT4</name>
               <description>External Interrupt 4 Enable</description>
               <bitOffset>4</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT5</name>
               <description>External Interrupt 5 Enable</description>
               <bitOffset>5</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT6</name>
               <description>External Interrupt 6 Enable</description>
               <bitOffset>6</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT7</name>
               <description>External Interrupt 7 Enable</description>
               <bitOffset>7</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT8</name>
               <description>External Interrupt 8 Enable</description>
               <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT9</name>
               <description>External Interrupt 9 Enable</description>
               <bitOffset>9</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT10</name>
               <description>External Interrupt 10 Enable</description>
               <bitOffset>10</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT11</name>
               <description>External Interrupt 11 Enable</description>
               <bitOffset>11</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT12</name>
               <description>External Interrupt 12 Enable</description>
               <bitOffset>12</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT13</name>
               <description>External Interrupt 13 Enable</description>
               <bitOffset>13</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT14</name>
               <description>External Interrupt 14 Enable</description>
               <bitOffset>14</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
             <field>
               <name>EXTINT15</name>
               <description>External Interrupt 15 Enable</description>
               <bitOffset>15</bitOffset>
               <bitWidth>1</bitWidth>
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -6336,14 +6353,13 @@
                   <value>0x21</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>I2S_0</name>
-                  <description>I2S_0</description>
-                  <value>0x23</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>I2S_1</name>
-                  <description>I2S_1</description>
-                  <value>0x24</value>
+                  <!-- Kvasir: DS40001882L 15.8.3 CLKCTRL.ID table (md l.5236-5239): 0x22 PTC, 0x23/0x24 I2S_0/1,
+                       0x25 TCC3. This file is the ATSAMD21G17L: no PTC, no I2S (Table 2-1), TCC3 is an L-only
+                       block; scripts/make_g18a_svd.py gives the G18A its USB 0x06, PTC, I2S and takes TCC3 and
+                       TC6_TC7 out (its ID_A_ONLY / ID_L_ONLY lists). -->
+                  <name>TCC3</name>
+                  <description>TCC3</description>
+                  <value>0x25</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -8581,6 +8597,8 @@
               <description>Port Data Direction Clear</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.2 md l.17005: "Writing a '0' to a bit has no effect", a 1 clears that bit of DIR -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8597,6 +8615,8 @@
               <description>Port Data Direction Set</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.3 md l.17050: "Writing a '0' to a bit has no effect", a 1 sets that bit of DIR -->
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8613,6 +8633,8 @@
               <description>Port Data Direction Toggle</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.4 md l.17092: "Writing a '0' to a bit has no effect", a 1 toggles that bit of DIR -->
+              <modifiedWriteValues>oneToToggle</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8645,6 +8667,8 @@
               <description>Port Data Output Value Clear</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.6 md l.17183: "Writing a '0' to a bit has no effect", a 1 clears that bit of OUT -->
+              <modifiedWriteValues>oneToClear</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8661,6 +8685,8 @@
               <description>Port Data Output Value Set</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.7 md l.17225: "Writing a '0' to a bit has no effect", a 1 sets that bit of OUT -->
+              <modifiedWriteValues>oneToSet</modifiedWriteValues>
             </field>
           </fields>
         </register>
@@ -8677,6 +8703,8 @@
               <description>Port Data Output Value Toggle</description>
               <bitOffset>0</bitOffset>
               <bitWidth>32</bitWidth>
+              <!-- Kvasir: DS40001882L 23.8.8 md l.17265: "Writing a '0' to a bit has no effect", a 1 toggles that bit of OUT -->
+              <modifiedWriteValues>oneToToggle</modifiedWriteValues>
             </field>
           </fields>
         </register>

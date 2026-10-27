@@ -1,0 +1,7 @@
+# Headers that do not compile alone right after kvasir_config.hpp yet: <dir>/<file> <reason>. They compile inside
+# chip/chip.hpp, which includes the register headers and the chip's own headers (PM.hpp, GCLK.hpp, the *_Traits.hpp)
+# before the shared drivers. The list is the input of making the headers self-contained; a header that compiles alone
+# again comes off it (then the build compiles it alone).
+atsam_common/CAN.hpp         the chip has no CAN: static_assert(Sam::Package::hasCan) on the D21 by design
+atsam_common/GclkIndexed.hpp the indexed GCLK (GENCTRLn/PCHCTRLm) of the C2x/E5x: the D21 has the indirect one (chip/GCLK.hpp)
+chip/Usb_Traits.hpp          the USB register header exists on the ATSAMD21G18A only: fails alone in the G17L tree (one list for both parts)

@@ -1,7 +1,5 @@
 #pragma once
-#include "Interrupt.hpp"
 #include "Variant.hpp"
-#include "chip/atsam_common/DMAC.hpp"
 #include "chip/atsam_common/Sercom_Common.hpp"
 #include "kvasir/Io/Types.hpp"
 
@@ -9,88 +7,9 @@
 
 namespace Kvasir { namespace Sercom { namespace Traits {
 
-    namespace detail {
-
-        template<unsigned Instance>
-        struct IsrIndex;
-
-        template<>
-        struct IsrIndex<0> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom0)>;
-        };
-
-        template<>
-        struct IsrIndex<1> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom1)>;
-        };
-
-        template<>
-        struct IsrIndex<2> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom2)>;
-        };
-
-        template<>
-        struct IsrIndex<3> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom3)>;
-        };
-
-        template<>
-        struct IsrIndex<4> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom4)>;
-        };
-
-        template<>
-        struct IsrIndex<5> {
-            using Type = brigand::list<decltype(Kvasir::Interrupt::sercom5)>;
-        };
-    }   // namespace detail
-
     struct SercomTraits : SercomTraitsBase<SercomTraits> {
-        static constexpr int                sercomInstanceBegin = 0;
-        static constexpr int                sercomInstanceEnd   = 6;
-        static constexpr std::array<int, 0> disabledInstances   = {{}};
-
-        template<unsigned Instance>
-        struct IsrIndex {
-            using Type = typename detail::IsrIndex<Instance>::Type;
-        };
-
-        template<unsigned Instance>
-        static constexpr auto DmaTriggers() {
-            static_assert(5 >= Instance);
-            if constexpr(Instance == 0) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom0rx,
-                                      DMAC::TriggerSource::sercom0tx);
-            } else if constexpr(Instance == 1) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom1rx,
-                                      DMAC::TriggerSource::sercom1tx);
-            } else if constexpr(Instance == 2) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom2rx,
-                                      DMAC::TriggerSource::sercom2tx);
-            } else if constexpr(Instance == 3) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom3rx,
-                                      DMAC::TriggerSource::sercom3tx);
-            } else if constexpr(Instance == 4) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom4rx,
-                                      DMAC::TriggerSource::sercom4tx);
-            } else if constexpr(Instance == 5) {
-                return std::make_pair(Kvasir::DMAC::TriggerSource::sercom5rx,
-                                      DMAC::TriggerSource::sercom5tx);
-            }
-        }
-
-        template<unsigned Instance>
-        static constexpr auto DmaRX_Trigger() {
-            return DmaTriggers<Instance>().first;
-        }
-
-        template<unsigned Instance>
-        static constexpr auto DmaTX_Trigger() {
-            return DmaTriggers<Instance>().second;
-        }
-
-        // {instance, port, pin, pin function (C = 2, D = 3), pad}: SAM D21 datasheet DS40001882,
-        // tables 7-1 and 7-2 "PORT Function Multiplexing".
+        // {instance, port, pin, pin function (C = 2, D = 3), pad}: SAM D21 datasheet DS40001882L,
+        // Tables 7-1 and 7-2 "PORT Function Multiplexing" (md l.1028, l.1123).
         static constexpr std::array pinMuxInfos{
           // Instance 0
           PinInfo{0, 0,  4, 3, 0},
@@ -146,7 +65,7 @@ namespace Kvasir { namespace Sercom { namespace Traits {
           PinInfo{5, 0, 25, 3, 3},
           PinInfo{5, 1,  2, 3, 0},
           PinInfo{5, 1,  3, 3, 1},
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
+#ifdef KVASIR_CHIP_ATSAMD21G18A
           // What table 7-1 (A variants, column SAMD2xG) has and table 7-2 (L variants) has not:
           // PA00, PA01 and PB22, PB23, which the L parts do not bond out. Everything above is the
           // same in both tables.

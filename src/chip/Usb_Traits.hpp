@@ -6,9 +6,10 @@
 
 #include "GCLK.hpp"
 #include "Interrupt.hpp"
-#include "Io.hpp"
+#include "NvmCalibration_Traits.hpp"
 #include "PM.hpp"
 #include "Variant.hpp"
+#include "atsam_common/Io.hpp"
 #include "kvasir/Io/Types.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "peripherals/USB_DEVICE.hpp"
@@ -20,9 +21,8 @@ namespace Kvasir { namespace USB { namespace Sam {
     struct Traits {
         using Regs = Kvasir::Peripheral::USB_DEVICE::Registers<>;
 
-        // The pack's SVD nests the endpoint registers in a DEVICE_ENDPOINT<N> cluster; an older
-        // one lists them as registers with an index, EPCFG<N> (svd/README.md). The backend sees
-        // neither spelling.
+        // The pack's SVD nests the endpoint registers in a DEVICE_ENDPOINT<N> cluster
+        // (svd/README.md); the backend does not see that spelling.
         template<unsigned N>
         struct Endpoint {
             using Group       = typename Regs::template DEVICE_ENDPOINT<N>;
@@ -37,22 +37,22 @@ namespace Kvasir { namespace USB { namespace Sam {
 
         // Endpoint numbers 0 to 7 (datasheet DS40001882, 32.1 "Overview": "The USB device mode
         // supports 8 endpoint addresses").
-        static constexpr std::size_t EndpointCount = 8;
+        static constexpr std::size_t endpointCount = 8;
 
-        static constexpr auto InterruptIndexes = brigand::list<decltype(Kvasir::Interrupt::usb)>{};
+        static constexpr auto interruptIndexes = brigand::list<decltype(Kvasir::Interrupt::usb)>{};
 
         // CLK_USB_AHB and CLK_USB_APB (PM.hpp has the two mask bits).
         static constexpr auto powerClockEnable
-          = list(typename Kvasir::PM::enable<Regs::baseAddr>::action{});
+          = list(typename Kvasir::PM::Enable<Regs::baseAddr>::action{});
 
         // GCLK_USB has to be 48 MHz +-0.25 % (32.5.3): which generator feeds it is the clock
         // settings' business, this is the channel they route it to.
         static constexpr auto gclkChannel = Kvasir::GCLK::Peripheral::usb;
 
         // USB/DM is PA24, USB/DP is PA25, both peripheral function G (table 7-1, column COM).
-        static constexpr auto pinConfig = list(
-          action(Kvasir::Io::Action::PinFunction<6>{}, Kvasir::Register::PinLocation<0, 24>{}),
-          action(Kvasir::Io::Action::PinFunction<6>{}, Kvasir::Register::PinLocation<0, 25>{}));
+        static constexpr auto pinConfig
+          = list(action(Kvasir::Io::Action::PinFunction<6>{}, Kvasir::Io::PinLocation<0, 24>{}),
+                 action(Kvasir::Io::Action::PinFunction<6>{}, Kvasir::Io::PinLocation<0, 25>{}));
 
         struct PadCalibration {
             std::uint8_t transn{};
@@ -60,12 +60,13 @@ namespace Kvasir { namespace USB { namespace Sam {
             std::uint8_t trim{};
         };
 
-        // The NVM software calibration area, 128 bits from 0x00806020 (table 10-8): USB TRANSN is
-        // bits 49:45, USB TRANSP 54:50, USB TRIM 57:55 - all in the second word.
-        [[nodiscard]] static constexpr PadCalibration decodePadCalibration(std::uint32_t word1) {
-            PadCalibration cal{.transn = static_cast<std::uint8_t>((word1 >> 13U) & 0x1FU),
-                               .transp = static_cast<std::uint8_t>((word1 >> 18U) & 0x1FU),
-                               .trim   = static_cast<std::uint8_t>((word1 >> 23U) & 0x07U)};
+        // USB TRANSN / TRANSP / TRIM of the NVM software calibration area (bits 49:45, 54:50, 57:55; DS40001882L
+        // Table 10-8), with a fallback for a field that was never programmed.
+        [[nodiscard]] static constexpr PadCalibration
+        padCalibrationFrom(Kvasir::Nvm::Calibration const& nvm) {
+            PadCalibration cal{.transn = nvm.usbTransn,
+                               .transp = nvm.usbTransp,
+                               .trim   = nvm.usbTrim};
             // A field that reads all ones was never programmed. The datasheet does not say what
             // to load then (10.3.2 lists the fields only; PADCAL resets to 0x0000, 32.8.6).
             // 5 / 29 / 3 are the values Zephyr's SAM0 USB driver loads in that case, from the same
@@ -84,27 +85,34 @@ namespace Kvasir { namespace USB { namespace Sam {
         }
 
         [[nodiscard]] static bool padCalibrationProgrammed() {
-            auto const* const area = reinterpret_cast<std::uint32_t const volatile*>(
-              std::uintptr_t{0x00806020});   // NOLINT(performance-no-int-to-ptr)
-            std::uint32_t const word1 = area[1];
-            return ((word1 >> 13U) & 0x1FU) != 0x1FU && ((word1 >> 18U) & 0x1FU) != 0x1FU
-                && ((word1 >> 23U) & 0x07U) != 0x07U;
+            auto const nvm = Kvasir::Nvm::calibration();
+            return nvm.usbTransn != 0x1FU && nvm.usbTransp != 0x1FU && nvm.usbTrim != 0x07U;
         }
 
         [[nodiscard]] static PadCalibration padCalibration() {
-            auto const* const area = reinterpret_cast<std::uint32_t const volatile*>(
-              std::uintptr_t{0x00806020});   // NOLINT(performance-no-int-to-ptr)
-            return decodePadCalibration(area[1]);
+            return padCalibrationFrom(Kvasir::Nvm::calibration());
         }
     };
 
-    static_assert(Traits::decodePadCalibration((7U << 13U) | (20U << 18U) | (2U << 23U)).transn == 7
-                    && Traits::decodePadCalibration((7U << 13U) | (20U << 18U) | (2U << 23U)).transp
+    static_assert(Traits::padCalibrationFrom({.usbTransn = 7,
+                                              .usbTransp = 20,
+                                              .usbTrim   = 2})
+                        .transn
+                      == 7
+                    && Traits::padCalibrationFrom({.usbTransn = 7,
+                                                   .usbTransp = 20,
+                                                   .usbTrim   = 2})
+                           .transp
                          == 20
-                    && Traits::decodePadCalibration((7U << 13U) | (20U << 18U) | (2U << 23U)).trim
+                    && Traits::padCalibrationFrom({.usbTransn = 7,
+                                                   .usbTransp = 20,
+                                                   .usbTrim   = 2})
+                           .trim
                          == 2,
-                  "bits 49:45, 54:50 and 57:55 of the area are bits 17:13, 22:18 and 25:23 of its "
-                  "second word");
-    static_assert(Traits::decodePadCalibration(0xFFFF'FFFF).transn == 5,
+                  "a programmed field is taken as it is");
+    static_assert(Traits::padCalibrationFrom(Kvasir::Nvm::CalibrationLayout::decode({0xFFFF'FFFF,
+                                                                                     0xFFFF'FFFF}))
+                      .transn
+                    == 5,
                   "an unprogrammed area gets the typical values");
 }}}   // namespace Kvasir::USB::Sam

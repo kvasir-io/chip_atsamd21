@@ -1,14 +1,21 @@
 #pragma once
-#include "kvasir/Util/BitField.hpp"
+// The fields of the NVM User Row (SAM D21 DS40001882L 10.3.1, Table 10-7; at 0x804000). Bits 24:17 and 41 are BOD12
+// calibration written in production that "must not be changed": no field here covers them, and combineInto leaves
+// them as read. WDT Window resets to 0xB on silicon, not the table's 0x5 (errata DS80000760M 1.5.4, md l.620-623):
+// revisions C and D only - the erratum's revision table read on the PDF page 12, its .md lost the columns - so a
+// revision E or later part has the table's 0x5 (the default below is a rev C/D part's).
+#include "kvasir/Register/BitField.hpp"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 
 namespace Kvasir { namespace Fuses { namespace Traits {
     struct Bod33 {
         enum class Action : std::uint8_t {
-            None      = 0,
-            Reset     = 1,
-            Interrupt = 2,
+            none      = 0,
+            reset     = 1,
+            interrupt = 2,
         };
         enum class Enable : std::uint8_t {
             disabled = 0,

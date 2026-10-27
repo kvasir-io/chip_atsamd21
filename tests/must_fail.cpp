@@ -8,25 +8,25 @@ using Kvasir::ClockLimits::Supply;
 #if MUST_FAIL == 1
 // a hand-written RWS too small for the supply
 consteval void f() {
-    Kvasir::Nvm::assertWaitStatesFrom<48'000'000, Supply::from1V62, 1, L::WaitStates85C>();
+    Kvasir::Nvm::assertWaitStatesFrom<48'000'000, Supply::from1V62, 1, L::waitStates85C>();
 }
 #elif MUST_FAIL == 2
 // a frequency the table has no row for (the open loop's 49 MHz)
-constexpr unsigned ws = L::waitStates<L::DfllOpenLoopMaxHz, Supply::from2V7>();
+constexpr unsigned ws = L::waitStates<L::dfllOpenLoopMaxHz, Supply::from2V7>();
 #elif MUST_FAIL == 3
 // the old FDPLL numbers (DIV 128): reference 31 007.75 Hz
 constexpr auto c
-  = Kvasir::DPLL::assertXoscSetting<L::Fdpll96m, L::DpllWhere, 8'000'000, 128, 3095, 0>();
+  = Kvasir::DPLL::assertXoscSetting<L::fdpll96m, L::dpllWhere, 8'000'000, 128, 3095, 0>();
 #elif MUST_FAIL == 4
 // nothing reaches 200 MHz
 constexpr auto s
-  = Kvasir::DPLL::solveXosc<L::Fdpll96m, L::DpllWhere, 8'000'000, 200'000'000, 0, false>();
+  = Kvasir::DPLL::solveXosc<L::fdpll96m, L::dpllWhere, 8'000'000, 200'000'000, 0, false>();
 #elif MUST_FAIL == 5
 // a DFLL reference above 33 kHz
 consteval void f() {
     Kvasir::ClockLimits::assertInRange<Kvasir::Prescaler::Rational{40'000, 1},
-                                       L::Dfll48m.refMin,
-                                       L::Dfll48m.refMax,
+                                       L::dfll48m.refMin,
+                                       L::dfll48m.refMax,
                                        "DFLL48M reference",
                                        "SAM D21 Table 37-54 f_REF">();
 }
@@ -36,7 +36,7 @@ constexpr unsigned ws = L::waitStates<48'000'000, Supply::from2V7, L::Rating::c1
 #elif MUST_FAIL == 7
 // a DFLL closed loop outside the tolerance asked for: 1465 x 32768 Hz
 consteval void f() {
-    constexpr auto loop = Kvasir::DFLL::closedLoop<L::Dfll48m>(32'768, 48'000'000);
+    constexpr auto loop = Kvasir::DFLL::closedLoop<L::dfll48m>(32'768, 48'000'000);
     Kvasir::Prescaler::assertInTolerance<loop.achieved,
                                          48'000'000,
                                          Kvasir::Prescaler::Tolerance::ppm(100),

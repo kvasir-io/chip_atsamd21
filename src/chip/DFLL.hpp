@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClockLimits.hpp"
+#include "NvmCalibration_Traits.hpp"
 #include "WaitBounds.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
@@ -28,36 +29,57 @@ namespace Kvasir { namespace DFLL {
 
     /// The middle of both ranges: fine always, coarse where the part has no factory value
     /// (the field reads all ones).
-    inline constexpr Trim MidRange{.coarse = 0x1F, .fine = 0x200};
+    inline constexpr Trim midRange{.coarse = 0x1F, .fine = 0x200};
 
-    /// The NVM software calibration area, 128 bits from 0x00806020 (datasheet table 10-8):
-    /// DFLL48M COARSE CAL is bits 63:58, the top of the second word. Bits 73:64, where older
-    /// revisions of the datasheet had a DFLL48M FINE CAL, are reserved and not used.
-    inline constexpr std::uint32_t CalibrationAreaAddress = 0x00806020;
-
-    /// The trim out of the calibration area's second word.
-    [[nodiscard]] constexpr Trim decode(std::uint32_t word1) {
-        auto const coarse = static_cast<std::uint8_t>((word1 >> 26U) & 0x3FU);
-        return {.coarse = coarse == 0x3FU ? MidRange.coarse : coarse, .fine = MidRange.fine};
+    /// The trim for a DFLL48M COARSE CAL value (Nvm::Calibration::dfllCoarse, bits 63:58 of the NVM software
+    /// calibration area, DS40001882L Table 10-8). Bits 73:64, where older revisions of the datasheet had a DFLL48M
+    /// FINE CAL, are reserved and not used.
+    [[nodiscard]] constexpr Trim trimFrom(std::uint8_t coarse) {
+        return {.coarse = coarse == 0x3FU ? midRange.coarse : coarse, .fine = midRange.fine};
     }
 
-    static_assert(decode(0x94'00'00'00)
+    static_assert(trimFrom(Nvm::CalibrationLayout::decode({0,
+                                                           0x94'00'00'00})
+                             .dfllCoarse)
                     == Trim{.coarse = 37,
                             .fine   = 0x200},
                   "bits 63:58");
-    static_assert(decode(0x97'FF'FF'FF)
+    static_assert(trimFrom(Nvm::CalibrationLayout::decode({0xFFFF'FFFF,
+                                                           0x97'FF'FF'FF})
+                             .dfllCoarse)
                     == Trim{.coarse = 37,
                             .fine   = 0x200},
                   "and nothing of what is below them");
-    static_assert(decode(0xFF'FF'FF'FF) == MidRange,
+    static_assert(trimFrom(Nvm::CalibrationLayout::decode({0xFFFF'FFFF,
+                                                           0xFF'FF'FF'FF})
+                             .dfllCoarse)
+                    == midRange,
                   "an unprogrammed area is the middle of the range");
 
     /// What the factory measured for this part.
-    [[nodiscard]] inline Trim factoryTrim() {
-        auto const* const area = reinterpret_cast<std::uint32_t const volatile*>(
-          CalibrationAreaAddress);   // NOLINT(performance-no-int-to-ptr)
-        return decode(area[1]);
-    }
+    [[nodiscard]] inline Trim factoryTrim() { return trimFrom(Nvm::calibration().dfllCoarse); }
+
+    namespace detail {
+        using KSR = Kvasir::Peripheral::SYSCTRL::Registers<>;
+
+        /// PCLKSR.DFLLRDY: the synchronisation after a DFLL register write (WaitBounds.hpp DfllSyncBound).
+        inline void waitSync() {
+            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
+              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
+        }
+
+        /// The start every mode shares: enabled with ONDEMAND off (errata DS80000760 1.2.1, all silicon revisions:
+        /// "the DFLL clock must be requested before being configured"), then DFLLVAL = `trim`, each synchronised.
+        inline void enableWith(Trim trim) {
+            apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
+                                                  clear(KSR::DFLLCTRL::ondemand)));
+            waitSync();
+            apply(write(KSR::DFLLVAL::fine, trim.fine),
+                  write(KSR::DFLLVAL::diff, 0),
+                  write(KSR::DFLLVAL::coarse, trim.coarse));
+            waitSync();
+        }
+    }   // namespace detail
 
     /// The DFLL running in open loop on `trim`, ready to be a clock generator's source.
     /// ONDEMAND is cleared with the enable, before DFLLVAL is written: "the DFLL clock must be
@@ -67,22 +89,8 @@ namespace Kvasir { namespace DFLL {
     /// CPU over: `Kvasir::Nvm::waitStates<48'000'000, Supply>()` (ClockTree.hpp) is what the
     /// datasheet allows to name. Table 37-52 gives the open loop up to 49 MHz, which is above f_CPU
     /// max (48 MHz, Table 37-7) and above the last row of Table 37-42: there is no wait-state count
-    /// for the open loop's worst case (ClockLimits::D21::DfllOpenLoopMaxHz).
-    inline void enableOpenLoop(Trim trim = factoryTrim()) {
-        using KSR        = Kvasir::Peripheral::SYSCTRL::Registers<>;
-        auto const ready = [] {
-            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
-              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
-        };
-
-        apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
-                                              clear(KSR::DFLLCTRL::ondemand)));
-        ready();
-        apply(write(KSR::DFLLVAL::fine, trim.fine),
-              write(KSR::DFLLVAL::diff, 0),
-              write(KSR::DFLLVAL::coarse, trim.coarse));
-        ready();
-    }
+    /// for the open loop's worst case (ClockLimits::D21::dfllOpenLoopMaxHz).
+    inline void enableOpenLoop(Trim trim = factoryTrim()) { detail::enableWith(trim); }
 
     /// The DFLL locked to the USB start-of-frame, for a device without a crystal: the host sends
     /// a SOF every millisecond, and with DFLLMUL.MUL = 48000 (0xBB80) the loop makes 48 MHz of
@@ -101,31 +109,20 @@ namespace Kvasir { namespace DFLL {
     /// can be wrong after a suspend (errata 1.2.3). DFLLRDY is the register synchronisation and
     /// is safe to wait on. The wait states are the caller's, for 48 MHz.
     inline void enableUsbRecovery(Trim trim = factoryTrim()) {
-        using KSR        = Kvasir::Peripheral::SYSCTRL::Registers<>;
-        auto const ready = [] {
-            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
-              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
-        };
-
-        apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
-                                              clear(KSR::DFLLCTRL::ondemand)));
-        ready();
-        apply(write(KSR::DFLLVAL::fine, trim.fine),
-              write(KSR::DFLLVAL::diff, 0),
-              write(KSR::DFLLVAL::coarse, trim.coarse));
-        ready();
+        using detail::KSR;
+        detail::enableWith(trim);
         apply(
           KSR::DFLLMUL::overrideDefaults(write(KSR::DFLLMUL::mul, Kvasir::Register::value<48000>()),
                                          write(KSR::DFLLMUL::fstep, Kvasir::Register::value<10>()),
                                          write(KSR::DFLLMUL::cstep, Kvasir::Register::value<1>())));
-        ready();
+        detail::waitSync();
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
                                               set(KSR::DFLLCTRL::mode),
                                               set(KSR::DFLLCTRL::usbcrm),
                                               set(KSR::DFLLCTRL::ccdis),
                                               clear(KSR::DFLLCTRL::qldis),
                                               clear(KSR::DFLLCTRL::ondemand)));
-        ready();
+        detail::waitSync();
     }
 
     /// The DFLL locked to a reference on GCLK_DFLL48M_REF (generic clock channel 0, which the
@@ -148,44 +145,33 @@ namespace Kvasir { namespace DFLL {
     inline void enableClosedLoop(Trim trim = factoryTrim()) {
         namespace L = Kvasir::ClockLimits::D21;
         Kvasir::ClockLimits::assertInRange<Kvasir::Prescaler::Rational{RefHz, 1},
-                                           L::Dfll48m.refMin,
-                                           L::Dfll48m.refMax,
+                                           L::dfll48m.refMin,
+                                           L::dfll48m.refMax,
                                            "DFLL48M reference",
                                            "SAM D21 Table 37-54 f_REF">();
-        constexpr auto loop = closedLoop<L::Dfll48m>(RefHz, TargetHz);
+        constexpr auto loop = closedLoop<L::dfll48m>(RefHz, TargetHz);
         static_assert(loop.mulFits, "DFLL48M: DFLLMUL.MUL is 16 bits (17.8.12)");
         Kvasir::Prescaler::assertInTolerance<loop.achieved,
                                              TargetHz,
                                              Kvasir::Prescaler::Tolerance::ppm(TolerancePpm),
                                              "DFLL48M closed loop">();
-        static_assert(ReferenceAccuracyPpm <= L::DfllReferenceAccuracyMaxPpm,
+        static_assert(ReferenceAccuracyPpm <= L::dfllReferenceAccuracyMaxPpm,
                       "DFLL48M: the closed-loop reference must be within 2 % (note 1 under SAM "
                       "D21 Table 37-54)");
 
-        using KSR = Kvasir::Peripheral::SYSCTRL::Registers<>;
+        using detail::KSR;
         using Kvasir::Register::value;
-        auto const ready = [] {
-            Kvasir::Register::waitUntil<Kvasir::Chip::DfllSyncBound>(
-              Kvasir::Register::isSet(KSR::PCLKSR::dfllrdy));
-        };
-
-        apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
-                                              clear(KSR::DFLLCTRL::ondemand)));
-        ready();
-        apply(write(KSR::DFLLVAL::fine, trim.fine),
-              write(KSR::DFLLVAL::diff, 0),
-              write(KSR::DFLLVAL::coarse, trim.coarse));
-        ready();
+        detail::enableWith(trim);
         apply(KSR::DFLLMUL::overrideDefaults(
           write(KSR::DFLLMUL::mul, value<loop.mul>()),
-          write(KSR::DFLLMUL::fstep, value<MaxFineStep<L::Dfll48m>>()),
-          write(KSR::DFLLMUL::cstep, value<MaxCoarseStep<L::Dfll48m>>())));
-        ready();
+          write(KSR::DFLLMUL::fstep, value<maxFineStep<L::dfll48m>>()),
+          write(KSR::DFLLMUL::cstep, value<maxCoarseStep<L::dfll48m>>())));
+        detail::waitSync();
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
                                               set(KSR::DFLLCTRL::mode),
                                               set(KSR::DFLLCTRL::bplckc),
                                               clear(KSR::DFLLCTRL::ondemand)));
-        ready();
+        detail::waitSync();
         Kvasir::Register::waitUntil<Kvasir::Chip::DfllLockBound>(
           Kvasir::Register::isSet(KSR::PCLKSR::dflllckf));
     }

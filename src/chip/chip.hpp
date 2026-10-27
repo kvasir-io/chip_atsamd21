@@ -1,40 +1,22 @@
 #pragma once
-
+// The chip itself: variant, clocks, power manager, interrupts, Io, start-up, reset cause, reboot and the watchdog.
+// No driver and nothing from kvasir_devices: include a driver by name (chip/atsam_common/Sercom_I2CQueued.hpp, ...)
+// or all of them through chip/drivers.hpp, and a generated peripheral by name (peripherals/TCC.hpp) or all of them
+// through chip/peripherals.hpp. Every header includes the peripherals it uses.
+// Any number of an image's TUs may include it, and every other chip header: the Startup itself (vector table, reset
+// entry, the runtime-library stand-ins) is kvasir/StartUp/StartUp.hpp, which the main TU alone includes.
 #include "Variant.hpp"
 //
-#include "peripherals/AC.hpp"
-#include "peripherals/ADC.hpp"
-#include "peripherals/DAC.hpp"
-#include "peripherals/DMAC.hpp"
 #include "peripherals/DSU.hpp"
-#include "peripherals/EIC.hpp"
-#include "peripherals/EVSYS.hpp"
 #include "peripherals/GCLK.hpp"
-#include "peripherals/HMATRIX.hpp"
-#include "peripherals/MTB.hpp"
 #include "peripherals/NVMCTRL.hpp"
 #include "peripherals/PAC0.hpp"
 #include "peripherals/PAC1.hpp"
 #include "peripherals/PAC2.hpp"
 #include "peripherals/PM.hpp"
 #include "peripherals/PORT.hpp"
-#include "peripherals/RTC_MODE0.hpp"
-#include "peripherals/RTC_MODE1.hpp"
-#include "peripherals/RTC_MODE2.hpp"
-#include "peripherals/SERCOM_I2CM.hpp"
-#include "peripherals/SERCOM_I2CS.hpp"
-#include "peripherals/SERCOM_SPI.hpp"
-#include "peripherals/SERCOM_USART.hpp"
 #include "peripherals/SYSCTRL.hpp"
-#include "peripherals/TCC.hpp"
-#include "peripherals/TC_COUNT16.hpp"
-#include "peripherals/TC_COUNT32.hpp"
-#include "peripherals/TC_COUNT8.hpp"
 #include "peripherals/WDT.hpp"
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-    #include "peripherals/I2S.hpp"
-    #include "peripherals/USB_DEVICE.hpp"
-#endif
 //
 #include "PM.hpp"
 //
@@ -43,36 +25,12 @@
 #include "Dpll.hpp"
 #include "GCLK.hpp"
 #include "Interrupt.hpp"
-#include "Io.hpp"
-#include "atsam_common/EIC.hpp"
-#include "atsam_common/EVSYS.hpp"
-#include "atsam_common/Fuses.hpp"
-
-//#include "PM.hpp"
-
-//#include "TC.hpp"
-//#include "TCC.hpp"
-//#include "WDT.hpp"
-//
+#include "NvmCalibration_Traits.hpp"
 #include "Sercom_Traits.hpp"
-//
-#if !defined(KVASIR_CHIP_ATSAMD21G18A)
-    // EEPROM emulation in the RWW flash section, which only the L (and D) parts have.
-    #include "atsam_common/NVMCTRL.hpp"
-#endif
-#include "atsam_common/SamPushButton.hpp"
-#include "atsam_common/SamQuadratureEncoder.hpp"
-#include "atsam_common/SamRotaryEncoder.hpp"
-#include "atsam_common/Sercom_I2C.hpp"
-#include "atsam_common/Sercom_I2CQueued.hpp"
-#include "atsam_common/Sercom_SPI.hpp"
-#include "atsam_common/Sercom_Usart.hpp"
-#include "atsam_common/Serial_Number.hpp"
-#include "atsam_common/StartUp.hpp"
+#include "atsam_common/DMAC.hpp"   // DmaBase with the core: the SERCOM drivers and DMA users take it from here
+#include "atsam_common/Debug.hpp"
+#include "atsam_common/Io.hpp"
+#include "atsam_common/Reboot.hpp"
+#include "atsam_common/StartUp.hpp"   // after GCLK.hpp: it calls the GCLK functions non-dependently
+#include "atsam_common/Wdt.hpp"
 #include "core/core.hpp"
-#if defined(KVASIR_CHIP_ATSAMD21G18A) && __has_include(<kvasir/Devices/USB/Device.hpp>)
-    // The USB controller as a backend of kvasir_devices' USB device: only for a firmware that has
-    // kvasir_devices on its include path (LIBRARIES kvasir::devices).
-    #include "Usb_Traits.hpp"
-    #include "atsam_common/usb/Backend.hpp"
-#endif

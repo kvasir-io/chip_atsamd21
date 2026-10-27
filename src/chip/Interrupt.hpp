@@ -1,95 +1,34 @@
 #pragma once
 #include "Variant.hpp"
+#include "core/CoreInterrupts.hpp"
 #include "kvasir/Common/Interrupt.hpp"
+#include "kvasir/Port/Interrupts.hpp"
+#include "peripherals/Interrupts.hpp"
 
 #include <array>
 #include <type_traits>
 
 namespace Kvasir {
-namespace Interrupt {
-    template<int I>
-    using Type = ::Kvasir::Nvic::Index<I>;
-
-    static constexpr Type<-14> nonMaskableInt{};
-    static constexpr Type<-13> hardFault{};
-    static constexpr Type<-5>  sVCall{};
-    static constexpr Type<-2>  pendSV{};
-    static constexpr Type<-1>  systick{};
-    static constexpr Type<0>   pm{};
-    static constexpr Type<1>   sysctl{};
-    static constexpr Type<2>   wdt{};
-    static constexpr Type<3>   rtc{};
-    static constexpr Type<4>   eic{};
-    static constexpr Type<5>   nvmctrl{};
-    static constexpr Type<6>   dmac{};
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-    static constexpr Type<7> usb{};
-#endif
-    // 7 on a part without USB
-    static constexpr Type<8>  evsys{};
-    static constexpr Type<9>  sercom0{};
-    static constexpr Type<10> sercom1{};
-    static constexpr Type<11> sercom2{};
-    static constexpr Type<12> sercom3{};
-    static constexpr Type<13> sercom4{};
-    static constexpr Type<14> sercom5{};
-    static constexpr Type<15> tcc0{};
-    static constexpr Type<16> tcc1{};
-    static constexpr Type<17> tcc2{};
-    static constexpr Type<18> tc3{};
-    static constexpr Type<19> tc4{};
-    static constexpr Type<20> tc5{};
-    // SAM D21 datasheet DS40001882, table 11-3 "Interrupt Line Mapping"; which lines a part has
-    // follows from its peripherals ("Configuration Summary").
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-    static constexpr Type<23> adc{};
-    static constexpr Type<24> ac{};
-    static constexpr Type<25> dac{};
-    static constexpr Type<26> ptc{};
-    static constexpr Type<27> i2s{};
-#else
-    static constexpr Type<21> tc6{};
-    static constexpr Type<22> tc7{};
-    static constexpr Type<23> adc{};
-    static constexpr Type<24> ac{};
-    static constexpr Type<25> dac{};
-    // 26
-    // 27
-    static constexpr Type<28> ac1{};
-#endif
-
+// The core's exceptions (core/CoreInterrupts.hpp) and the device lines of this part's SVD (svd_converter:
+// peripherals/Interrupts.hpp, the SVD's names lower-cased without IRQ).
+// Which lines a part has follows from its SVD: chip.svd for the G17L (TCC3 on 29, DS40001882L Table 11-3), the
+// generated G18A SVD for the G18A (USB on 7, I2S on 27, PTC on 26: scripts/make_g18a_svd.py).
+struct Interrupt
+  : CoreInterrupts
+  , Peripheral::DeviceInterrupts {
     // The vector that serves EXTINT line n: one for all sixteen ("EIC - External Interrupt
     // Controller | 4", DS40001882L Table 11-3, md line 1856). Kvasir::EIC's lines are
     // sub-interrupts of it (atsam_common/EIC.hpp).
     template<unsigned Line>
     using EicExtIntVector = std::remove_cvref_t<decltype(eic)>;
-}   // namespace Interrupt
+};
 
 namespace Nvic {
-    using namespace Kvasir::Interrupt;
-
+    // the core's reserved slots, then the lines the part's SVD does not name
     template<>
-    struct InterruptOffsetTraits<void> {
-        static constexpr int begin = -14;
-#if defined(KVASIR_CHIP_ATSAMD21G18A)
-        static constexpr int        end      = 28;
-        static constexpr std::array disabled = {-12, -11, -10, -9, -8, -7, -6, -4, -3, 21, 22};
-#else
-        static constexpr int        end      = 29;
-        static constexpr std::array disabled = {-12, -11, -10, -9, -8, -7, -6, -4, -3, 7, 26, 27};
-#endif
-        static constexpr std::array noEnable
-          = {nonMaskableInt.index(), sVCall.index(), pendSV.index()};
-        static constexpr std::array noDisable
-          = {nonMaskableInt.index(), sVCall.index(), pendSV.index()};
-        static constexpr std::array noSetPending = {sVCall.index(), hardFault.index()};
-        static constexpr std::array noClearPending
-          = {nonMaskableInt.index(), sVCall.index(), hardFault.index()};
-        static constexpr std::array noSetPriority = {nonMaskableInt.index(), hardFault.index()};
-
-        using FaultInterruptIndexs           = brigand::list<decltype(hardFault)>;
-        using FaultInterruptIndexsNeedEnable = brigand::list<>;
-    };
-
+    struct InterruptOffsetTraits<Kvasir::Tag::User>
+      : Core::ChipInterruptTraits<Core::InterruptRules,
+                                  Peripheral::interruptEnd,
+                                  Peripheral::interruptGaps> {};
 }   // namespace Nvic
 }   // namespace Kvasir

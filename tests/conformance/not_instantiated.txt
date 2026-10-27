@@ -1,0 +1,6 @@
+# Driver templates instantiate.cpp does not instantiate, one reason per line. The others of src/chip/ and atsam_common/
+# are instantiated there once, or have no dependent register write (non-template code compiles in the header TUs).
+chip/Evsys.hpp               event channels are wired by a firmware's generator/user pairs
+chip/Fuses.hpp               the user-row write is a function template a firmware calls with its fuse values
+chip/ClockTree.hpp           the clock tree and the DPLL/DFLL/GCLK setters run from a firmware's coreClockInit(); their solvers are the host tests
+chip/Usb_Traits.hpp          the USB backend (ATSAMD21G18A) is driven by kvasir_devices' USB stack and its descriptors

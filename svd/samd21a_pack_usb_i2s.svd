@@ -1,0 +1,2854 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The USB and I2S peripherals of Microchip's ATSAMD21G18A.svd (Microchip.SAMD21_DFP, Apache-2.0), copied
+     byte for byte by scripts/make_g18a_svd.py - edit nothing here; a new pack goes in with
+     the script's refresh-fragment mode. -->
+<device>
+  <peripherals>
+      <peripheral>
+         <name>I2S</name>
+         <version>U22241.0.2</version>
+         <description>Inter-IC Sound Interface</description>
+         <baseAddress>0x42005000</baseAddress>
+         <addressBlock>
+            <offset>0</offset>
+            <size>0x38</size>
+            <usage>registers</usage>
+         </addressBlock>
+         <interrupt>
+            <name>I2S</name>
+            <description>Inter-IC Sound Controller</description>
+            <value>27</value>
+         </interrupt>
+         <registers>
+            <register>
+               <name>CTRLA</name>
+               <description>Control A</description>
+               <addressOffset>0x0</addressOffset>
+               <size>8</size>
+               <resetValue>0x00</resetValue>
+               <fields>
+                  <field>
+                     <name>SWRST</name>
+                     <description>Software Reset</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>ENABLE</name>
+                     <description>Enable</description>
+                     <bitOffset>1</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>CKEN0</name>
+                     <description>Clock Unit 0 Enable</description>
+                     <bitOffset>2</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>CKEN1</name>
+                     <description>Clock Unit 1 Enable</description>
+                     <bitOffset>3</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SEREN0</name>
+                     <description>Serializer 0 Enable</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SEREN1</name>
+                     <description>Serializer 1 Enable</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <dim>2</dim>
+               <dimIncrement>4</dimIncrement>
+               <name>CLKCTRL[%s]</name>
+               <description>Clock Unit n Control</description>
+               <addressOffset>0x4</addressOffset>
+               <size>32</size>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                  <field>
+                     <name>SLOTSIZE</name>
+                     <description>Slot Size</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>2</bitWidth>
+                     <enumeratedValues>
+                        <name>SLOTSIZESelect</name>
+                        <enumeratedValue>
+                           <name>8</name>
+                           <description>8-bit Slot for Clock Unit n</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>16</name>
+                           <description>16-bit Slot for Clock Unit n</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>24</name>
+                           <description>24-bit Slot for Clock Unit n</description>
+                           <value>0x2</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>32</name>
+                           <description>32-bit Slot for Clock Unit n</description>
+                           <value>0x3</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>NBSLOTS</name>
+                     <description>Number of Slots in Frame</description>
+                     <bitOffset>2</bitOffset>
+                     <bitWidth>3</bitWidth>
+                  </field>
+                  <field>
+                     <name>FSWIDTH</name>
+                     <description>Frame Sync Width</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>2</bitWidth>
+                     <enumeratedValues>
+                        <name>FSWIDTHSelect</name>
+                        <enumeratedValue>
+                           <name>SLOT</name>
+                           <description>Frame Sync Pulse is 1 Slot wide (default for I2S protocol)</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>HALF</name>
+                           <description>Frame Sync Pulse is half a Frame wide</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>BIT</name>
+                           <description>Frame Sync Pulse is 1 Bit wide</description>
+                           <value>0x2</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>BURST</name>
+                           <description>Clock Unit n operates in Burst mode, with a 1-bit wide Frame Sync pulse per Data sample, only when Data transfer is requested</description>
+                           <value>0x3</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>BITDELAY</name>
+                     <description>Data Delay from Frame Sync</description>
+                     <bitOffset>7</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>BITDELAYSelect</name>
+                        <enumeratedValue>
+                           <name>LJ</name>
+                           <description>Left Justified (0 Bit Delay)</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>I2S</name>
+                           <description>I2S (1 Bit Delay)</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>FSSEL</name>
+                     <description>Frame Sync Select</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>FSSELSelect</name>
+                        <enumeratedValue>
+                           <name>SCKDIV</name>
+                           <description>Divided Serial Clock n is used as Frame Sync n source</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>FSPIN</name>
+                           <description>FSn input pin is used as Frame Sync n source</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>FSINV</name>
+                     <description>Frame Sync Invert</description>
+                     <bitOffset>11</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SCKSEL</name>
+                     <description>Serial Clock Select</description>
+                     <bitOffset>12</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>SCKSELSelect</name>
+                        <enumeratedValue>
+                           <name>MCKDIV</name>
+                           <description>Divided Master Clock n is used as Serial Clock n source</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>SCKPIN</name>
+                           <description>SCKn input pin is used as Serial Clock n source</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>MCKSEL</name>
+                     <description>Master Clock Select</description>
+                     <bitOffset>16</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>MCKSELSelect</name>
+                        <enumeratedValue>
+                           <name>GCLK</name>
+                           <description>GCLK_I2S_n is used as Master Clock n source</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>MCKPIN</name>
+                           <description>MCKn input pin is used as Master Clock n source</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>MCKEN</name>
+                     <description>Master Clock Enable</description>
+                     <bitOffset>18</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>MCKDIV</name>
+                     <description>Master Clock Division Factor</description>
+                     <bitOffset>19</bitOffset>
+                     <bitWidth>5</bitWidth>
+                  </field>
+                  <field>
+                     <name>MCKOUTDIV</name>
+                     <description>Master Clock Output Division Factor</description>
+                     <bitOffset>24</bitOffset>
+                     <bitWidth>5</bitWidth>
+                  </field>
+                  <field>
+                     <name>FSOUTINV</name>
+                     <description>Frame Sync Output Invert</description>
+                     <bitOffset>29</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SCKOUTINV</name>
+                     <description>Serial Clock Output Invert</description>
+                     <bitOffset>30</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>MCKOUTINV</name>
+                     <description>Master Clock Output Invert</description>
+                     <bitOffset>31</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <name>INTENCLR</name>
+               <description>Interrupt Enable Clear</description>
+               <addressOffset>0xC</addressOffset>
+               <size>16</size>
+               <resetValue>0x0000</resetValue>
+               <modifiedWriteValues>oneToClear</modifiedWriteValues>
+               <fields>
+                  <field>
+                     <name>RXRDY0</name>
+                     <description>Receive Ready 0 Interrupt Enable</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXRDY1</name>
+                     <description>Receive Ready 1 Interrupt Enable</description>
+                     <bitOffset>1</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR0</name>
+                     <description>Receive Overrun 0 Interrupt Enable</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR1</name>
+                     <description>Receive Overrun 1 Interrupt Enable</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY0</name>
+                     <description>Transmit Ready 0 Interrupt Enable</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY1</name>
+                     <description>Transmit Ready 1 Interrupt Enable</description>
+                     <bitOffset>9</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR0</name>
+                     <description>Transmit Underrun 0 Interrupt Enable</description>
+                     <bitOffset>12</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR1</name>
+                     <description>Transmit Underrun 1 Interrupt Enable</description>
+                     <bitOffset>13</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <name>INTENSET</name>
+               <description>Interrupt Enable Set</description>
+               <addressOffset>0x10</addressOffset>
+               <size>16</size>
+               <resetValue>0x0000</resetValue>
+               <modifiedWriteValues>oneToSet</modifiedWriteValues>
+               <fields>
+                  <field>
+                     <name>RXRDY0</name>
+                     <description>Receive Ready 0 Interrupt Enable</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXRDY1</name>
+                     <description>Receive Ready 1 Interrupt Enable</description>
+                     <bitOffset>1</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR0</name>
+                     <description>Receive Overrun 0 Interrupt Enable</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR1</name>
+                     <description>Receive Overrun 1 Interrupt Enable</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY0</name>
+                     <description>Transmit Ready 0 Interrupt Enable</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY1</name>
+                     <description>Transmit Ready 1 Interrupt Enable</description>
+                     <bitOffset>9</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR0</name>
+                     <description>Transmit Underrun 0 Interrupt Enable</description>
+                     <bitOffset>12</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR1</name>
+                     <description>Transmit Underrun 1 Interrupt Enable</description>
+                     <bitOffset>13</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <name>INTFLAG</name>
+               <description>Interrupt Flag Status and Clear</description>
+               <addressOffset>0x14</addressOffset>
+               <size>16</size>
+               <resetValue>0x0000</resetValue>
+               <modifiedWriteValues>oneToClear</modifiedWriteValues>
+               <fields>
+                  <field>
+                     <name>RXRDY0</name>
+                     <description>Receive Ready 0</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXRDY1</name>
+                     <description>Receive Ready 1</description>
+                     <bitOffset>1</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR0</name>
+                     <description>Receive Overrun 0</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>RXOR1</name>
+                     <description>Receive Overrun 1</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY0</name>
+                     <description>Transmit Ready 0</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXRDY1</name>
+                     <description>Transmit Ready 1</description>
+                     <bitOffset>9</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR0</name>
+                     <description>Transmit Underrun 0</description>
+                     <bitOffset>12</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>TXUR1</name>
+                     <description>Transmit Underrun 1</description>
+                     <bitOffset>13</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <name>SYNCBUSY</name>
+               <description>Synchronization Status</description>
+               <addressOffset>0x18</addressOffset>
+               <size>16</size>
+               <access>read-only</access>
+               <resetValue>0x0000</resetValue>
+               <fields>
+                  <field>
+                     <name>SWRST</name>
+                     <description>Software Reset Synchronization Status</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>ENABLE</name>
+                     <description>Enable Synchronization Status</description>
+                     <bitOffset>1</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>CKEN0</name>
+                     <description>Clock Unit 0 Enable Synchronization Status</description>
+                     <bitOffset>2</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>CKEN1</name>
+                     <description>Clock Unit 1 Enable Synchronization Status</description>
+                     <bitOffset>3</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SEREN0</name>
+                     <description>Serializer 0 Enable Synchronization Status</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SEREN1</name>
+                     <description>Serializer 1 Enable Synchronization Status</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>DATA0</name>
+                     <description>Data 0 Synchronization Status</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>DATA1</name>
+                     <description>Data 1 Synchronization Status</description>
+                     <bitOffset>9</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <dim>2</dim>
+               <dimIncrement>4</dimIncrement>
+               <name>SERCTRL[%s]</name>
+               <description>Serializer n Control</description>
+               <addressOffset>0x20</addressOffset>
+               <size>32</size>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                  <field>
+                     <name>SERMODE</name>
+                     <description>Serializer Mode</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>2</bitWidth>
+                     <enumeratedValues>
+                        <name>SERMODESelect</name>
+                        <enumeratedValue>
+                           <name>RX</name>
+                           <description>Receive</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>TX</name>
+                           <description>Transmit</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>PDM2</name>
+                           <description>Receive one PDM data on each serial clock edge</description>
+                           <value>0x2</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>TXDEFAULT</name>
+                     <description>Line Default Line when Slot Disabled</description>
+                     <bitOffset>2</bitOffset>
+                     <bitWidth>2</bitWidth>
+                     <enumeratedValues>
+                        <name>TXDEFAULTSelect</name>
+                        <enumeratedValue>
+                           <name>ZERO</name>
+                           <description>Output Default Value is 0</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>ONE</name>
+                           <description>Output Default Value is 1</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>HIZ</name>
+                           <description>Output Default Value is high impedance</description>
+                           <value>0x3</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>TXSAME</name>
+                     <description>Transmit Data when Underrun</description>
+                     <bitOffset>4</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>TXSAMESelect</name>
+                        <enumeratedValue>
+                           <name>ZERO</name>
+                           <description>Zero data transmitted in case of underrun</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>SAME</name>
+                           <description>Last data transmitted in case of underrun</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>CLKSEL</name>
+                     <description>Clock Unit Selection</description>
+                     <bitOffset>5</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>CLKSELSelect</name>
+                        <enumeratedValue>
+                           <name>CLK0</name>
+                           <description>Use Clock Unit 0</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>CLK1</name>
+                           <description>Use Clock Unit 1</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>SLOTADJ</name>
+                     <description>Data Slot Formatting Adjust</description>
+                     <bitOffset>7</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>SLOTADJSelect</name>
+                        <enumeratedValue>
+                           <name>RIGHT</name>
+                           <description>Data is right adjusted in slot</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>LEFT</name>
+                           <description>Data is left adjusted in slot</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>DATASIZE</name>
+                     <description>Data Word Size</description>
+                     <bitOffset>8</bitOffset>
+                     <bitWidth>3</bitWidth>
+                     <enumeratedValues>
+                        <name>DATASIZESelect</name>
+                        <enumeratedValue>
+                           <name>32</name>
+                           <description>32 bits</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>24</name>
+                           <description>24 bits</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>20</name>
+                           <description>20 bits</description>
+                           <value>0x2</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>18</name>
+                           <description>18 bits</description>
+                           <value>0x3</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>16</name>
+                           <description>16 bits</description>
+                           <value>0x4</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>16C</name>
+                           <description>16 bits compact stereo</description>
+                           <value>0x5</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>8</name>
+                           <description>8 bits</description>
+                           <value>0x6</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>8C</name>
+                           <description>8 bits compact stereo</description>
+                           <value>0x7</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>WORDADJ</name>
+                     <description>Data Word Formatting Adjust</description>
+                     <bitOffset>12</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>WORDADJSelect</name>
+                        <enumeratedValue>
+                           <name>RIGHT</name>
+                           <description>Data is right adjusted in word</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>LEFT</name>
+                           <description>Data is left adjusted in word</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>EXTEND</name>
+                     <description>Data Formatting Bit Extension</description>
+                     <bitOffset>13</bitOffset>
+                     <bitWidth>2</bitWidth>
+                     <enumeratedValues>
+                        <name>EXTENDSelect</name>
+                        <enumeratedValue>
+                           <name>ZERO</name>
+                           <description>Extend with zeroes</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>ONE</name>
+                           <description>Extend with ones</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>MSBIT</name>
+                           <description>Extend with Most Significant Bit</description>
+                           <value>0x2</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>LSBIT</name>
+                           <description>Extend with Least Significant Bit</description>
+                           <value>0x3</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>BITREV</name>
+                     <description>Data Formatting Bit Reverse</description>
+                     <bitOffset>15</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>BITREVSelect</name>
+                        <enumeratedValue>
+                           <name>MSBIT</name>
+                           <description>Transfer Data Most Significant Bit (MSB) first (default for I2S protocol)</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>LSBIT</name>
+                           <description>Transfer Data Least Significant Bit (LSB) first</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>SLOTDIS0</name>
+                     <description>Slot 0 Disabled for this Serializer</description>
+                     <bitOffset>16</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS1</name>
+                     <description>Slot 1 Disabled for this Serializer</description>
+                     <bitOffset>17</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS2</name>
+                     <description>Slot 2 Disabled for this Serializer</description>
+                     <bitOffset>18</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS3</name>
+                     <description>Slot 3 Disabled for this Serializer</description>
+                     <bitOffset>19</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS4</name>
+                     <description>Slot 4 Disabled for this Serializer</description>
+                     <bitOffset>20</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS5</name>
+                     <description>Slot 5 Disabled for this Serializer</description>
+                     <bitOffset>21</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS6</name>
+                     <description>Slot 6 Disabled for this Serializer</description>
+                     <bitOffset>22</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>SLOTDIS7</name>
+                     <description>Slot 7 Disabled for this Serializer</description>
+                     <bitOffset>23</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+                  <field>
+                     <name>MONO</name>
+                     <description>Mono Mode</description>
+                     <bitOffset>24</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>MONOSelect</name>
+                        <enumeratedValue>
+                           <name>STEREO</name>
+                           <description>Normal mode</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>MONO</name>
+                           <description>Left channel data is duplicated to right channel</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>DMA</name>
+                     <description>Single or Multiple DMA Channels</description>
+                     <bitOffset>25</bitOffset>
+                     <bitWidth>1</bitWidth>
+                     <enumeratedValues>
+                        <name>DMASelect</name>
+                        <enumeratedValue>
+                           <name>SINGLE</name>
+                           <description>Single DMA channel</description>
+                           <value>0x0</value>
+                        </enumeratedValue>
+                        <enumeratedValue>
+                           <name>MULTIPLE</name>
+                           <description>One DMA channel per data channel</description>
+                           <value>0x1</value>
+                        </enumeratedValue>
+                     </enumeratedValues>
+                  </field>
+                  <field>
+                     <name>RXLOOP</name>
+                     <description>Loop-back Test Mode</description>
+                     <bitOffset>26</bitOffset>
+                     <bitWidth>1</bitWidth>
+                  </field>
+               </fields>
+            </register>
+            <register>
+               <dim>2</dim>
+               <dimIncrement>4</dimIncrement>
+               <name>DATA[%s]</name>
+               <description>Data n</description>
+               <addressOffset>0x30</addressOffset>
+               <size>32</size>
+               <resetValue>0x00000000</resetValue>
+               <fields>
+                  <field>
+                     <name>DATA</name>
+                     <description>Sample Data</description>
+                     <bitOffset>0</bitOffset>
+                     <bitWidth>32</bitWidth>
+                  </field>
+               </fields>
+            </register>
+         </registers>
+      </peripheral>
+      <peripheral>
+         <name>USB</name>
+         <version>U22221.0.1</version>
+         <description>Universal Serial Bus</description>
+         <baseAddress>0x41005000</baseAddress>
+         <addressBlock>
+            <offset>0</offset>
+            <size>0x200</size>
+            <usage>registers</usage>
+         </addressBlock>
+         <interrupt>
+            <name>USB</name>
+            <description>Universal Serial Bus</description>
+            <value>7</value>
+         </interrupt>
+         <registers>
+            <cluster>
+               <name>DEVICE</name>
+               <description>USB is Device</description>
+               <headerStructName>UsbDevice</headerStructName>
+               <addressOffset>0x0</addressOffset>
+               <register>
+                  <name>CTRLA</name>
+                  <description>Control A</description>
+                  <addressOffset>0x0</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>SWRST</name>
+                        <description>Software Reset</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>ENABLE</name>
+                        <description>Enable</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RUNSTDBY</name>
+                        <description>Run in Standby Mode</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>MODE</name>
+                        <description>Operating Mode</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                        <enumeratedValues>
+                           <name>MODESelect</name>
+                           <enumeratedValue>
+                              <name>DEVICE</name>
+                              <description>Device Mode</description>
+                              <value>0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HOST</name>
+                              <description>Host Mode</description>
+                              <value>1</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>SYNCBUSY</name>
+                  <description>Synchronization Busy</description>
+                  <addressOffset>0x2</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>SWRST</name>
+                        <description>Software Reset Synchronization Busy</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>ENABLE</name>
+                        <description>Enable Synchronization Busy</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>QOSCTRL</name>
+                  <description>USB Quality Of Service</description>
+                  <addressOffset>0x3</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x05</resetValue>
+                  <fields>
+                     <field>
+                        <name>CQOS</name>
+                        <description>Configuration Quality of Service</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>CQOSSelect</name>
+                           <enumeratedValue>
+                              <name>DISABLE</name>
+                              <description>Background (no sensitive operation)</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LOW</name>
+                              <description>Sensitive Bandwidth</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>MEDIUM</name>
+                              <description>Sensitive Latency</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HIGH</name>
+                              <description>Critical Latency</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                     <field>
+                        <name>DQOS</name>
+                        <description>Data Quality of Service</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>DQOSSelect</name>
+                           <enumeratedValue>
+                              <name>DISABLE</name>
+                              <description>Background (no sensitive operation)</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LOW</name>
+                              <description>Sensitive Bandwidth</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>MEDIUM</name>
+                              <description>Sensitive Latency</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HIGH</name>
+                              <description>Critical Latency</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>CTRLB</name>
+                  <description>DEVICE Control B</description>
+                  <addressOffset>0x8</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0001</resetValue>
+                  <fields>
+                     <field>
+                        <name>DETACH</name>
+                        <description>Detach</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SPDCONF</name>
+                        <description>Speed Configuration</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>SPDCONFSelect</name>
+                           <enumeratedValue>
+                              <name>FS</name>
+                              <description>FS : Full Speed</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LS</name>
+                              <description>LS : Low Speed</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HS</name>
+                              <description>HS : High Speed capable</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HSTM</name>
+                              <description>HSTM: High Speed Test Mode (force high-speed mode for test mode)</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                     <field>
+                        <name>NREPLY</name>
+                        <description>No Reply</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>TSTJ</name>
+                        <description>Test mode J</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>TSTK</name>
+                        <description>Test mode K</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>TSTPCKT</name>
+                        <description>Test packet mode</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>OPMODE2</name>
+                        <description>Specific Operational Mode</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>GNAK</name>
+                        <description>Global NAK</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMHDSK</name>
+                        <description>Link Power Management Handshake</description>
+                        <bitOffset>10</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>LPMHDSKSelect</name>
+                           <enumeratedValue>
+                              <name>NO</name>
+                              <description>No handshake. LPM is not supported</description>
+                              <value>0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>ACK</name>
+                              <description>ACK</description>
+                              <value>1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>NYET</name>
+                              <description>NYET</description>
+                              <value>2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>STALL</name>
+                              <description>STALL</description>
+                              <value>3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>DADD</name>
+                  <description>DEVICE Device Address</description>
+                  <addressOffset>0xA</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>DADD</name>
+                        <description>Device Address</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>7</bitWidth>
+                     </field>
+                     <field>
+                        <name>ADDEN</name>
+                        <description>Device Address Enable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>STATUS</name>
+                  <description>DEVICE Status</description>
+                  <addressOffset>0xC</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x40</resetValue>
+                  <fields>
+                     <field>
+                        <name>SPEED</name>
+                        <description>Speed Status</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>SPEEDSelect</name>
+                           <enumeratedValue>
+                              <name>FS</name>
+                              <description>Full-speed mode</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HS</name>
+                              <description>High-speed mode</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LS</name>
+                              <description>Low-speed mode</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                     <field>
+                        <name>LINESTATE</name>
+                        <description>USB Line State Status</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>LINESTATESelect</name>
+                           <enumeratedValue>
+                              <name>0</name>
+                              <description>SE0/RESET</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>1</name>
+                              <description>FS-J or LS-K State</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>2</name>
+                              <description>FS-K or LS-J State</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>FSMSTATUS</name>
+                  <description>Finite State Machine Status</description>
+                  <addressOffset>0xD</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x01</resetValue>
+                  <fields>
+                     <field>
+                        <name>FSMSTATE</name>
+                        <description>Fine State Machine Status</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>7</bitWidth>
+                        <enumeratedValues>
+                           <name>FSMSTATESelect</name>
+                           <enumeratedValue>
+                              <name>OFF</name>
+                              <description>OFF (L3). It corresponds to the powered-off, disconnected, and disabled state</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>ON</name>
+                              <description>ON (L0). It corresponds to the Idle and Active states</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>SUSPEND</name>
+                              <description>SUSPEND (L2)</description>
+                              <value>0x4</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>SLEEP</name>
+                              <description>SLEEP (L1)</description>
+                              <value>0x8</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>DNRESUME</name>
+                              <description>DNRESUME. Down Stream Resume.</description>
+                              <value>0x10</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>UPRESUME</name>
+                              <description>UPRESUME. Up Stream Resume.</description>
+                              <value>0x20</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>RESET</name>
+                              <description>RESET. USB lines Reset.</description>
+                              <value>0x40</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>FNUM</name>
+                  <description>DEVICE Device Frame Number</description>
+                  <addressOffset>0x10</addressOffset>
+                  <size>16</size>
+                  <access>read-only</access>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>MFNUM</name>
+                        <description>Micro Frame Number</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>3</bitWidth>
+                     </field>
+                     <field>
+                        <name>FNUM</name>
+                        <description>Frame Number</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>11</bitWidth>
+                     </field>
+                     <field>
+                        <name>FNCERR</name>
+                        <description>Frame Number CRC Error</description>
+                        <bitOffset>15</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTENCLR</name>
+                  <description>DEVICE Device Interrupt Enable Clear</description>
+                  <addressOffset>0x14</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>SUSPEND</name>
+                        <description>Suspend Interrupt Enable</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>MSOF</name>
+                        <description>Micro Start of Frame Interrupt Enable in High Speed Mode</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SOF</name>
+                        <description>Start Of Frame Interrupt Enable</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORST</name>
+                        <description>End of Reset Interrupt Enable</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up Interrupt Enable</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORSM</name>
+                        <description>End Of Resume Interrupt Enable</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume Interrupt Enable</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access Interrupt Enable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMNYET</name>
+                        <description>Link Power Management Not Yet Interrupt Enable</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMSUSP</name>
+                        <description>Link Power Management Suspend Interrupt Enable</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTENSET</name>
+                  <description>DEVICE Device Interrupt Enable Set</description>
+                  <addressOffset>0x18</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToSet</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>SUSPEND</name>
+                        <description>Suspend Interrupt Enable</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>MSOF</name>
+                        <description>Micro Start of Frame Interrupt Enable in High Speed Mode</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SOF</name>
+                        <description>Start Of Frame Interrupt Enable</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORST</name>
+                        <description>End of Reset Interrupt Enable</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up Interrupt Enable</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORSM</name>
+                        <description>End Of Resume Interrupt Enable</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume Interrupt Enable</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access Interrupt Enable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMNYET</name>
+                        <description>Link Power Management Not Yet Interrupt Enable</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMSUSP</name>
+                        <description>Link Power Management Suspend Interrupt Enable</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTFLAG</name>
+                  <description>DEVICE Device Interrupt Flag</description>
+                  <addressOffset>0x1C</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>SUSPEND</name>
+                        <description>Suspend</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>MSOF</name>
+                        <description>Micro Start of Frame in High Speed Mode</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SOF</name>
+                        <description>Start Of Frame</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORST</name>
+                        <description>End of Reset</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EORSM</name>
+                        <description>End Of Resume</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMNYET</name>
+                        <description>Link Power Management Not Yet</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>LPMSUSP</name>
+                        <description>Link Power Management Suspend</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>EPINTSMRY</name>
+                  <description>DEVICE End Point Interrupt Summary</description>
+                  <addressOffset>0x20</addressOffset>
+                  <size>16</size>
+                  <access>read-only</access>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>EPINT0</name>
+                        <description>End Point 0 Interrupt</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT1</name>
+                        <description>End Point 1 Interrupt</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT2</name>
+                        <description>End Point 2 Interrupt</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT3</name>
+                        <description>End Point 3 Interrupt</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT4</name>
+                        <description>End Point 4 Interrupt</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT5</name>
+                        <description>End Point 5 Interrupt</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT6</name>
+                        <description>End Point 6 Interrupt</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT7</name>
+                        <description>End Point 7 Interrupt</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>DESCADD</name>
+                  <description>Descriptor Address</description>
+                  <addressOffset>0x24</addressOffset>
+                  <size>32</size>
+                  <resetValue>0x00000000</resetValue>
+                  <fields>
+                     <field>
+                        <name>DESCADD</name>
+                        <description>Descriptor Address Value</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>32</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>PADCAL</name>
+                  <description>USB PAD Calibration</description>
+                  <addressOffset>0x28</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>TRANSP</name>
+                        <description>USB Pad Transp calibration</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>5</bitWidth>
+                     </field>
+                     <field>
+                        <name>TRANSN</name>
+                        <description>USB Pad Transn calibration</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>5</bitWidth>
+                     </field>
+                     <field>
+                        <name>TRIM</name>
+                        <description>USB Pad Trim calibration</description>
+                        <bitOffset>12</bitOffset>
+                        <bitWidth>3</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <cluster>
+                  <dim>8</dim>
+                  <dimIncrement>0x20</dimIncrement>
+                  <name>DEVICE_ENDPOINT[%s]</name>
+                  <description/>
+                  <addressOffset>0x100</addressOffset>
+                  <register>
+                     <name>EPCFG</name>
+                     <description>DEVICE_ENDPOINT End Point Configuration</description>
+                     <addressOffset>0x0</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>EPTYPE0</name>
+                           <description>End Point Type0</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>3</bitWidth>
+                        </field>
+                        <field>
+                           <name>EPTYPE1</name>
+                           <description>End Point Type1</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>3</bitWidth>
+                        </field>
+                        <field>
+                           <name>NYETDIS</name>
+                           <description>NYET Token Disable</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPSTATUSCLR</name>
+                     <description>DEVICE_ENDPOINT End Point Pipe Status Clear</description>
+                     <addressOffset>0x4</addressOffset>
+                     <size>8</size>
+                     <access>write-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGLOUT</name>
+                           <description>Data Toggle OUT Clear</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>DTGLIN</name>
+                           <description>Data Toggle IN Clear</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Curren Bank Clear</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ0</name>
+                           <description>Stall 0 Request Clear</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ1</name>
+                           <description>Stall 1 Request Clear</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 Ready Clear</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 Ready Clear</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPSTATUSSET</name>
+                     <description>DEVICE_ENDPOINT End Point Pipe Status Set</description>
+                     <addressOffset>0x5</addressOffset>
+                     <size>8</size>
+                     <access>write-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGLOUT</name>
+                           <description>Data Toggle OUT Set</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>DTGLIN</name>
+                           <description>Data Toggle IN Set</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Current Bank Set</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ0</name>
+                           <description>Stall 0 Request Set</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ1</name>
+                           <description>Stall 1 Request Set</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 Ready Set</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 Ready Set</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPSTATUS</name>
+                     <description>DEVICE_ENDPOINT End Point Pipe Status</description>
+                     <addressOffset>0x6</addressOffset>
+                     <size>8</size>
+                     <access>read-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGLOUT</name>
+                           <description>Data Toggle Out</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>DTGLIN</name>
+                           <description>Data Toggle In</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Current Bank</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ0</name>
+                           <description>Stall 0 Request</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALLRQ1</name>
+                           <description>Stall 1 Request</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 ready</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 ready</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPINTFLAG</name>
+                     <description>DEVICE_ENDPOINT End Point Interrupt Flag</description>
+                     <addressOffset>0x7</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL0</name>
+                           <description>Error Flow 0</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL1</name>
+                           <description>Error Flow 1</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>RXSTP</name>
+                           <description>Received Setup</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL0</name>
+                           <description>Stall 0 In/out</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL1</name>
+                           <description>Stall 1 In/out</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPINTENCLR</name>
+                     <description>DEVICE_ENDPOINT End Point Interrupt Clear Flag</description>
+                     <addressOffset>0x8</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0 Interrupt Disable</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1 Interrupt Disable</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL0</name>
+                           <description>Error Flow 0 Interrupt Disable</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL1</name>
+                           <description>Error Flow 1 Interrupt Disable</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>RXSTP</name>
+                           <description>Received Setup Interrupt Disable</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL0</name>
+                           <description>Stall 0 In/Out Interrupt Disable</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL1</name>
+                           <description>Stall 1 In/Out Interrupt Disable</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>EPINTENSET</name>
+                     <description>DEVICE_ENDPOINT End Point Interrupt Set Flag</description>
+                     <addressOffset>0x9</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToSet</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0 Interrupt Enable</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1 Interrupt Enable</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL0</name>
+                           <description>Error Flow 0 Interrupt Enable</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL1</name>
+                           <description>Error Flow 1 Interrupt Enable</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>RXSTP</name>
+                           <description>Received Setup Interrupt Enable</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL0</name>
+                           <description>Stall 0 In/out Interrupt enable</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL1</name>
+                           <description>Stall 1 In/out Interrupt enable</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+               </cluster>
+            </cluster>
+            <cluster>
+               <name>HOST</name>
+               <description>USB is Host</description>
+               <alternateCluster>DEVICE</alternateCluster>
+               <headerStructName>UsbHost</headerStructName>
+               <addressOffset>0x0</addressOffset>
+               <register>
+                  <name>CTRLA</name>
+                  <description>Control A</description>
+                  <addressOffset>0x0</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>SWRST</name>
+                        <description>Software Reset</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>ENABLE</name>
+                        <description>Enable</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RUNSTDBY</name>
+                        <description>Run in Standby Mode</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>MODE</name>
+                        <description>Operating Mode</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                        <enumeratedValues>
+                           <name>MODESelect</name>
+                           <enumeratedValue>
+                              <name>DEVICE</name>
+                              <description>Device Mode</description>
+                              <value>0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HOST</name>
+                              <description>Host Mode</description>
+                              <value>1</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>SYNCBUSY</name>
+                  <description>Synchronization Busy</description>
+                  <addressOffset>0x2</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>SWRST</name>
+                        <description>Software Reset Synchronization Busy</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>ENABLE</name>
+                        <description>Enable Synchronization Busy</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>QOSCTRL</name>
+                  <description>USB Quality Of Service</description>
+                  <addressOffset>0x3</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x05</resetValue>
+                  <fields>
+                     <field>
+                        <name>CQOS</name>
+                        <description>Configuration Quality of Service</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>CQOSSelect</name>
+                           <enumeratedValue>
+                              <name>DISABLE</name>
+                              <description>Background (no sensitive operation)</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LOW</name>
+                              <description>Sensitive Bandwidth</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>MEDIUM</name>
+                              <description>Sensitive Latency</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HIGH</name>
+                              <description>Critical Latency</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                     <field>
+                        <name>DQOS</name>
+                        <description>Data Quality of Service</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>DQOSSelect</name>
+                           <enumeratedValue>
+                              <name>DISABLE</name>
+                              <description>Background (no sensitive operation)</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>LOW</name>
+                              <description>Sensitive Bandwidth</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>MEDIUM</name>
+                              <description>Sensitive Latency</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>HIGH</name>
+                              <description>Critical Latency</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>CTRLB</name>
+                  <description>HOST Control B</description>
+                  <addressOffset>0x8</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>RESUME</name>
+                        <description>Send USB Resume</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SPDCONF</name>
+                        <description>Speed Configuration for Host</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                        <enumeratedValues>
+                           <name>SPDCONFSelect</name>
+                           <enumeratedValue>
+                              <name>NORMAL</name>
+                              <description>Normal mode:the host starts in full-speed mode and performs a high-speed reset to switch to the high speed mode if the downstream peripheral is high-speed capable.</description>
+                              <value>0x0</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>FS</name>
+                              <description>Full-speed:the host remains in full-speed mode whatever is the peripheral speed capability. Relevant in UTMI mode only.</description>
+                              <value>0x3</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                     <field>
+                        <name>TSTJ</name>
+                        <description>Test mode J</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>TSTK</name>
+                        <description>Test mode K</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>SOFE</name>
+                        <description>Start of Frame Generation Enable</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>BUSRESET</name>
+                        <description>Send USB Reset</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>VBUSOK</name>
+                        <description>VBUS is OK</description>
+                        <bitOffset>10</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>L1RESUME</name>
+                        <description>Send L1 Resume</description>
+                        <bitOffset>11</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>HSOFC</name>
+                  <description>HOST Host Start Of Frame Control</description>
+                  <addressOffset>0xA</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>FLENC</name>
+                        <description>Frame Length Control</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>4</bitWidth>
+                     </field>
+                     <field>
+                        <name>FLENCE</name>
+                        <description>Frame Length Control Enable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>STATUS</name>
+                  <description>HOST Status</description>
+                  <addressOffset>0xC</addressOffset>
+                  <size>8</size>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>SPEED</name>
+                        <description>Speed Status</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>2</bitWidth>
+                     </field>
+                     <field>
+                        <name>LINESTATE</name>
+                        <description>USB Line State Status</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>2</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>FSMSTATUS</name>
+                  <description>Finite State Machine Status</description>
+                  <addressOffset>0xD</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x01</resetValue>
+                  <fields>
+                     <field>
+                        <name>FSMSTATE</name>
+                        <description>Fine State Machine Status</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>7</bitWidth>
+                        <enumeratedValues>
+                           <name>FSMSTATESelect</name>
+                           <enumeratedValue>
+                              <name>OFF</name>
+                              <description>OFF (L3). It corresponds to the powered-off, disconnected, and disabled state</description>
+                              <value>0x1</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>ON</name>
+                              <description>ON (L0). It corresponds to the Idle and Active states</description>
+                              <value>0x2</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>SUSPEND</name>
+                              <description>SUSPEND (L2)</description>
+                              <value>0x4</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>SLEEP</name>
+                              <description>SLEEP (L1)</description>
+                              <value>0x8</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>DNRESUME</name>
+                              <description>DNRESUME. Down Stream Resume.</description>
+                              <value>0x10</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>UPRESUME</name>
+                              <description>UPRESUME. Up Stream Resume.</description>
+                              <value>0x20</value>
+                           </enumeratedValue>
+                           <enumeratedValue>
+                              <name>RESET</name>
+                              <description>RESET. USB lines Reset.</description>
+                              <value>0x40</value>
+                           </enumeratedValue>
+                        </enumeratedValues>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>FNUM</name>
+                  <description>HOST Host Frame Number</description>
+                  <addressOffset>0x10</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>MFNUM</name>
+                        <description>Micro Frame Number</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>3</bitWidth>
+                     </field>
+                     <field>
+                        <name>FNUM</name>
+                        <description>Frame Number</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>11</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>FLENHIGH</name>
+                  <description>HOST Host Frame Length</description>
+                  <addressOffset>0x12</addressOffset>
+                  <size>8</size>
+                  <access>read-only</access>
+                  <resetValue>0x00</resetValue>
+                  <fields>
+                     <field>
+                        <name>FLENHIGH</name>
+                        <description>Frame Length</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>8</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTENCLR</name>
+                  <description>HOST Host Interrupt Enable Clear</description>
+                  <addressOffset>0x14</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>HSOF</name>
+                        <description>Host Start Of Frame Interrupt Disable</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RST</name>
+                        <description>BUS Reset Interrupt Disable</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up Interrupt Disable</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DNRSM</name>
+                        <description>DownStream to Device Interrupt Disable</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume from Device Interrupt Disable</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access Interrupt Disable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DCONN</name>
+                        <description>Device Connection Interrupt Disable</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DDISC</name>
+                        <description>Device Disconnection Interrupt Disable</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTENSET</name>
+                  <description>HOST Host Interrupt Enable Set</description>
+                  <addressOffset>0x18</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToSet</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>HSOF</name>
+                        <description>Host Start Of Frame Interrupt Enable</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RST</name>
+                        <description>Bus Reset Interrupt Enable</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up Interrupt Enable</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DNRSM</name>
+                        <description>DownStream to the Device Interrupt Enable</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume fromthe device Interrupt Enable</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access Interrupt Enable</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DCONN</name>
+                        <description>Link Power Management Interrupt Enable</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DDISC</name>
+                        <description>Device Disconnection Interrupt Enable</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>INTFLAG</name>
+                  <description>HOST Host Interrupt Flag</description>
+                  <addressOffset>0x1C</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                  <fields>
+                     <field>
+                        <name>HSOF</name>
+                        <description>Host Start Of Frame</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RST</name>
+                        <description>Bus Reset</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>WAKEUP</name>
+                        <description>Wake Up</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DNRSM</name>
+                        <description>Downstream</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>UPRSM</name>
+                        <description>Upstream Resume from the Device</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>RAMACER</name>
+                        <description>Ram Access</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DCONN</name>
+                        <description>Device Connection</description>
+                        <bitOffset>8</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>DDISC</name>
+                        <description>Device Disconnection</description>
+                        <bitOffset>9</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>PINTSMRY</name>
+                  <description>HOST Pipe Interrupt Summary</description>
+                  <addressOffset>0x20</addressOffset>
+                  <size>16</size>
+                  <access>read-only</access>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>EPINT0</name>
+                        <description>Pipe 0 Interrupt</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT1</name>
+                        <description>Pipe 1 Interrupt</description>
+                        <bitOffset>1</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT2</name>
+                        <description>Pipe 2 Interrupt</description>
+                        <bitOffset>2</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT3</name>
+                        <description>Pipe 3 Interrupt</description>
+                        <bitOffset>3</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT4</name>
+                        <description>Pipe 4 Interrupt</description>
+                        <bitOffset>4</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT5</name>
+                        <description>Pipe 5 Interrupt</description>
+                        <bitOffset>5</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT6</name>
+                        <description>Pipe 6 Interrupt</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                     <field>
+                        <name>EPINT7</name>
+                        <description>Pipe 7 Interrupt</description>
+                        <bitOffset>7</bitOffset>
+                        <bitWidth>1</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>DESCADD</name>
+                  <description>Descriptor Address</description>
+                  <addressOffset>0x24</addressOffset>
+                  <size>32</size>
+                  <resetValue>0x00000000</resetValue>
+                  <fields>
+                     <field>
+                        <name>DESCADD</name>
+                        <description>Descriptor Address Value</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>32</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <register>
+                  <name>PADCAL</name>
+                  <description>USB PAD Calibration</description>
+                  <addressOffset>0x28</addressOffset>
+                  <size>16</size>
+                  <resetValue>0x0000</resetValue>
+                  <fields>
+                     <field>
+                        <name>TRANSP</name>
+                        <description>USB Pad Transp calibration</description>
+                        <bitOffset>0</bitOffset>
+                        <bitWidth>5</bitWidth>
+                     </field>
+                     <field>
+                        <name>TRANSN</name>
+                        <description>USB Pad Transn calibration</description>
+                        <bitOffset>6</bitOffset>
+                        <bitWidth>5</bitWidth>
+                     </field>
+                     <field>
+                        <name>TRIM</name>
+                        <description>USB Pad Trim calibration</description>
+                        <bitOffset>12</bitOffset>
+                        <bitWidth>3</bitWidth>
+                     </field>
+                  </fields>
+               </register>
+               <cluster>
+                  <dim>8</dim>
+                  <dimIncrement>0x20</dimIncrement>
+                  <name>HOST_PIPE[%s]</name>
+                  <description/>
+                  <addressOffset>0x100</addressOffset>
+                  <register>
+                     <name>PCFG</name>
+                     <description>HOST_PIPE End Point Configuration</description>
+                     <addressOffset>0x0</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>PTOKEN</name>
+                           <description>Pipe Token</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>2</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK</name>
+                           <description>Pipe Bank</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PTYPE</name>
+                           <description>Pipe Type</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>3</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>BINTERVAL</name>
+                     <description>HOST_PIPE Bus Access Period of Pipe</description>
+                     <addressOffset>0x3</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>BITINTERVAL</name>
+                           <description>Bit Interval</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>8</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PSTATUSCLR</name>
+                     <description>HOST_PIPE End Point Pipe Status Clear</description>
+                     <addressOffset>0x4</addressOffset>
+                     <size>8</size>
+                     <access>write-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGL</name>
+                           <description>Data Toggle clear</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Curren Bank clear</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PFREEZE</name>
+                           <description>Pipe Freeze Clear</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 Ready Clear</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 Ready Clear</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PSTATUSSET</name>
+                     <description>HOST_PIPE End Point Pipe Status Set</description>
+                     <addressOffset>0x5</addressOffset>
+                     <size>8</size>
+                     <access>write-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGL</name>
+                           <description>Data Toggle Set</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Current Bank Set</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PFREEZE</name>
+                           <description>Pipe Freeze Set</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 Ready Set</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 Ready Set</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PSTATUS</name>
+                     <description>HOST_PIPE End Point Pipe Status</description>
+                     <addressOffset>0x6</addressOffset>
+                     <size>8</size>
+                     <access>read-only</access>
+                     <resetValue>0x00</resetValue>
+                     <fields>
+                        <field>
+                           <name>DTGL</name>
+                           <description>Data Toggle</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>CURBK</name>
+                           <description>Current Bank</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PFREEZE</name>
+                           <description>Pipe Freeze</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK0RDY</name>
+                           <description>Bank 0 ready</description>
+                           <bitOffset>6</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>BK1RDY</name>
+                           <description>Bank 1 ready</description>
+                           <bitOffset>7</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PINTFLAG</name>
+                     <description>HOST_PIPE Pipe Interrupt Flag</description>
+                     <addressOffset>0x7</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0 Interrupt Flag</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1 Interrupt Flag</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL</name>
+                           <description>Error Flow Interrupt Flag</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PERR</name>
+                           <description>Pipe Error Interrupt Flag</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TXSTP</name>
+                           <description>Transmit  Setup Interrupt Flag</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL</name>
+                           <description>Stall Interrupt Flag</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PINTENCLR</name>
+                     <description>HOST_PIPE Pipe Interrupt Flag Clear</description>
+                     <addressOffset>0x8</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToClear</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0 Disable</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1 Disable</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL</name>
+                           <description>Error Flow Interrupt Disable</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PERR</name>
+                           <description>Pipe Error Interrupt Disable</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TXSTP</name>
+                           <description>Transmit  Setup Interrupt Disable</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL</name>
+                           <description>Stall Inetrrupt Disable</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+                  <register>
+                     <name>PINTENSET</name>
+                     <description>HOST_PIPE Pipe Interrupt Flag Set</description>
+                     <addressOffset>0x9</addressOffset>
+                     <size>8</size>
+                     <resetValue>0x00</resetValue>
+                     <modifiedWriteValues>oneToSet</modifiedWriteValues>
+                     <fields>
+                        <field>
+                           <name>TRCPT0</name>
+                           <description>Transfer Complete 0 Interrupt Enable</description>
+                           <bitOffset>0</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRCPT1</name>
+                           <description>Transfer Complete 1 Interrupt Enable</description>
+                           <bitOffset>1</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TRFAIL</name>
+                           <description>Error Flow Interrupt Enable</description>
+                           <bitOffset>2</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>PERR</name>
+                           <description>Pipe Error Interrupt Enable</description>
+                           <bitOffset>3</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>TXSTP</name>
+                           <description>Transmit  Setup Interrupt Enable</description>
+                           <bitOffset>4</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                        <field>
+                           <name>STALL</name>
+                           <description>Stall Interrupt Enable</description>
+                           <bitOffset>5</bitOffset>
+                           <bitWidth>1</bitWidth>
+                        </field>
+                     </fields>
+                  </register>
+               </cluster>
+            </cluster>
+         </registers>
+      </peripheral>
+  </peripherals>
+</device>
