@@ -29,13 +29,16 @@
 #include "DFLL.hpp"
 #include "Dpll.hpp"
 #include "GCLK.hpp"
+#include "PM.hpp"
 #include "WaitBounds.hpp"
 #include "atsam_common/ClockTree.hpp"
 #include "atsam_common/Clocks.hpp"
+#include "core_peripherals/SYSTICK.hpp"
 #include "kvasir/Register/Register.hpp"
 #include "kvasir/Register/Utility.hpp"
 #include "peripherals/NVMCTRL.hpp"
 #include "peripherals/SYSCTRL.hpp"
+#include "peripherals/TC_COUNT16.hpp"
 
 #include <cstdint>
 #include <type_traits>
@@ -134,6 +137,88 @@ namespace Kvasir { namespace Clocks { namespace Sam {
     };
 
     namespace Detail {
+        // Is the FDPLL96M's output the frequency it was set for? Its LOCK and CLKRDY are no proof: on a board without
+        // a crystal XOSCRDY (the start-up counter, 17.6.2) and CLKRDY both came, and the DCO ran free at ~31.9 MHz
+        // (measured on a G18A rev D). So count it: generator 1 takes the FDPLL / 16 to TC3 (GCLK channel
+        // TCC2_TC3, 15.8.3), and SysTick on the processor clock times a window while the CPU still runs from OSC8M
+        // (GCLK0 undivided, from reset or parkMainClock: 8 MHz >> SYSCTRL.OSC8M.PRESC, 17.8.9 md l.8884). A window of
+        // f_CPU / 250 SysTick ticks is 4 ms, so the count expected is (FDPLL / 16) / 250 whatever PRESC is. OSC8M is
+        // within 7.8..8.16 MHz over the whole range (Table 37-57): +-10 % takes that and the read-request latency, and
+        // still tells 31.9 MHz from 48. Afterwards TC3, its channel, generator 1, TC3's APB gate and SysTick are what a
+        // reset leaves: TC3 by CTRLA.SWRST (30.8.1), CLKCTRL ID 0x1B with CLKEN 0 and GEN 0 (Table 15-3 "Others"),
+        // GENCTRL / GENDIV of generator 1 = 0x00000001 (15.8.4 / 15.8.5 power-reset tables), APBCMASK.TC3 0 (16.8.10,
+        // reset 0x00010000), SYST_CSR.ENABLE 0. Registers only: it runs in coreClockInit.
+        template<std::uint64_t FdpllHz>
+        struct FdpllCheck {
+            static constexpr std::uint32_t div = 16;
+            static constexpr std::uint32_t expected
+              = static_cast<std::uint32_t>(FdpllHz / div / 250);
+            static_assert(expected > 100 && expected * 11 / 10 < 0x1'0000,
+                          "FdpllCheck: the count of the 4 ms window fits TC3's 16 bits");
+            using Bound = Kvasir::Register::Bound::Polls<100'000>;
+
+            [[nodiscard]] static bool matches() {
+                namespace R         = Kvasir::Register;
+                using Tc            = Kvasir::Peripheral::TC_COUNT16::Registers<3>;
+                using KSR           = Kvasir::Peripheral::SYSCTRL::Registers<>;
+                using GC            = Kvasir::Peripheral::GCLK::Registers<>;
+                using Syst          = Kvasir::Peripheral::SYSTICK::Registers<>;
+                auto const tcSynced = [] {
+                    return R::waitUntil<Bound, R::OnTimeout::Report>(
+                      R::isClear(Tc::STATUS::syncbusy));
+                };
+                auto const gclkSynced = [] {
+                    return R::waitUntil<Bound, R::OnTimeout::Report>(
+                      R::isClear(GC::STATUS::syncbusy));
+                };
+                // COUNT through a read request (READREQ.RREQ, ADDR = COUNT's offset 0x10, 30.8.2)
+                auto const count = [&] {
+                    apply(Tc::READREQ::overrideDefaults(
+                      write(Tc::READREQ::addr, R::value<std::uint16_t, 0x10>()),
+                      set(Tc::READREQ::rreq)));
+                    static_cast<void>(tcSynced());
+                    return static_cast<std::uint32_t>(get<0>(apply(read(Tc::COUNT::count))));
+                };
+
+                apply(typename PM::Enable<Tc::baseAddr>::action{});
+                apply(GCLK::GenericClockGenerator<1, GCLK::GeneratorSource::fdpll, div>::enable());
+                static_cast<void>(gclkSynced());
+                apply(GCLK::PeripheralChannelController<1, GCLK::Peripheral::tcc2_tc3>::enable());
+                apply(set(Tc::CTRLA::swrst));
+                bool ok = static_cast<bool>(tcSynced());
+                apply(write(Tc::CTRLA::MODEValC::count16), set(Tc::CTRLA::enable));
+                ok = ok && static_cast<bool>(tcSynced());
+
+                std::uint32_t const cpuHz
+                  = 8'000'000U >> static_cast<unsigned>(get<0>(apply(read(KSR::OSC8M::presc))));
+                std::uint32_t const window = cpuHz / 250;
+                apply(write(Syst::RVR::reload, 0x00FF'FFFFU));
+                apply(write(Syst::CVR::current, 0U));
+                apply(write(Syst::CSR::CLKSOURCEValC::processor), set(Syst::CSR::enable));
+                std::uint32_t const t0    = get<0>(apply(read(Syst::CVR::current)));
+                std::uint32_t const first = count();
+                bool const timed = static_cast<bool>(R::waitUntil<Bound, R::OnTimeout::Report>([&] {
+                    return ((t0 - get<0>(apply(read(Syst::CVR::current)))) & 0x00FF'FFFFU)
+                        >= window;
+                }));
+                std::uint32_t const counted = (count() - first) & 0xFFFFU;
+
+                // back to what a reset leaves
+                apply(clear(Syst::CSR::enable));
+                apply(set(Tc::CTRLA::swrst));
+                static_cast<void>(tcSynced());
+                apply(GC::CLKCTRL::overrideDefaults(
+                  write(GC::CLKCTRL::id,
+                        R::value<GCLK::Peripheral, GCLK::Peripheral::tcc2_tc3>())));
+                apply(GC::GENCTRL::overrideDefaults(write(GC::GENCTRL::id, R::value<1>())));
+                static_cast<void>(gclkSynced());
+                apply(GC::GENDIV::overrideDefaults(write(GC::GENDIV::id, R::value<1>())));
+                apply(typename PM::Disable<Tc::baseAddr>::action{});
+
+                return ok && timed && counted * 10 >= expected * 9 && counted * 10 <= expected * 11;
+            }
+        };
+
         // Generator 0 on the DFLL48M for f_CPU: 48 MHz / Div. Div = 1 for 48 MHz (DIVSEL 0 and GENDIV.DIV 0 or 1
         // are both "not divided", 15.8.4). The wait states are those of the 48 MHz row: the open loop runs up to
         // 49 MHz (Table 37-52, ClockLimits::D21::dfllOpenLoopMaxHz), above f_CPU max (Table 37-7) and above the last
@@ -254,6 +339,8 @@ namespace Kvasir { namespace Clocks { namespace Sam {
                 crystal = static_cast<bool>(
                   R::waitUntil<CrystalBound, R::OnTimeout::Report>([] { return DPLL::ready(); }));
             }
+            // ready is not running: the FDPLL counted against OSC8M (Detail::FdpllCheck)
+            crystal = crystal && Detail::FdpllCheck<C.cpu * dpll.gclkDiv>::matches();
             // RWS first (22.5.2), its own apply(): before either switch
             apply(Nvm::setWaitStates<WaitStates>());
             if(crystal) {
