@@ -59,7 +59,7 @@ namespace Kvasir { namespace DFLL {
     /// What the factory measured for this part.
     [[nodiscard]] inline Trim factoryTrim() { return trimFrom(Nvm::calibration().dfllCoarse); }
 
-    namespace detail {
+    namespace Detail {
         using KSR = Kvasir::Peripheral::SYSCTRL::Registers<>;
 
         /// PCLKSR.DFLLRDY: the synchronisation after a DFLL register write (WaitBounds.hpp DfllSyncBound).
@@ -79,7 +79,7 @@ namespace Kvasir { namespace DFLL {
                   write(KSR::DFLLVAL::coarse, trim.coarse));
             waitSync();
         }
-    }   // namespace detail
+    }   // namespace Detail
 
     /// The DFLL running in open loop on `trim`, ready to be a clock generator's source.
     /// ONDEMAND is cleared with the enable, before DFLLVAL is written: "the DFLL clock must be
@@ -90,7 +90,7 @@ namespace Kvasir { namespace DFLL {
     /// datasheet allows to name. Table 37-52 gives the open loop up to 49 MHz, which is above f_CPU
     /// max (48 MHz, Table 37-7) and above the last row of Table 37-42: there is no wait-state count
     /// for the open loop's worst case (ClockLimits::D21::dfllOpenLoopMaxHz).
-    inline void enableOpenLoop(Trim trim = factoryTrim()) { detail::enableWith(trim); }
+    inline void enableOpenLoop(Trim trim = factoryTrim()) { Detail::enableWith(trim); }
 
     /// The DFLL locked to the USB start-of-frame, for a device without a crystal: the host sends
     /// a SOF every millisecond, and with DFLLMUL.MUL = 48000 (0xBB80) the loop makes 48 MHz of
@@ -109,20 +109,20 @@ namespace Kvasir { namespace DFLL {
     /// can be wrong after a suspend (errata 1.2.3). DFLLRDY is the register synchronisation and
     /// is safe to wait on. The wait states are the caller's, for 48 MHz.
     inline void enableUsbRecovery(Trim trim = factoryTrim()) {
-        using detail::KSR;
-        detail::enableWith(trim);
+        using Detail::KSR;
+        Detail::enableWith(trim);
         apply(
           KSR::DFLLMUL::overrideDefaults(write(KSR::DFLLMUL::mul, Kvasir::Register::value<48000>()),
                                          write(KSR::DFLLMUL::fstep, Kvasir::Register::value<10>()),
                                          write(KSR::DFLLMUL::cstep, Kvasir::Register::value<1>())));
-        detail::waitSync();
+        Detail::waitSync();
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
                                               set(KSR::DFLLCTRL::mode),
                                               set(KSR::DFLLCTRL::usbcrm),
                                               set(KSR::DFLLCTRL::ccdis),
                                               clear(KSR::DFLLCTRL::qldis),
                                               clear(KSR::DFLLCTRL::ondemand)));
-        detail::waitSync();
+        Detail::waitSync();
     }
 
     /// The DFLL locked to a reference on GCLK_DFLL48M_REF (generic clock channel 0, which the
@@ -159,19 +159,19 @@ namespace Kvasir { namespace DFLL {
                       "DFLL48M: the closed-loop reference must be within 2 % (note 1 under SAM "
                       "D21 Table 37-54)");
 
-        using detail::KSR;
+        using Detail::KSR;
         using Kvasir::Register::value;
-        detail::enableWith(trim);
+        Detail::enableWith(trim);
         apply(KSR::DFLLMUL::overrideDefaults(
           write(KSR::DFLLMUL::mul, value<loop.mul>()),
           write(KSR::DFLLMUL::fstep, value<maxFineStep<L::dfll48m>>()),
           write(KSR::DFLLMUL::cstep, value<maxCoarseStep<L::dfll48m>>())));
-        detail::waitSync();
+        Detail::waitSync();
         apply(KSR::DFLLCTRL::overrideDefaults(set(KSR::DFLLCTRL::enable),
                                               set(KSR::DFLLCTRL::mode),
                                               set(KSR::DFLLCTRL::bplckc),
                                               clear(KSR::DFLLCTRL::ondemand)));
-        detail::waitSync();
+        Detail::waitSync();
         Kvasir::Register::waitUntil<Kvasir::Chip::DfllLockBound>(
           Kvasir::Register::isSet(KSR::PCLKSR::dflllckf));
     }

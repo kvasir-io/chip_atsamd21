@@ -77,7 +77,7 @@ static_assert(!DPLL::fromXosc<L::fdpll96m>(8'000'000,
                  .found);
 
 // the tie-break rules one by one
-namespace DD = DPLL::detail;
+namespace DD = DPLL::Detail;
 
 constexpr DPLL::Setting mk(std::uint64_t refNum,
                            std::uint64_t refDen,

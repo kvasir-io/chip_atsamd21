@@ -15,7 +15,7 @@
 
 namespace Kvasir { namespace Fuses {
 
-    namespace detail {
+    namespace Detail {
         // A group of Fuse_Traits fields (Traits::Bod33, Wdt, Nvm) with isValid / == / combineInto over the fields
         // named by their member pointers, in the order given.
         template<typename Group, auto... Fields>
@@ -43,10 +43,10 @@ namespace Kvasir { namespace Fuses {
         private:
             [[nodiscard]] constexpr Group const& group() const { return *this; }
         };
-    }   // namespace detail
+    }   // namespace Detail
 
     struct Bod33
-      : detail::FieldGroup<Traits::Bod33,
+      : Detail::FieldGroup<Traits::Bod33,
                            &Traits::Bod33::action,
                            &Traits::Bod33::enable,
                            &Traits::Bod33::hysteresis,
@@ -55,7 +55,7 @@ namespace Kvasir { namespace Fuses {
     };
 
     struct Wdt
-      : detail::FieldGroup<Traits::Wdt,
+      : Detail::FieldGroup<Traits::Wdt,
                            &Traits::Wdt::enable,
                            &Traits::Wdt::alwaysOn,
                            &Traits::Wdt::windowEnable,
@@ -66,7 +66,7 @@ namespace Kvasir { namespace Fuses {
     };
 
     struct Nvm
-      : detail::FieldGroup<Traits::Nvm,
+      : Detail::FieldGroup<Traits::Nvm,
                            &Traits::Nvm::bootprot,
                            &Traits::Nvm::eeprom,
                            &Traits::Nvm::lock> {

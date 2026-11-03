@@ -21,16 +21,16 @@ constexpr Row row(std::uint32_t word0,
 // BOOTPROT 7, EEPROM 7 << 4, BOD33 level 7 << 8, enable bit 14, action 1 << 15, BOD12 0x70 << 17, WDT period
 // 0xB << 27, Window bit 0 at 31 -> 0xD8E0C777; Window bits 3:1 = 5 at 32, EWOFFSET 0xB << 3, LOCK 0xFFFF << 16
 // -> 0xFFFF005D
-constexpr Row Defaults = row(0xD8E0'C777U, 0xFFFF'005DU);
+constexpr Row defaults = row(0xD8E0'C777U, 0xFFFF'005DU);
 
-constexpr Bod33 bod{Defaults};
+constexpr Bod33 bod{defaults};
 static_assert(bod.action.asValue() == 1 && bod.enable.asValue() == 1
               && bod.hysteresis.asValue() == 0 && bod.level.asValue() == 7);
-constexpr Wdt wdt{Defaults};
+constexpr Wdt wdt{defaults};
 static_assert(wdt.enable.asValue() == 0 && wdt.alwaysOn.asValue() == 0
               && wdt.windowEnable.asValue() == 0 && wdt.period.asValue() == 0xB
               && wdt.window.asValue() == 0xB && wdt.offset.asValue() == 0xB);
-constexpr Nvm nvm{Defaults};
+constexpr Nvm nvm{defaults};
 static_assert(nvm.bootprot.asValue() == 7 && nvm.eeprom.asValue() == 7
               && nvm.lock.asValue() == 0xFFFF);
 
@@ -50,7 +50,7 @@ static_assert([] {
     nvm.bootprot.combineInto(r);
     nvm.eeprom.combineInto(r);
     nvm.lock.combineInto(r);
-    return r == Defaults;
+    return r == defaults;
 }());
 
 // a field write leaves the BOD12 bits (24:17, 41) and the reserved bits as they were
