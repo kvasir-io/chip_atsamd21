@@ -88,3 +88,24 @@ kvasir_conformance_must_fail(
     CASES
     "1|provided [(]configured, owned[)] by two peripherals: Io pin 0[.]17"
     "2|provided [(]configured, owned[)] by two peripherals: Io pin 0[.]8")
+
+# A pin's level or direction written twice in one apply() (chip_atsam_common RegisterSeam.hpp: PORT's DIR and OUT as
+# Register::SharedState): port_levels_must_fail.cpp with PORT_FAIL=0 compiles in `all`, each case below must fail naming
+# the pin and what it writes (ctest in this tree, both compilers).
+kvasir_conformance_must_fail(
+    NAME
+    port_levels_must_fail
+    PROJECT
+    chip_atsamd21_conformance
+    SOURCE
+    port_levels_must_fail.cpp
+    DEFINE
+    PORT_FAIL
+    CASES
+    "1|one hardware state through two registers.*SAM PORT PA17, its level[.:].*apply[(][)] of its own"
+    "2|one hardware state through two registers.*SAM PORT PA8, its level[.:].*apply[(][)] of its own"
+    "3|one hardware state through two registers.*SAM PORT PA6, its level[.:].*apply[(][)] of its own"
+    "4|one hardware state through two registers.*SAM PORT PA17, its level[.:].*apply[(][)] of its own"
+    "5|one hardware state through two registers.*SAM PORT PA17, its level[.:].*apply[(][)] of its own"
+    "6|one hardware state through two registers.*SAM PORT PA2, its level[.:].*apply[(][)] of its own"
+    "7|one hardware state through two registers.*SAM PORT PA6, its direction: .*once per list")

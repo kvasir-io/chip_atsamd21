@@ -5374,28 +5374,29 @@
                   <description>Match/Capture 1</description>
                   <value>0x11</value>
                 </enumeratedValue>
+                <!-- Kvasir: TC3..TC7 (the vendor SVD said TC0..TC4 for the same values): DS40001882L Table 24-2 l.18305-18324, USER 0x12 TC3 .. 0x16 TC7 -->
                 <enumeratedValue>
-                  <name>TC0</name>
+                  <name>TC3</name>
                   <description/>
                   <value>0x12</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TC1</name>
+                  <name>TC4</name>
                   <description/>
                   <value>0x13</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TC2</name>
+                  <name>TC5</name>
                   <description/>
                   <value>0x14</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TC3</name>
+                  <name>TC6</name>
                   <description/>
                   <value>0x15</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TC4</name>
+                  <name>TC7</name>
                   <description/>
                   <value>0x16</value>
                 </enumeratedValue>

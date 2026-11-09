@@ -46,6 +46,20 @@ KVASIR_CONFORMANCE_REQUIRE("Nvic::InterruptOffsetTraits<Tag::User>::end",
 KVASIR_CONFORMANCE_REQUIRE("Io::PinLocationTraits<void>",
                            Kvasir::Io::PinLocationTraits<void>::pinEnd > 0);
 
+// the register seam (cmake/chip.cmake KVASIR_CHIP_REGISTER_SEAM, chip_atsam_common RegisterSeam.hpp): a group's OUTSET
+// and OUTCLR write one state, so apply() refuses makeOutput(pin) with set(pin) in one list
+namespace Conformance::Seam {
+using Port = Kvasir::Peripheral::PORT::Registers<>;
+template<typename A>
+constexpr unsigned state = Kvasir::Register::SharedState<Kvasir::Tag::User, A>::value;
+}   // namespace Conformance::Seam
+
+KVASIR_CONFORMANCE_REQUIRE("Register::SharedState<Tag::User> of the PORT (RegisterSeam.hpp)",
+                           Conformance::Seam::state<Conformance::Seam::Port::OUTSET<1>::Addr>
+                               == Conformance::Seam::state<Conformance::Seam::Port::OUTCLR<1>::Addr>
+                             && Conformance::Seam::state<Conformance::Seam::Port::OUTSET<1>::Addr>
+                                  == Conformance::Seam::Port::OUT<1>::Addr::value);
+
 // reset cause, wait bounds
 KVASIR_CONFORMANCE_REQUIRE("PM::resetCause()",
                            Kvasir::Conformance::Row::resetCause);
